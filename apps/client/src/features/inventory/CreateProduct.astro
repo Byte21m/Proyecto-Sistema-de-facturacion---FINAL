@@ -1,0 +1,101 @@
+<div class="glass-card p-8 rounded-3xl animate-fade-in">
+  <div class="flex items-center gap-3 mb-6">
+    <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white text-xl">
+      📦
+    </div>
+    <h2 class="text-xl font-bold text-gray-900 dark:text-white">Nuevo Producto</h2>
+  </div>
+
+  <form id="main-form" class="flex flex-col gap-5">
+    <div class="flex flex-col gap-2">
+      <label for="nombre-input" class="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">Nombre del Producto</label>
+      <input
+        type="text"
+        id="nombre-input"
+        class="w-full bg-white/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-2xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 backdrop-blur-sm"
+        placeholder="Ej. Mouse Gamer RGB"
+      />
+      <p id="error-nombre" class="text-xs font-semibold text-red-500 dark:text-red-400 ml-1 hidden"></p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div class="flex flex-col gap-2">
+        <label for="precio-input" class="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">Precio ($)</label>
+        <input
+          type="number"
+          step="0.01"
+          id="precio-input"
+          class="w-full bg-white/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-2xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 backdrop-blur-sm"
+          placeholder="0.00"
+        />
+        <p id="error-precio" class="text-xs font-semibold text-red-500 dark:text-red-400 ml-1 hidden"></p>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="stock-input" class="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">Stock Inicial</label>
+        <input
+          type="number"
+          id="stock-input"
+          class="w-full bg-white/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-2xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 backdrop-blur-sm"
+          placeholder="0"
+        />
+        <p id="error-stock" class="text-xs font-semibold text-red-500 dark:text-red-400 ml-1 hidden"></p>
+      </div>
+    </div>
+
+    <button
+      id="main-form-btn"
+      class="mt-2 group relative w-full bg-indigo-600 py-3.5 rounded-2xl text-white font-bold shadow-xl shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-1 active:scale-95 transition-all duration-300 overflow-hidden disabled:opacity-50 disabled:translate-y-0"
+    >
+      <span class="relative z-10">Añadir al Inventario</span>
+      <div class="absolute inset-0 bg-linear-to-r from-indigo-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+    </button>
+  </form>
+</div>
+
+<script>
+  import inventoryService from './inventoryService';
+  import { createProductSchema } from './schemas';
+  import { showToast } from '../../components/notification/notification';
+
+  const form = document.querySelector('#main-form');
+  const inputNombre = document.querySelector('#nombre-input');
+  const inputPrecio = document.querySelector('#precio-input');
+  const inputStock = document.querySelector('#stock-input');
+  const formButton = document.querySelector('#main-form-btn');
+
+  const getPayload = () => ({
+    nombre: inputNombre.value,
+    precio_dolar: parseFloat(inputPrecio.value),
+    stock: parseInt(inputStock.value),
+  });
+
+  const validate = () => {
+    const payload = getPayload();
+    const result = createProductSchema.safeParse(payload);
+    formButton.disabled = !result.success;
+    return result;
+  };
+
+  [inputNombre, inputPrecio, inputStock].forEach(input => {
+    input.addEventListener('input', () => {
+      validate();
+      // Limpiar errores visuales al escribir si quieres algo más reactivo
+    });
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const result = validate();
+    if (!result.success) return;
+
+    try {
+      await inventoryService.addProduct(result.data);
+      showToast({ text: `Producto "${result.data.nombre}" añadido`, type: 'success' });
+      form.reset();
+      validate();
+    } catch {
+      showToast({ text: 'Error al añadir producto', type: 'error' });
+    }
+  });
+</script>

@@ -6,6 +6,7 @@ import { SqliteError } from 'better-sqlite3';
 import jwt from 'jsonwebtoken';
 import authRouter from './features/auth/auth.routes.js';
 import userRouter from './features/user/user.routes.js';
+import productRouter from './features/product/product.routes.js';
 
 const app = express();
 const port = 3000;
@@ -18,9 +19,10 @@ app.get('/api/ping', (req, res) => {
   res.json({ mensaje: '¡El sistema de facturación está vivo!' });
 });
 
-// Rutas copiadas del profesor
+// Rutas del sistema de facturación
 app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/product', productRouter);
 
 app.use((err, req, res, _next) => {
   let errorString = 'Desconocido';

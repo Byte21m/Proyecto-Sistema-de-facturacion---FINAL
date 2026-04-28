@@ -3,48 +3,77 @@ import PageLayout from '../layout/PageLayout.astro';
 ---
 
 <PageLayout title="Inicio - Sistema de Facturación PRO">
-  <main class="flex flex-col items-center justify-center p-4 gap-4 h-[calc(100vh-5rem)] overflow-hidden">
-    <div class="max-w-5xl text-center flex flex-col items-center gap-4">
-      <div class="p-3 bg-indigo-600 rounded-xl shadow-lg shadow-indigo-500/30">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-      </div>
-      
-      <h1 class="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-indigo-600 to-blue-500 tracking-tight dark:from-indigo-400 dark:to-blue-300">
-        Sistema de Facturación PRO
+  <main class="relative h-full flex items-center justify-center overflow-hidden bg-mesh">
+    <!-- Decoración de fondo -->
+    <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-20 dark:opacity-40">
+      <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-indigo-500 rounded-full blur-[120px]"></div>
+      <div class="absolute top-[60%] -right-[10%] w-[40%] h-[40%] bg-purple-500 rounded-full blur-[120px]"></div>
+    </div>
+
+    <div class="relative z-10 max-w-6xl mx-auto px-6 flex flex-col items-center text-center gap-6 md:gap-8">
+      <h1 class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.9] md:leading-[0.85]">
+        Facturación <br />
+        <span class="text-gradient">Inteligente.</span>
       </h1>
       
-      <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium max-w-3xl">
-        La solución definitiva para gestionar el crecimiento de tu PyME y emitir facturas en segundos de manera segura.
+      <p class="max-w-2xl text-base md:text-xl text-gray-600 dark:text-gray-400 font-medium leading-relaxed">
+        La solución definitiva para gestionar el crecimiento de tu PyME. Emite facturas en segundos con un sistema seguro, rápido y estéticamente superior.
       </p>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 w-full text-left">
-        <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-gray-700">
-          <div class="text-indigo-500 mb-2 text-2xl">🛡️</div>
-          <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-1">Seguridad Total</h3>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Autenticación inviolable.</p>
-        </div>
-        <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-gray-700">
-          <div class="text-indigo-500 mb-2 text-2xl">📦</div>
-          <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-1">Control de Inventario</h3>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Gestión de stock en tiempo real.</p>
-        </div>
-        <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-gray-700">
-          <div class="text-indigo-500 mb-2 text-2xl">🚀</div>
-          <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-1">Ventas Rápidas</h3>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Módulo diseñado para kioscos.</p>
-        </div>
-      </div>
-
-      <div class="mt-6 flex flex-wrap justify-center items-center gap-4 w-full">
-        <a href="/login" class="px-8 py-3 rounded-xl bg-indigo-600 text-white font-bold text-lg shadow-lg hover:scale-105 active:scale-95 transition-transform">
-          Iniciar Sesión
+      <!-- Botones Principales -->
+      <div class="flex flex-wrap justify-center gap-4 mt-2">
+        <a href="/login" class="group relative px-8 py-3.5 rounded-2xl bg-indigo-600 text-white font-bold text-lg shadow-2xl shadow-indigo-500/20 hover:shadow-indigo-500/40 hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+          <span class="relative z-10">Iniciar Sesión</span>
+          <div class="absolute inset-0 bg-linear-to-r from-indigo-400 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
         </a>
-        <a href="/signup" class="px-8 py-3 rounded-xl bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 border-2 border-indigo-100 dark:border-gray-700 font-bold text-lg hover:scale-105 active:scale-95 transition-transform">
+        <a href="/signup" class="px-8 py-3.5 rounded-2xl glass-card text-gray-900 dark:text-white font-bold text-lg hover:bg-white/90 dark:hover:bg-gray-800/90 hover:-translate-y-1 transition-all duration-300">
           Registrar mi PyME
         </a>
+      </div>
+
+      <!-- Features Grid con Glassmorphism -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mt-6 w-full">
+        <div class="group p-6 md:p-8 rounded-3xl glass-card text-left hover:border-indigo-500/50 transition-all duration-500 hover:scale-[1.02]">
+          <div class="w-10 h-10 flex items-center justify-center rounded-2xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 text-xl mb-4 group-hover:rotate-12 transition-transform">
+            🛡️
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Seguridad Total</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 leading-snug">
+            Autenticación inviolable mediante JWT y cifrado de grado militar.
+          </p>
+        </div>
+
+        <div class="group p-6 md:p-8 rounded-3xl glass-card text-left hover:border-purple-500/50 transition-all duration-500 hover:scale-[1.02]">
+          <div class="w-10 h-10 flex items-center justify-center rounded-2xl bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 text-xl mb-4 group-hover:rotate-12 transition-transform">
+            📦
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Inventario PRO</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 leading-snug">
+            Control de stock en tiempo real con alertas inteligentes.
+          </p>
+        </div>
+
+        <div class="group p-6 md:p-8 rounded-3xl glass-card text-left hover:border-pink-500/50 transition-all duration-500 hover:scale-[1.02]">
+          <div class="w-10 h-10 flex items-center justify-center rounded-2xl bg-pink-100 dark:bg-pink-900/50 text-pink-600 dark:text-pink-400 text-xl mb-4 group-hover:rotate-12 transition-transform">
+            🚀
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Ventas Ultra-rápidas</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 leading-snug">
+            Módulo optimizado para puntos de venta con alto tráfico.
+          </p>
+        </div>
       </div>
     </div>
   </main>
 </PageLayout>
+
+<style>
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fade-in 0.8s ease-out forwards;
+  }
+</style>
+

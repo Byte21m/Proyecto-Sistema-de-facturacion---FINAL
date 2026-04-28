@@ -1,0 +1,91 @@
+---
+import ProductItem from './ProductItem.astro';
+---
+
+<div class="glass-card rounded-3xl overflow-hidden animate-fade-in">
+  <div class="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-white/50 dark:bg-gray-900/50">
+    <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+      <span class="text-indigo-500">📋</span> Listado de Productos
+    </h2>
+    <div id="loading-indicator" class="hidden">
+      <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-500"></div>
+    </div>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-gray-50/50 dark:bg-gray-800/50">
+          <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Producto</th>
+          <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Precio ($)</th>
+          <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock</th>
+          <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="inventory-table-body" class="divide-y divide-gray-100 dark:divide-gray-800">
+        <!-- Renderizado dinámico aquí -->
+      </tbody>
+    </table>
+  </div>
+
+  <div id="empty-state" class="p-12 text-center hidden">
+    <div class="text-6xl mb-4">🧊</div>
+    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Inventario vacío</h3>
+    <p class="text-gray-500 dark:text-gray-400">Comienza añadiendo productos al sistema.</p>
+  </div>
+</div>
+
+<ProductItem />
+
+<script>
+  import inventoryService, { inventoryStore } from './inventoryService';
+  import { showToast } from '../../components/notification/notification';
+
+  const tableBody = document.querySelector('#inventory-table-body');
+  const template = document.querySelector('#template-product-item');
+  const emptyState = document.querySelector('#empty-state');
+  const loadingIndicator = document.querySelector('#loading-indicator');
+
+  inventoryStore.listen((products) => {
+    tableBody.innerHTML = '';
+    
+    if (products.length === 0) {
+      emptyState.classList.remove('hidden');
+    } else {
+      emptyState.classList.add('hidden');
+      products.forEach((product) => {
+        const row = template.content.cloneNode(true).children[0];
+        
+        // Asignar datos
+        const nombreText = row.querySelector('.product-name');
+        const precioText = row.querySelector('.product-price');
+        const stockText = row.querySelector('.product-stock');
+        const deleteBtn = row.querySelector('.delete-btn');
+
+        nombreText.textContent = product.nombre;
+        precioText.textContent = `$${parseFloat(product.precio_dolar).toFixed(2)}`;
+        stockText.textContent = product.stock;
+
+        // Estilo según stock
+        if (product.stock <= 5) {
+          stockText.classList.add('text-amber-500', 'font-bold');
+        }
+
+        deleteBtn.addEventListener('click', async () => {
+          if (confirm(`¿Eliminar ${product.nombre}?`)) {
+            await inventoryService.deleteProduct(product.id);
+            showToast({ text: 'Producto eliminado', type: 'success' });
+          }
+        });
+
+        tableBody.appendChild(row);
+      });
+    }
+  });
+
+  // Carga inicial
+  loadingIndicator.classList.remove('hidden');
+  inventoryService.loadInventoryFromServer().finally(() => {
+    loadingIndicator.classList.add('hidden');
+  });
+</script>

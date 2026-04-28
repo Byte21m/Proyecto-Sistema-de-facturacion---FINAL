@@ -1,0 +1,31 @@
+---
+import InventoryList from '../features/inventory/InventoryList.astro';
+import CreateProduct from '../features/inventory/CreateProduct.astro';
+import PageLayout from '../layout/PageLayout.astro';
+---
+
+<PageLayout title="Inventario - Sistema de Facturación">
+  <main
+    id="main-container"
+    class="flex flex-col p-8 max-w-7xl mx-auto gap-8 min-h-full bg-mesh"
+  >
+    <div class="flex flex-col gap-2">
+      <h1 class="text-4xl font-black text-gray-900 dark:text-white tracking-tight">Inventario de Productos</h1>
+      <p class="text-gray-500 dark:text-gray-400 font-medium">Gestiona el stock y los precios de tu sistema de facturación.</p>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+      <div class="lg:col-span-1">
+        <CreateProduct />
+      </div>
+      <div class="lg:col-span-2">
+        <InventoryList />
+      </div>
+    </div>
+  </main>
+</PageLayout>
+
+<script>
+  import authService from '../features/auth/auth.service';
+  authService.getLoggedUser();
+</script>

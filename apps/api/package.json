@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "node --watch index.js",
+    "dev": "node --watch --env-file=.env index.js",
     "tables:create": "node db/tables.js"
   },
   "keywords": [],

@@ -25,10 +25,12 @@ const { title } = Astro.props;
       })();
     </script>
   </head>
-  <body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300 min-h-screen">
+  <body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300 h-screen overflow-hidden flex flex-col">
     <Navbar />
     <Notification />
-    <slot />
+    <div class="flex-1 overflow-hidden relative">
+      <slot />
+    </div>
   </body>
   <script
     is:inline

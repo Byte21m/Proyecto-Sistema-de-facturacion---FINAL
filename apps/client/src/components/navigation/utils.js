@@ -24,7 +24,7 @@ export const getLinks = (pathname) => {
 export const getButtons = (pathname) => {
   let buttons = [];
 
-  if (pathname === '/contacts') {
+  if (pathname === '/inventory') {
     buttons = buttons.concat({
       name: 'Cerrar sesión',
       handler: () => {
