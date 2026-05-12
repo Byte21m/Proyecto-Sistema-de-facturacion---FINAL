@@ -60,9 +60,12 @@ import AppLayout from '../layout/AppLayout.astro';
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <p class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1">Ingresos (Bs)</p>
-          <p id="stat-revenue" class="text-3xl font-black text-gray-900 dark:text-white">—</p>
-          <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 font-medium">Total hoy en bolívares</p>
+          <p class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1">Ingresos</p>
+          <div class="flex items-baseline gap-2">
+            <p id="stat-revenue" class="text-3xl font-black text-gray-900 dark:text-white">—</p>
+            <p id="stat-revenue-usd" class="text-sm font-bold text-amber-600 dark:text-amber-500 hidden"></p>
+          </div>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 font-medium">Bolívares y Dólares (BCV)</p>
         </div>
       </div>
 
@@ -135,7 +138,7 @@ import AppLayout from '../layout/AppLayout.astro';
             <thead>
               <tr class="bg-gray-50/50 dark:bg-gray-800/50">
                 <th class="px-6 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Producto</th>
-                <th class="px-6 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Precio ($)</th>
+                <th class="px-6 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Precio ($ y Bs)</th>
                 <th class="px-6 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock</th>
                 <th class="px-6 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado</th>
               </tr>
@@ -183,15 +186,26 @@ import AppLayout from '../layout/AppLayout.astro';
     });
   }
 
-  function renderDashboard(products, todaySales) {
+  function renderDashboard(products, todaySales, bcvRate = 0) {
     // Stats
     const totalProducts = products.length;
     const lowStockProducts = products.filter(p => p.stock <= 5);
-    const totalRevenue = todaySales.reduce((sum, s) => sum + (s.total_bs || 0), 0);
+    const totalRevenueBs = todaySales.reduce((sum, s) => sum + (s.total_bs || 0), 0);
+    // Calcular los dólares en tiempo real dividiendo los bolívares actuales entre la tasa de hoy
+    // (Si falla la API por alguna razón, usamos el histórico guardado como respaldo)
+    const totalRevenueUsd = bcvRate > 0 
+      ? (totalRevenueBs / bcvRate) 
+      : todaySales.reduce((sum, s) => sum + (s.total_usd || 0), 0);
 
     document.getElementById('stat-products').textContent = totalProducts;
     document.getElementById('stat-sales').textContent = todaySales.length;
-    document.getElementById('stat-revenue').textContent = `Bs ${totalRevenue.toFixed(2)}`;
+    document.getElementById('stat-revenue').textContent = `Bs ${totalRevenueBs.toFixed(2)}`;
+    
+    const usdEl = document.getElementById('stat-revenue-usd');
+    if (usdEl) {
+      usdEl.textContent = `($${totalRevenueUsd.toFixed(2)})`;
+      usdEl.classList.remove('hidden');
+    }
     document.getElementById('stat-low-stock').textContent = lowStockProducts.length;
 
     // Low stock table
@@ -212,9 +226,12 @@ import AppLayout from '../layout/AppLayout.astro';
           ? 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400'
           : 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400';
 
+        const usdPrice = parseFloat(product.precio_dolar);
+        const bsPriceText = bcvRate > 0 ? `<br><span class="text-xs text-gray-400 dark:text-gray-500">Bs ${(usdPrice * bcvRate).toFixed(2)}</span>` : '';
+
         tr.innerHTML = `
           <td class="px-6 py-3 text-sm font-bold text-gray-900 dark:text-white">${product.nombre}</td>
-          <td class="px-6 py-3 text-sm text-gray-600 dark:text-gray-400">$${parseFloat(product.precio_dolar).toFixed(2)}</td>
+          <td class="px-6 py-3 text-sm text-gray-600 dark:text-gray-400 leading-tight">$${usdPrice.toFixed(2)}${bsPriceText}</td>
           <td class="px-6 py-3 text-sm font-bold ${product.stock === 0 ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}">${product.stock}</td>
           <td class="px-6 py-3"><span class="px-2.5 py-1 rounded-lg text-xs font-bold ${stockColor}">${stockLevel}</span></td>
         `;
@@ -225,7 +242,19 @@ import AppLayout from '../layout/AppLayout.astro';
 
   // ===== Init: Load data and render =====
   (async () => {
-    let todaySales = [];
+    let todaySales;
+    let bcvRate = 0;
+
+    // Obtener tasa BCV silenciosamente en el fondo
+    try {
+      const bcvRes = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
+      if (bcvRes.ok) {
+        const bcvData = await bcvRes.json();
+        bcvRate = bcvData.promedio || 0;
+      }
+    } catch {
+      // Ignorar errores de red
+    }
 
     // Cargar productos (con reintento si falla)
     await inventoryService.loadInventoryFromServer();
@@ -257,6 +286,6 @@ import AppLayout from '../layout/AppLayout.astro';
     }
 
     // Renderizar con lo que se haya cargado
-    renderDashboard(products, todaySales);
+    renderDashboard(products, todaySales, bcvRate);
   })();
 </script>

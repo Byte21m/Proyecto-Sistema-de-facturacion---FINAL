@@ -17,9 +17,12 @@ const createProductsTable = async () => {
   const statement = db.prepare(`
     CREATE TABLE products (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      nombre TEXT UNIQUE NOT NULL,
+      nombre TEXT NOT NULL,
       precio_dolar REAL NOT NULL,
-      stock INTEGER DEFAULT 0
+      stock INTEGER DEFAULT 0,
+      user_id INTEGER NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id),
+      UNIQUE(nombre, user_id)
     )
   `);
   statement.run();

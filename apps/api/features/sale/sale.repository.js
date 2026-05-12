@@ -67,35 +67,37 @@ const createSale = (params) => {
 /**
  * Obtiene todas las ventas
  */
-const findSales = () => {
+const findSales = (id_usuario) => {
   const statement = db.prepare(`
     SELECT s.*, u.email as usuario_email
     FROM sales s
     LEFT JOIN users u ON s.id_usuario = u.id
+    WHERE s.id_usuario = ?
     ORDER BY s.fecha DESC
   `);
-  return statement.all();
+  return statement.all(id_usuario);
 };
 
 /**
  * Obtiene las ventas de hoy
  */
-const findTodaySales = () => {
+const findTodaySales = (id_usuario) => {
   const statement = db.prepare(`
-    SELECT s.*, u.email as usuario_email
+    SELECT s.*, u.email as usuario_email,
+           (SELECT COALESCE(SUM(sd.precio_momento * sd.cantidad), 0) FROM sale_details sd WHERE sd.id_venta = s.id) as total_usd
     FROM sales s
     LEFT JOIN users u ON s.id_usuario = u.id
-    WHERE date(s.fecha) = date('now')
+    WHERE date(s.fecha) = date('now') AND s.id_usuario = ?
     ORDER BY s.fecha DESC
   `);
-  return statement.all();
+  return statement.all(id_usuario);
 };
 
 /**
  * Obtiene una venta por ID con sus detalles
  */
-const findSaleById = (id) => {
-  const sale = db.prepare('SELECT * FROM sales WHERE id = ?').get(id);
+const findSaleById = (id, id_usuario) => {
+  const sale = db.prepare('SELECT * FROM sales WHERE id = ? AND id_usuario = ?').get(id, id_usuario);
   if (!sale) return null;
 
   const details = db.prepare(`
@@ -111,15 +113,16 @@ const findSaleById = (id) => {
 /**
  * Obtiene el historial de productos vendidos
  */
-const findSalesHistory = () => {
+const findSalesHistory = (id_usuario) => {
   const statement = db.prepare(`
     SELECT sd.id, s.id as id_factura, p.nombre as producto_nombre, sd.cantidad, sd.precio_momento, sd.tasa_dia, s.fecha
     FROM sale_details sd
     JOIN sales s ON sd.id_venta = s.id
     JOIN products p ON sd.id_producto = p.id
+    WHERE s.id_usuario = ?
     ORDER BY s.fecha DESC
   `);
-  return statement.all();
+  return statement.all(id_usuario);
 };
 
 const saleRepository = {

@@ -15,7 +15,7 @@ productRouter.use(authenticate);
 // Listar productos
 productRouter.get('/', async (req, res, next) => {
   try {
-    const products = await productRepository.findProducts();
+    const products = await productRepository.findProducts(req.user.id);
     res.json(products);
   } catch (error) {
     next(error);
@@ -26,7 +26,7 @@ productRouter.get('/', async (req, res, next) => {
 productRouter.post('/', async (req, res, next) => {
   try {
     const body = createProductRouteSchema.body.parse(req.body);
-    const product = await productRepository.createProduct(body);
+    const product = await productRepository.createProduct({ ...body, user_id: req.user.id });
     res.status(201).json(product);
   } catch (error) {
     next(error);
@@ -38,7 +38,7 @@ productRouter.put('/:id', async (req, res, next) => {
   try {
     const { id } = updateProductRouteSchema.params.parse(req.params);
     const body = updateProductRouteSchema.body.parse(req.body);
-    const product = await productRepository.updateProduct(id, body);
+    const product = await productRepository.updateProduct(id, req.user.id, body);
     res.json(product);
   } catch (error) {
     next(error);
@@ -49,7 +49,7 @@ productRouter.put('/:id', async (req, res, next) => {
 productRouter.delete('/:id', async (req, res, next) => {
   try {
     const { id } = deleteProductRouteSchema.params.parse(req.params);
-    await productRepository.deleteProduct(id);
+    await productRepository.deleteProduct(id, req.user.id);
     res.status(204).send();
   } catch (error) {
     next(error);

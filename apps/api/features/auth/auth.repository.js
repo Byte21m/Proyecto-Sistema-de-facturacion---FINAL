@@ -56,5 +56,15 @@ const deleteSession = (id) => {
   deleteSessionQuery.run(id);
 };
 
-const authRepository = { createSession, findSessionByJwtId, updateSessionJwtId, deleteSession };
+/**
+ * Elimina todas las sesiones de un usuario
+ * @param {string} userId - El id del usuario
+ * @returns {void}
+ */
+const deleteAllSessionsByUserId = (userId) => {
+  const deleteSessionsQuery = db.prepare('DELETE FROM sessions WHERE user_id = ?');
+  deleteSessionsQuery.run(userId);
+};
+
+const authRepository = { createSession, findSessionByJwtId, updateSessionJwtId, deleteSession, deleteAllSessionsByUserId };
 export default authRepository;

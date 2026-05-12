@@ -42,14 +42,14 @@ userRouter.post('/', async (req, res, next) => {
                         <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; width: 100%; max-width: 600px;">
                             <tr>
                                 <td align="center" style="background-color: #0f172a; padding: 30px 20px;">
-                                    <h2 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600; letter-spacing: 2px;">💼 SYS-FACTURACIÓN PRO</h2>
+                                    <h2 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600; letter-spacing: 2px;"> SYS-FACTURACIÓN PRO</h2>
                                 </td>
                             </tr>
                             <tr>
                                 <td style="padding: 40px 30px;">
                                     <h1 style="color: #1e293b; font-size: 24px; margin-top: 0; margin-bottom: 20px;">¡Comienza a Facturar Hoy!</h1>
                                     <p style="color: #475569; font-size: 16px; line-height: 1.6; margin-bottom: 25px;">
-                                        Hola cordialmente,<br><br>
+                                        Bienvenido,<br><br>
                                         Tu cuenta corporativa casi está lista. Para brindarte nuestra protección máxima, necesitamos confirmar que esta es tu dirección de correo electrónico real antes de darte de alta en nuestro ecosistema.
                                     </p>
                                     <table width="100%" cellpadding="0" cellspacing="0" border="0">

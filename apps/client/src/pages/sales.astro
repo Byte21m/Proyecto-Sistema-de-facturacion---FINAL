@@ -64,7 +64,15 @@ import AppLayout from '../layout/AppLayout.astro';
       <div class="space-y-4">
         <!-- Tasa del día -->
         <div class="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-200/60 dark:border-gray-800/60 shadow-sm">
-          <label for="tasa-input" class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 block">Tasa del día (Bs/$)</label>
+          <div class="flex justify-between items-center mb-2">
+            <label for="tasa-input" class="text-sm font-bold text-gray-700 dark:text-gray-300 block">Tasa del día (Bs/$)</label>
+            <button id="btn-fetch-bcv" type="button" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center gap-1 transition-colors" title="Obtener tasa oficial del BCV">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Recargar BCV
+            </button>
+          </div>
           <input
             type="number"
             id="tasa-input"
@@ -458,8 +466,32 @@ import AppLayout from '../layout/AppLayout.astro';
     btn.disabled = false;
   });
 
+  const btnFetchBcv = document.getElementById('btn-fetch-bcv');
+
+  const fetchBcvRate = async (showNotification = false) => {
+    try {
+      const bcvRes = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
+      if (bcvRes.ok) {
+        const bcvData = await bcvRes.json();
+        if (bcvData.promedio && tasaInput) {
+          tasaInput.value = bcvData.promedio.toFixed(2);
+          updateTotals(); // Actualizar el total por si ya había algo en carrito
+          if (showNotification) showToast({ type: 'success', text: 'Tasa BCV actualizada exitosamente' });
+        }
+      }
+    } catch {
+      if (showNotification) showToast({ type: 'error', text: 'Error al consultar la tasa BCV' });
+      console.log('No se pudo obtener la tasa BCV automáticamente');
+    }
+  };
+
+  btnFetchBcv?.addEventListener('click', () => fetchBcvRate(true));
+
   // ===== Init: Load products and render =====
   (async () => {
+    // Fetch BCV Rate Automatically
+    await fetchBcvRate(false);
+
     // Si la tienda ya tiene items, renderizalos inmediatamente (para la vista rápida del carrito)
     inventoryStore.subscribe(() => {
       renderProducts(searchInput.value);

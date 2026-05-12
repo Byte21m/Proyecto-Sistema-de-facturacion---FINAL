@@ -163,6 +163,74 @@ authRouter.patch('/verify', async (req, res, next) => {
   }
 });
 
+// Ruta para solicitar restablecimiento de contraseña
+authRouter.post('/forgot-password', async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Correo requerido' });
+
+    const user = userRepository.findUserByEmail(email);
+    // Siempre respondemos éxito para no revelar si el correo existe o no
+    if (!user) {
+      return res.status(200).json({ message: 'Si el correo existe, hemos enviado un enlace de recuperación.' });
+    }
+
+    // Crear token efímero (15 mins)
+    const resetToken = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.EMAIL_TOKEN_SECRET || process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: '15m' }
+    );
+
+    const clientEndpoint = process.env.CLIENT_ENDPOINT || 'http://localhost:4321';
+
+    await nodemailerService.sendMail({
+      to: user.email,
+      subject: '🔐 Recuperación de Contraseña - FacturaApp',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h2 style="color: #4f46e5;">Recuperación de Contraseña</h2>
+          <p>Has solicitado restablecer tu contraseña. Haz clic en el botón de abajo para asignar una nueva.</p>
+          <p><strong>Este enlace expira en 15 minutos.</strong></p>
+          <a href="${clientEndpoint}/reset-password?token=${resetToken}" style="display: inline-block; background-color: #4f46e5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0;">Restablecer Contraseña</a>
+          <p style="color: #6b7280; font-size: 12px;">Si no solicitaste este cambio, ignora este correo.</p>
+        </div>
+      `,
+    });
+
+    return res.status(200).json({ message: 'Si el correo existe, hemos enviado un enlace de recuperación.' });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Ruta para restablecer contraseña
+authRouter.post('/reset-password', async (req, res, next) => {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password) return res.status(400).json({ error: 'Faltan datos' });
+
+    // Verificar token
+    const decodedToken = jwt.verify(token, process.env.EMAIL_TOKEN_SECRET || process.env.ACCESS_TOKEN_SECRET);
+    
+    // Encriptar nueva contraseña
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // Actualizar en base de datos
+    userRepository.updatePassword(decodedToken.id, passwordHash);
+
+    // Cerrar todas las sesiones (Invalidar)
+    authRepository.deleteAllSessionsByUserId(decodedToken.id);
+
+    return res.status(200).json({ message: 'Contraseña actualizada exitosamente' });
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      return res.status(403).json({ error: 'El enlace ha expirado. Solicita uno nuevo.' });
+    }
+    return res.status(403).json({ error: 'Enlace inválido o corrupto.' });
+  }
+});
+
 // Ruta para refrescar el token de acceso
 authRouter.get('/refresh', async (req, res) => {
   // 1. Obtener el refresh token

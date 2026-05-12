@@ -3,23 +3,18 @@ import PageLayout from '../layout/PageLayout.astro';
 ---
 
 <PageLayout title="Inicio - Sistema de Facturación PRO">
-  <main class="relative h-full flex items-center justify-center overflow-hidden bg-mesh">
-    <!-- Decoración de fondo -->
-    <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-30 dark:opacity-40">
-      <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-indigo-500 rounded-full blur-[120px]"></div>
-      <div class="absolute top-[60%] -right-[10%] w-[40%] h-[40%] bg-purple-500 rounded-full blur-[120px]"></div>
-      <div class="absolute top-[30%] left-[50%] w-[30%] h-[30%] bg-pink-400 rounded-full blur-[100px]"></div>
-    </div>
-
-    <div class="relative z-10 max-w-6xl mx-auto px-6 flex flex-col items-center text-center gap-6 md:gap-8">
-      <!-- Badge -->
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-100 dark:bg-indigo-500/15 border border-indigo-200 dark:border-indigo-500/30 animate-fade-in">
-        <span class="relative flex h-2 w-2">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-500 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-600"></span>
-        </span>
-        <span class="text-xs font-bold text-indigo-700 dark:text-indigo-300 tracking-wide uppercase">Sistema Activo</span>
+  <main class="relative h-full w-full overflow-hidden bg-mesh">
+    <!-- Contenedor flex para centrar verticalmente -->
+    <div class="h-full w-full flex flex-col items-center justify-center py-6 md:py-10">
+      
+      <!-- Decoración de fondo -->
+      <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-20 dark:opacity-30">
+        <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-blue-500 rounded-full blur-[120px]"></div>
+        <div class="absolute top-[60%] -right-[10%] w-[40%] h-[40%] bg-indigo-400 rounded-full blur-[120px]"></div>
+        <div class="absolute top-[30%] left-[50%] w-[30%] h-[30%] bg-sky-300 rounded-full blur-[100px]"></div>
       </div>
+
+      <div class="relative z-10 max-w-6xl mx-auto px-6 flex flex-col items-center text-center gap-4 md:gap-6">
 
       <h1 class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.9] md:leading-[0.85] text-gray-900 dark:text-white animate-fade-in" style="animation-delay: 0.1s">
         Facturación <br />
@@ -42,8 +37,8 @@ import PageLayout from '../layout/PageLayout.astro';
       </div>
 
       <!-- Features Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mt-6 w-full animate-fade-in" style="animation-delay: 0.4s">
-        <div class="group p-6 md:p-8 rounded-3xl bg-white/80 dark:bg-gray-900/70 backdrop-blur-xl border border-gray-200 dark:border-gray-800/50 shadow-lg hover:shadow-xl text-left hover:border-indigo-400 dark:hover:border-indigo-500/50 transition-all duration-500 hover:scale-[1.02]">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mt-8 md:mt-12 w-full animate-fade-in" style="animation-delay: 0.4s">
+        <div class="group p-6 md:p-8 rounded-3xl bg-white/80 dark:bg-gray-800/60 backdrop-blur-xl border border-gray-200 dark:border-white/10 shadow-lg hover:shadow-xl text-left hover:border-indigo-400 dark:hover:border-indigo-500/50 transition-all duration-500 hover:scale-[1.02]">
           <div class="w-10 h-10 flex items-center justify-center rounded-2xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 text-xl mb-4 group-hover:rotate-12 transition-transform">
             🛡️
           </div>
@@ -53,7 +48,7 @@ import PageLayout from '../layout/PageLayout.astro';
           </p>
         </div>
 
-        <div class="group p-6 md:p-8 rounded-3xl bg-white/80 dark:bg-gray-900/70 backdrop-blur-xl border border-gray-200 dark:border-gray-800/50 shadow-lg hover:shadow-xl text-left hover:border-purple-400 dark:hover:border-purple-500/50 transition-all duration-500 hover:scale-[1.02]">
+        <div class="group p-6 md:p-8 rounded-3xl bg-white/80 dark:bg-gray-800/60 backdrop-blur-xl border border-gray-200 dark:border-white/10 shadow-lg hover:shadow-xl text-left hover:border-purple-400 dark:hover:border-purple-500/50 transition-all duration-500 hover:scale-[1.02]">
           <div class="w-10 h-10 flex items-center justify-center rounded-2xl bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 text-xl mb-4 group-hover:rotate-12 transition-transform">
             📦
           </div>
@@ -63,7 +58,7 @@ import PageLayout from '../layout/PageLayout.astro';
           </p>
         </div>
 
-        <div class="group p-6 md:p-8 rounded-3xl bg-white/80 dark:bg-gray-900/70 backdrop-blur-xl border border-gray-200 dark:border-gray-800/50 shadow-lg hover:shadow-xl text-left hover:border-pink-400 dark:hover:border-pink-500/50 transition-all duration-500 hover:scale-[1.02]">
+        <div class="group p-6 md:p-8 rounded-3xl bg-white/80 dark:bg-gray-800/60 backdrop-blur-xl border border-gray-200 dark:border-white/10 shadow-lg hover:shadow-xl text-left hover:border-pink-400 dark:hover:border-pink-500/50 transition-all duration-500 hover:scale-[1.02]">
           <div class="w-10 h-10 flex items-center justify-center rounded-2xl bg-pink-100 dark:bg-pink-900/50 text-pink-600 dark:text-pink-400 text-xl mb-4 group-hover:rotate-12 transition-transform">
             🚀
           </div>
@@ -72,6 +67,7 @@ import PageLayout from '../layout/PageLayout.astro';
             Registra ventas al instante con un flujo optimizado para máxima velocidad.
           </p>
         </div>
+      </div>
       </div>
     </div>
   </main>

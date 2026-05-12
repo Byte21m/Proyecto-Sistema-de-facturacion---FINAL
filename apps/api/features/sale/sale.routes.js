@@ -26,7 +26,7 @@ saleRouter.post('/', async (req, res, next) => {
 // Obtener todas las ventas
 saleRouter.get('/', async (req, res, next) => {
   try {
-    const sales = saleRepository.findSales();
+    const sales = saleRepository.findSales(req.user.id);
     res.json(sales);
   } catch (error) {
     next(error);
@@ -36,7 +36,7 @@ saleRouter.get('/', async (req, res, next) => {
 // Obtener ventas de hoy (para el dashboard)
 saleRouter.get('/today', async (req, res, next) => {
   try {
-    const sales = saleRepository.findTodaySales();
+    const sales = saleRepository.findTodaySales(req.user.id);
     res.json(sales);
   } catch (error) {
     next(error);
@@ -46,7 +46,7 @@ saleRouter.get('/today', async (req, res, next) => {
 // Obtener historial detallado de items vendidos
 saleRouter.get('/history/items', async (req, res, next) => {
   try {
-    const history = saleRepository.findSalesHistory();
+    const history = saleRepository.findSalesHistory(req.user.id);
     res.json(history);
   } catch (error) {
     next(error);
@@ -57,7 +57,7 @@ saleRouter.get('/history/items', async (req, res, next) => {
 saleRouter.get('/:id', async (req, res, next) => {
   try {
     const id = parseInt(req.params.id);
-    const sale = saleRepository.findSaleById(id);
+    const sale = saleRepository.findSaleById(id, req.user.id);
     if (!sale) {
       return res.status(404).json({ error: 'Venta no encontrada' });
     }

@@ -63,12 +63,28 @@ const updateEmailVerify = (id) => {
   updateEmailVerifyQuery.run(id);
 };
 
+/**
+ * Actualiza la contraseña del usuario
+ * @param {string} id - El id del usuario a actualizar
+ * @param {string} passwordHash - El hash de la nueva contraseña
+ * @returns {void}
+ */
+const updatePassword = (id, passwordHash) => {
+  const updatePasswordQuery = db.prepare(`
+    UPDATE users 
+    SET password_hash = ?
+    WHERE id = ?
+  `);
+  updatePasswordQuery.run(passwordHash, id);
+};
+
 const userRepository = {
   createUser,
   deleteUserById,
   findUserByEmail,
   findUsers,
   updateEmailVerify,
+  updatePassword,
 };
 
 export default userRepository;
