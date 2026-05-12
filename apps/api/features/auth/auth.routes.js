@@ -213,7 +213,7 @@ authRouter.get('/user', authenticate, async (req, res) => {
 });
 
 // Ruta para cerrar sesión
-authRouter.get('/signout', authenticate, async (req, res) => {
+authRouter.post('/signout', authenticate, async (req, res) => {
   // 1. Obtener el refresh token
   const refreshToken = req.cookies?.refresh_token;
 

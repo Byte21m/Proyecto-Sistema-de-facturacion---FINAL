@@ -1,0 +1,262 @@
+---
+import AppLayout from '../layout/AppLayout.astro';
+---
+
+<AppLayout title="Dashboard - FacturaApp" activePage="dashboard">
+  <div class="p-6 md:p-8 max-w-7xl mx-auto space-y-8 animate-fade-in">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+      <div>
+        <p class="text-sm font-semibold text-indigo-600 dark:text-indigo-400 mb-1">Bienvenido de vuelta 👋</p>
+        <h1 class="text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight">Dashboard</h1>
+        <p class="text-gray-500 dark:text-gray-400 font-medium mt-1">Resumen general de tu negocio</p>
+      </div>
+      <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 bg-white/60 dark:bg-gray-800/60 backdrop-blur-md px-4 py-2 rounded-xl border border-gray-200/60 dark:border-gray-700/60">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <span id="current-date" class="font-semibold"></span>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+      <!-- Total Productos -->
+      <div class="stat-card group relative overflow-hidden bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-200/60 dark:border-gray-800/60 shadow-sm hover:shadow-lg hover:shadow-indigo-500/5 hover:-translate-y-0.5 transition-all duration-300">
+        <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-full -translate-y-8 translate-x-8"></div>
+        <div class="relative">
+          <div class="w-10 h-10 bg-indigo-100 dark:bg-indigo-500/20 rounded-xl flex items-center justify-center mb-3">
+            <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+          </div>
+          <p class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1">Productos</p>
+          <p id="stat-products" class="text-3xl font-black text-gray-900 dark:text-white">—</p>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 font-medium">Registrados en el sistema</p>
+        </div>
+      </div>
+
+      <!-- Total Ventas -->
+      <div class="stat-card group relative overflow-hidden bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-200/60 dark:border-gray-800/60 shadow-sm hover:shadow-lg hover:shadow-emerald-500/5 hover:-translate-y-0.5 transition-all duration-300">
+        <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-full -translate-y-8 translate-x-8"></div>
+        <div class="relative">
+          <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-500/20 rounded-xl flex items-center justify-center mb-3">
+            <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
+            </svg>
+          </div>
+          <p class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1">Ventas Hoy</p>
+          <p id="stat-sales" class="text-3xl font-black text-gray-900 dark:text-white">—</p>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 font-medium">Facturas emitidas</p>
+        </div>
+      </div>
+
+      <!-- Ingresos -->
+      <div class="stat-card group relative overflow-hidden bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-200/60 dark:border-gray-800/60 shadow-sm hover:shadow-lg hover:shadow-amber-500/5 hover:-translate-y-0.5 transition-all duration-300">
+        <div class="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 dark:bg-amber-500/10 rounded-full -translate-y-8 translate-x-8"></div>
+        <div class="relative">
+          <div class="w-10 h-10 bg-amber-100 dark:bg-amber-500/20 rounded-xl flex items-center justify-center mb-3">
+            <svg class="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1">Ingresos (Bs)</p>
+          <p id="stat-revenue" class="text-3xl font-black text-gray-900 dark:text-white">—</p>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 font-medium">Total hoy en bolívares</p>
+        </div>
+      </div>
+
+      <!-- Stock Bajo -->
+      <div class="stat-card group relative overflow-hidden bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-200/60 dark:border-gray-800/60 shadow-sm hover:shadow-lg hover:shadow-rose-500/5 hover:-translate-y-0.5 transition-all duration-300">
+        <div class="absolute top-0 right-0 w-24 h-24 bg-rose-500/5 dark:bg-rose-500/10 rounded-full -translate-y-8 translate-x-8"></div>
+        <div class="relative">
+          <div class="w-10 h-10 bg-rose-100 dark:bg-rose-500/20 rounded-xl flex items-center justify-center mb-3">
+            <svg class="w-5 h-5 text-rose-600 dark:text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <p class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1">Stock Bajo</p>
+          <p id="stat-low-stock" class="text-3xl font-black text-gray-900 dark:text-white">—</p>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 font-medium">Productos con ≤5 uds</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Grid: Quick Actions + Low Stock Table -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Quick Actions -->
+      <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-200/60 dark:border-gray-800/60 shadow-sm">
+        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          Acciones Rápidas
+        </h2>
+        <div class="space-y-3">
+          <a href="/sales" class="flex items-center gap-3 p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors group">
+            <div class="w-9 h-9 rounded-lg bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-bold">Nueva Venta</p>
+              <p class="text-xs opacity-70">Registrar venta en POS</p>
+            </div>
+          </a>
+
+          <a href="/inventory" class="flex items-center gap-3 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-colors group">
+            <div class="w-9 h-9 rounded-lg bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-bold">Agregar Producto</p>
+              <p class="text-xs opacity-70">Añadir al inventario</p>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Low Stock Alert -->
+      <div class="lg:col-span-2 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/60 dark:border-gray-800/60 shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200/60 dark:border-gray-800/60 flex items-center justify-between">
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <svg class="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            Alertas de Stock
+          </h2>
+          <a href="/inventory" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Ver todo →</a>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead>
+              <tr class="bg-gray-50/50 dark:bg-gray-800/50">
+                <th class="px-6 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Producto</th>
+                <th class="px-6 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Precio ($)</th>
+                <th class="px-6 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock</th>
+                <th class="px-6 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado</th>
+              </tr>
+            </thead>
+            <tbody id="low-stock-body" class="divide-y divide-gray-100 dark:divide-gray-800">
+            </tbody>
+          </table>
+        </div>
+        <div id="low-stock-empty" class="p-10 text-center hidden">
+          <div class="text-4xl mb-2">✅</div>
+          <p class="text-sm font-bold text-gray-900 dark:text-white">¡Todo en orden!</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">No hay productos con stock bajo.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</AppLayout>
+
+<style>
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out forwards;
+  }
+  .stat-card {
+    animation: fade-in 0.5s ease-out both;
+  }
+  .stat-card:nth-child(2) { animation-delay: 0.05s; }
+  .stat-card:nth-child(3) { animation-delay: 0.1s; }
+  .stat-card:nth-child(4) { animation-delay: 0.15s; }
+</style>
+
+<script>
+  import inventoryService, { inventoryStore } from '../features/inventory/inventoryService';
+  import { getPrivateKy } from '../features/auth/auth.service';
+
+  // Date display
+  const dateEl = document.getElementById('current-date');
+  if (dateEl) {
+    const now = new Date();
+    dateEl.textContent = now.toLocaleDateString('es-VE', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+  }
+
+  function renderDashboard(products, todaySales) {
+    // Stats
+    const totalProducts = products.length;
+    const lowStockProducts = products.filter(p => p.stock <= 5);
+    const totalRevenue = todaySales.reduce((sum, s) => sum + (s.total_bs || 0), 0);
+
+    document.getElementById('stat-products').textContent = totalProducts;
+    document.getElementById('stat-sales').textContent = todaySales.length;
+    document.getElementById('stat-revenue').textContent = `Bs ${totalRevenue.toFixed(2)}`;
+    document.getElementById('stat-low-stock').textContent = lowStockProducts.length;
+
+    // Low stock table
+    const tbody = document.getElementById('low-stock-body');
+    const emptyState = document.getElementById('low-stock-empty');
+    tbody.innerHTML = '';
+
+    if (lowStockProducts.length === 0) {
+      emptyState?.classList.remove('hidden');
+    } else {
+      emptyState?.classList.add('hidden');
+      lowStockProducts.forEach(product => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-gray-50/80 dark:hover:bg-gray-800/40 transition-colors';
+
+        const stockLevel = product.stock === 0 ? 'Agotado' : 'Bajo';
+        const stockColor = product.stock === 0
+          ? 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400'
+          : 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400';
+
+        tr.innerHTML = `
+          <td class="px-6 py-3 text-sm font-bold text-gray-900 dark:text-white">${product.nombre}</td>
+          <td class="px-6 py-3 text-sm text-gray-600 dark:text-gray-400">$${parseFloat(product.precio_dolar).toFixed(2)}</td>
+          <td class="px-6 py-3 text-sm font-bold ${product.stock === 0 ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}">${product.stock}</td>
+          <td class="px-6 py-3"><span class="px-2.5 py-1 rounded-lg text-xs font-bold ${stockColor}">${stockLevel}</span></td>
+        `;
+        tbody?.appendChild(tr);
+      });
+    }
+  }
+
+  // ===== Init: Load data and render =====
+  (async () => {
+    let todaySales = [];
+
+    // Cargar productos (con reintento si falla)
+    await inventoryService.loadInventoryFromServer();
+
+    // Si no cargaron, reintentar después de un momento (la auth puede necesitar tiempo)
+    if (inventoryStore.get().length === 0) {
+      await new Promise(r => setTimeout(r, 800));
+      await inventoryService.loadInventoryFromServer();
+    }
+
+    const products = inventoryStore.get();
+
+    // Cargar ventas de hoy
+    const fetchTodaySales = async () => {
+      try {
+        const privateKy = getPrivateKy();
+        return await privateKy.get('/api/sale/today').json();
+      } catch {
+        return null; // Devuelve null si falla
+      }
+    };
+
+    todaySales = await fetchTodaySales();
+
+    // Si falla (posiblemente por token), esperar y reintentar
+    if (!todaySales) {
+      await new Promise(r => setTimeout(r, 800));
+      todaySales = await fetchTodaySales() || [];
+    }
+
+    // Renderizar con lo que se haya cargado
+    renderDashboard(products, todaySales);
+  })();
+</script>

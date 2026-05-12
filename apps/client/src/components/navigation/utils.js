@@ -24,7 +24,8 @@ export const getLinks = (pathname) => {
 export const getButtons = (pathname) => {
   let buttons = [];
 
-  if (pathname === '/inventory') {
+  const privatePages = ['/inventory', '/dashboard', '/sales'];
+  if (privatePages.includes(pathname)) {
     buttons = buttons.concat({
       name: 'Cerrar sesión',
       handler: () => {

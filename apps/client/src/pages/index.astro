@@ -5,61 +5,71 @@ import PageLayout from '../layout/PageLayout.astro';
 <PageLayout title="Inicio - Sistema de Facturación PRO">
   <main class="relative h-full flex items-center justify-center overflow-hidden bg-mesh">
     <!-- Decoración de fondo -->
-    <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-20 dark:opacity-40">
+    <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-30 dark:opacity-40">
       <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-indigo-500 rounded-full blur-[120px]"></div>
       <div class="absolute top-[60%] -right-[10%] w-[40%] h-[40%] bg-purple-500 rounded-full blur-[120px]"></div>
+      <div class="absolute top-[30%] left-[50%] w-[30%] h-[30%] bg-pink-400 rounded-full blur-[100px]"></div>
     </div>
 
     <div class="relative z-10 max-w-6xl mx-auto px-6 flex flex-col items-center text-center gap-6 md:gap-8">
-      <h1 class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.9] md:leading-[0.85]">
+      <!-- Badge -->
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-100 dark:bg-indigo-500/15 border border-indigo-200 dark:border-indigo-500/30 animate-fade-in">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-500 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-600"></span>
+        </span>
+        <span class="text-xs font-bold text-indigo-700 dark:text-indigo-300 tracking-wide uppercase">Sistema Activo</span>
+      </div>
+
+      <h1 class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.9] md:leading-[0.85] text-gray-900 dark:text-white animate-fade-in" style="animation-delay: 0.1s">
         Facturación <br />
-        <span class="text-gradient">Inteligente.</span>
+        <span class="text-gradient animate-gradient">Inteligente.</span>
       </h1>
       
-      <p class="max-w-2xl text-base md:text-xl text-gray-600 dark:text-gray-400 font-medium leading-relaxed">
+      <p class="max-w-2xl text-base md:text-xl text-gray-700 dark:text-gray-400 font-medium leading-relaxed animate-fade-in" style="animation-delay: 0.2s">
         La solución definitiva para gestionar el crecimiento de tu PyME. Emite facturas en segundos con un sistema seguro, rápido y estéticamente superior.
       </p>
 
       <!-- Botones Principales -->
-      <div class="flex flex-wrap justify-center gap-4 mt-2">
-        <a href="/login" class="group relative px-8 py-3.5 rounded-2xl bg-indigo-600 text-white font-bold text-lg shadow-2xl shadow-indigo-500/20 hover:shadow-indigo-500/40 hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+      <div class="flex flex-wrap justify-center gap-4 mt-2 animate-fade-in" style="animation-delay: 0.3s">
+        <a href="/login" class="group relative px-8 py-3.5 rounded-2xl bg-indigo-600 text-white font-bold text-lg shadow-2xl shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:-translate-y-1 transition-all duration-300 overflow-hidden">
           <span class="relative z-10">Iniciar Sesión</span>
           <div class="absolute inset-0 bg-linear-to-r from-indigo-400 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
         </a>
-        <a href="/signup" class="px-8 py-3.5 rounded-2xl glass-card text-gray-900 dark:text-white font-bold text-lg hover:bg-white/90 dark:hover:bg-gray-800/90 hover:-translate-y-1 transition-all duration-300">
+        <a href="/signup" class="px-8 py-3.5 rounded-2xl bg-white dark:bg-gray-900/70 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white font-bold text-lg shadow-lg hover:shadow-xl hover:border-indigo-400 dark:hover:border-indigo-500 hover:-translate-y-1 transition-all duration-300 backdrop-blur-xl">
           Registrar mi PyME
         </a>
       </div>
 
-      <!-- Features Grid con Glassmorphism -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mt-6 w-full">
-        <div class="group p-6 md:p-8 rounded-3xl glass-card text-left hover:border-indigo-500/50 transition-all duration-500 hover:scale-[1.02]">
+      <!-- Features Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mt-6 w-full animate-fade-in" style="animation-delay: 0.4s">
+        <div class="group p-6 md:p-8 rounded-3xl bg-white/80 dark:bg-gray-900/70 backdrop-blur-xl border border-gray-200 dark:border-gray-800/50 shadow-lg hover:shadow-xl text-left hover:border-indigo-400 dark:hover:border-indigo-500/50 transition-all duration-500 hover:scale-[1.02]">
           <div class="w-10 h-10 flex items-center justify-center rounded-2xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 text-xl mb-4 group-hover:rotate-12 transition-transform">
             🛡️
           </div>
           <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Seguridad Total</h3>
-          <p class="text-sm text-gray-500 dark:text-gray-400 leading-snug">
-            Autenticación inviolable mediante JWT y cifrado de grado militar.
+          <p class="text-sm text-gray-600 dark:text-gray-400 leading-snug">
+            Tus datos protegidos con los más altos estándares de seguridad y encriptación avanzada.
           </p>
         </div>
 
-        <div class="group p-6 md:p-8 rounded-3xl glass-card text-left hover:border-purple-500/50 transition-all duration-500 hover:scale-[1.02]">
+        <div class="group p-6 md:p-8 rounded-3xl bg-white/80 dark:bg-gray-900/70 backdrop-blur-xl border border-gray-200 dark:border-gray-800/50 shadow-lg hover:shadow-xl text-left hover:border-purple-400 dark:hover:border-purple-500/50 transition-all duration-500 hover:scale-[1.02]">
           <div class="w-10 h-10 flex items-center justify-center rounded-2xl bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 text-xl mb-4 group-hover:rotate-12 transition-transform">
             📦
           </div>
           <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Inventario PRO</h3>
-          <p class="text-sm text-gray-500 dark:text-gray-400 leading-snug">
+          <p class="text-sm text-gray-600 dark:text-gray-400 leading-snug">
             Control de stock en tiempo real con alertas inteligentes.
           </p>
         </div>
 
-        <div class="group p-6 md:p-8 rounded-3xl glass-card text-left hover:border-pink-500/50 transition-all duration-500 hover:scale-[1.02]">
+        <div class="group p-6 md:p-8 rounded-3xl bg-white/80 dark:bg-gray-900/70 backdrop-blur-xl border border-gray-200 dark:border-gray-800/50 shadow-lg hover:shadow-xl text-left hover:border-pink-400 dark:hover:border-pink-500/50 transition-all duration-500 hover:scale-[1.02]">
           <div class="w-10 h-10 flex items-center justify-center rounded-2xl bg-pink-100 dark:bg-pink-900/50 text-pink-600 dark:text-pink-400 text-xl mb-4 group-hover:rotate-12 transition-transform">
             🚀
           </div>
           <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Ventas Ultra-rápidas</h3>
-          <p class="text-sm text-gray-500 dark:text-gray-400 leading-snug">
-            Módulo optimizado para puntos de venta con alto tráfico.
+          <p class="text-sm text-gray-600 dark:text-gray-400 leading-snug">
+            Registra ventas al instante con un flujo optimizado para máxima velocidad.
           </p>
         </div>
       </div>
@@ -69,11 +79,19 @@ import PageLayout from '../layout/PageLayout.astro';
 
 <style>
   @keyframes fade-in {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(16px); }
     to { opacity: 1; transform: translateY(0); }
   }
   .animate-fade-in {
-    animation: fade-in 0.8s ease-out forwards;
+    animation: fade-in 0.7s ease-out both;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient-shift 4s ease-in-out infinite;
   }
 </style>
-

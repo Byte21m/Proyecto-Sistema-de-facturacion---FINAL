@@ -1,20 +1,17 @@
 ---
 import InventoryList from '../features/inventory/InventoryList.astro';
 import CreateProduct from '../features/inventory/CreateProduct.astro';
-import PageLayout from '../layout/PageLayout.astro';
+import AppLayout from '../layout/AppLayout.astro';
 ---
 
-<PageLayout title="Inventario - Sistema de Facturación">
-  <main
-    id="main-container"
-    class="flex flex-col p-8 max-w-7xl mx-auto gap-8 min-h-full bg-mesh"
-  >
-    <div class="flex flex-col gap-2">
-      <h1 class="text-4xl font-black text-gray-900 dark:text-white tracking-tight">Inventario de Productos</h1>
-      <p class="text-gray-500 dark:text-gray-400 font-medium">Gestiona el stock y los precios de tu sistema de facturación.</p>
+<AppLayout title="Inventario - FacturaApp" activePage="inventory">
+  <div class="p-6 md:p-8 max-w-7xl mx-auto space-y-6 animate-fade-in">
+    <div>
+      <h1 class="text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight">Inventario de Productos</h1>
+      <p class="text-gray-500 dark:text-gray-400 font-medium mt-1">Gestiona el stock y los precios de tu sistema de facturación.</p>
     </div>
     
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
       <div class="lg:col-span-1">
         <CreateProduct />
       </div>
@@ -22,10 +19,15 @@ import PageLayout from '../layout/PageLayout.astro';
         <InventoryList />
       </div>
     </div>
-  </main>
-</PageLayout>
+  </div>
+</AppLayout>
 
-<script>
-  import authService from '../features/auth/auth.service';
-  authService.getLoggedUser();
-</script>
+<style>
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out forwards;
+  }
+</style>

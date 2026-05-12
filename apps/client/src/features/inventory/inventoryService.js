@@ -61,12 +61,57 @@ const loadInventoryFromServer = async () => {
   }
 };
 
+/**
+ * Carga el historial de ventas
+ */
+const getSalesHistory = async () => {
+  try {
+    const privateKy = getPrivateKy();
+    const data = await privateKy.get('/api/sale/history/items').json();
+    return data;
+  } catch (err) {
+    console.error('Error cargando historial:', err);
+    return [];
+  }
+};
+
+/**
+ * Carga todas las ventas (facturas emitidas)
+ */
+const getSales = async () => {
+  try {
+    const privateKy = getPrivateKy();
+    const data = await privateKy.get('/api/sale').json();
+    return data;
+  } catch (err) {
+    console.error('Error cargando ventas:', err);
+    return [];
+  }
+};
+
+/**
+ * Obtiene los detalles de una factura específica
+ */
+const getSaleById = async (id) => {
+  try {
+    const privateKy = getPrivateKy();
+    const data = await privateKy.get(`/api/sale/${id}`).json();
+    return data;
+  } catch (err) {
+    console.error('Error cargando detalles de venta:', err);
+    return null;
+  }
+};
+
 const inventoryService = {
   addProduct,
   getInventory,
   deleteProduct,
   updateProduct,
   loadInventoryFromServer,
+  getSalesHistory,
+  getSales,
+  getSaleById,
 };
 
 export default inventoryService;

@@ -1,0 +1,14 @@
+---
+const { text = 'Button', type = 'button', className = '' } = Astro.props;
+---
+
+<button
+  type={type}
+  class:list={[
+    "group relative w-full bg-indigo-600 py-4 rounded-2xl text-white font-bold text-lg shadow-xl shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-1 active:scale-95 transition-all duration-300 overflow-hidden",
+    className
+  ]}
+>
+  <span class="relative z-10"><slot>{text}</slot></span>
+  <div class="absolute inset-0 bg-linear-to-r from-indigo-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</button>

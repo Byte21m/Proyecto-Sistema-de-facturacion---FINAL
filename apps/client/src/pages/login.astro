@@ -83,7 +83,7 @@ import PageLayout from '../layout/PageLayout.astro';
     };
     try {
       await ky.post('/api/auth/login', { json: payload }).json();
-      location.assign('/inventory');
+      location.assign('/dashboard');
     } catch (error) {
       if (error instanceof HTTPError) {
         showToast({ type: 'error', text: error.data.error || 'Error al iniciar sesión' });

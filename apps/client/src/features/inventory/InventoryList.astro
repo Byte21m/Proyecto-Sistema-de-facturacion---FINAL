@@ -2,7 +2,9 @@
 import ProductItem from './ProductItem.astro';
 ---
 
-<div class="glass-card rounded-3xl overflow-hidden animate-fade-in">
+<div class="flex flex-col gap-6">
+  <!-- Listado Principal -->
+  <div class="glass-card rounded-3xl overflow-hidden animate-fade-in">
   <div class="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-white/50 dark:bg-gray-900/50">
     <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
       <span class="text-indigo-500">📋</span> Listado de Productos
@@ -33,6 +35,7 @@ import ProductItem from './ProductItem.astro';
     <h3 class="text-lg font-bold text-gray-900 dark:text-white">Inventario vacío</h3>
     <p class="text-gray-500 dark:text-gray-400">Comienza añadiendo productos al sistema.</p>
   </div>
+  </div>
 </div>
 
 <ProductItem />
@@ -53,16 +56,38 @@ import ProductItem from './ProductItem.astro';
       emptyState.classList.remove('hidden');
     } else {
       emptyState.classList.add('hidden');
+
       products.forEach((product) => {
         const row = template.content.cloneNode(true).children[0];
         
-        // Asignar datos
+        // Asignar datos en vista normal
         const nombreText = row.querySelector('.product-name');
         const precioText = row.querySelector('.product-price');
         const stockText = row.querySelector('.product-stock');
         const deleteBtn = row.querySelector('.delete-btn');
+        const editBtn = row.querySelector('.edit-btn');
 
-        nombreText.textContent = product.nombre;
+        // Inputs de edición
+        const editNombre = row.querySelector('.edit-nombre');
+        const editPrecio = row.querySelector('.edit-precio');
+        const editStock = row.querySelector('.edit-stock');
+        const saveBtn = row.querySelector('.save-btn');
+        const cancelBtn = row.querySelector('.cancel-btn');
+
+        // Elementos de vista y edición
+        const viewCells = row.querySelectorAll('.view-mode');
+        const editCells = row.querySelectorAll('.edit-mode');
+
+        if (product.tiene_ventas) {
+          nombreText.innerHTML = `${product.nombre} <span class="ml-2 px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 uppercase">Vendido</span>`;
+          deleteBtn.disabled = true;
+          deleteBtn.classList.replace('hover:text-red-600', 'cursor-not-allowed');
+          deleteBtn.classList.replace('hover:bg-red-50', 'opacity-50');
+          deleteBtn.title = "No se puede eliminar porque tiene ventas asociadas";
+        } else {
+          nombreText.textContent = product.nombre;
+        }
+
         precioText.textContent = `$${parseFloat(product.precio_dolar).toFixed(2)}`;
         stockText.textContent = product.stock;
 
@@ -71,10 +96,65 @@ import ProductItem from './ProductItem.astro';
           stockText.classList.add('text-amber-500', 'font-bold');
         }
 
+        // ===== EDITAR =====
+        editBtn.addEventListener('click', () => {
+          editNombre.value = product.nombre;
+          editPrecio.value = product.precio_dolar;
+          editStock.value = product.stock;
+
+          viewCells.forEach(cell => cell.classList.add('hidden'));
+          editCells.forEach(cell => cell.classList.remove('hidden'));
+          editNombre.focus();
+        });
+
+        // ===== GUARDAR =====
+        saveBtn.addEventListener('click', async () => {
+          const nombre = editNombre.value.trim();
+          const precio_dolar = parseFloat(editPrecio.value);
+          const stock = parseInt(editStock.value);
+
+          if (!nombre) {
+            showToast({ text: 'El nombre no puede estar vacío', type: 'error' });
+            return;
+          }
+          if (isNaN(precio_dolar) || precio_dolar <= 0) {
+            showToast({ text: 'El precio debe ser mayor a 0', type: 'error' });
+            return;
+          }
+          if (isNaN(stock) || stock < 0) {
+            showToast({ text: 'El stock no puede ser negativo', type: 'error' });
+            return;
+          }
+
+          try {
+            saveBtn.disabled = true;
+            await inventoryService.updateProduct(product.id, { nombre, precio_dolar, stock });
+            showToast({ text: `"${nombre}" actualizado correctamente`, type: 'success' });
+          } catch {
+            showToast({ text: 'Error al actualizar producto', type: 'error' });
+          } finally {
+            saveBtn.disabled = false;
+          }
+        });
+
+        // ===== CANCELAR =====
+        cancelBtn.addEventListener('click', () => {
+          viewCells.forEach(cell => cell.classList.remove('hidden'));
+          editCells.forEach(cell => cell.classList.add('hidden'));
+        });
+
+        // ===== ELIMINAR =====
         deleteBtn.addEventListener('click', async () => {
-          if (confirm(`¿Eliminar ${product.nombre}?`)) {
-            await inventoryService.deleteProduct(product.id);
-            showToast({ text: 'Producto eliminado', type: 'success' });
+          if (product.tiene_ventas) return;
+
+          if (confirm(`¿Eliminar "${product.nombre}"?`)) {
+            try {
+              await inventoryService.deleteProduct(product.id);
+              showToast({ text: `"${product.nombre}" eliminado`, type: 'success' });
+            } catch (err) {
+              const msg = err?.response ? await err.response.json().then(d => d.error).catch(() => '') : '';
+              showToast({ text: msg || 'No se pudo eliminar el producto', type: 'error' });
+            }
           }
         });
 

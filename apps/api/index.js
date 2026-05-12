@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken';
 import authRouter from './features/auth/auth.routes.js';
 import userRouter from './features/user/user.routes.js';
 import productRouter from './features/product/product.routes.js';
+import saleRouter from './features/sale/sale.routes.js';
 
 const app = express();
 const port = 3000;
@@ -16,13 +17,14 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get('/api/ping', (req, res) => {
-  res.json({ mensaje: '¡El sistema de facturación está vivo!' });
+  res.json({ mensaje: '¡El sistema de facturación está activo!' });
 });
 
 // Rutas del sistema de facturación
 app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/product', productRouter);
+app.use('/api/sale', saleRouter);
 
 app.use((err, req, res, _next) => {
   let errorString = 'Desconocido';
@@ -42,6 +44,11 @@ app.use((err, req, res, _next) => {
 
       errorCode = 400;
       errorString = `${property?.toUpperCase() || ''} ya se encuentra en uso.`;
+    }
+
+    if (err.code === 'SQLITE_CONSTRAINT_FOREIGNKEY') {
+      errorCode = 409;
+      errorString = 'No se puede eliminar porque tiene registros asociados (ventas, etc).';
     }
   }
 
