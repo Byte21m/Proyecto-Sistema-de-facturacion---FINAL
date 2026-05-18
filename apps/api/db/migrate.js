@@ -13,6 +13,7 @@ try {
         nombre TEXT NOT NULL,
         precio_dolar REAL NOT NULL,
         stock INTEGER DEFAULT 0,
+        exento_iva BOOLEAN DEFAULT 0,
         user_id INTEGER NOT NULL DEFAULT 1,
         FOREIGN KEY (user_id) REFERENCES users(id),
         UNIQUE(nombre, user_id)
@@ -24,10 +25,21 @@ try {
     const oldExists = db.prepare("SELECT count(*) as c FROM sqlite_master WHERE type='table' AND name='products_old'").get().c > 0;
     const sourceTable = oldExists ? 'products_old' : 'products';
     
-    db.prepare(`
-      INSERT INTO products_new (id, nombre, precio_dolar, stock)
-      SELECT id, nombre, precio_dolar, stock FROM ${sourceTable}
-    `).run();
+    // Verificar si la tabla fuente tiene la columna exento_iva
+    const columns = db.prepare(`PRAGMA table_info(${sourceTable})`).all();
+    const hasExentoIva = columns.some(col => col.name === 'exento_iva');
+    
+    if (hasExentoIva) {
+      db.prepare(`
+        INSERT INTO products_new (id, nombre, precio_dolar, stock, exento_iva)
+        SELECT id, nombre, precio_dolar, stock, exento_iva FROM ${sourceTable}
+      `).run();
+    } else {
+      db.prepare(`
+        INSERT INTO products_new (id, nombre, precio_dolar, stock)
+        SELECT id, nombre, precio_dolar, stock FROM ${sourceTable}
+      `).run();
+    }
     
     // 3. Eliminar la tabla original/vieja
     if (oldExists) db.prepare('DROP TABLE products_old').run();

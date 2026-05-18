@@ -5,6 +5,8 @@ import jwt from 'jsonwebtoken';
 import userRepository from './user.repository.js';
 import nodemailerService from '../../services/nodemailer.js';
 import { CLIENT_ENDPOINT } from '../../config.js';
+import { authenticate } from '../auth/auth.middlewares.js';
+
 const userRouter = Router();
 
 userRouter.post('/', async (req, res, next) => {

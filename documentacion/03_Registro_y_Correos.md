@@ -1,18 +1,23 @@
 # 3. Registro y Envío de Correos (Features / User)
 
-El código del profesor en `apps/api/features/user` agrupa en una carpeta todo lo que un Usuario "es y hace" cuando es nuevo.
+El módulo de usuarios (`apps/api/features/user`) agrupa de forma auto-contenida toda la lógica, validación y persistencia que rige la creación de nuevas cuentas en el sistema.
 
-## 1. El Esquema (user.routes.schemas.js)
-Aquí se definen las reglas usando la librería `Zod`. Zod se asegura de que el texto insertado sí sea un correo, y revisa mediante un `Regex` (Expresión Regular) que la contraseña del usuario siempre tenga 8 caracteres, letras mayúsculas, minúsculas y números. Zod bloquea la orden si es mala y así ni siquiera tocamos la Base de Datos.
+## 1. El Esquema de Validación (user.routes.schemas.js)
+El primer anillo de seguridad está definido mediante la librería `Zod`. Antes de iniciar cualquier procesamiento, Zod inspecciona el cuerpo de la petición entrante:
+- Verifica que el campo de correo electrónico tenga un formato válido de email corporativo o personal.
+- Somete la contraseña a una estricta Expresión Regular (`Regex`) que exige un mínimo de 8 caracteres, combinando letras mayúsculas, minúsculas y números.
+Si la petición no supera estas validaciones, Zod aborta el flujo instantáneamente devolviendo un error 400 Bad Request, protegiendo al servidor de datos malformados y evitando consultas inútiles a la base de datos.
 
 ## 2. El Repositorio (user.repository.js)
-Este archivo solo tiene una tarea: "Hablar con la Base de Datos". Los repositorios son traductores; la ruta aísla todo el SQL en el repositorio. Aquí tenemos comandos como `createUser` (que corre un `INSERT INTO users...`) y `findUserByEmail` (que corre un `SELECT * FROM users WHERE email...`).
+El repositorio actúa como una capa de abstracción exclusiva para interactuar con SQLite. Desacopla completamente las consultas SQL de los controladores de ruta. Aquí residen funciones dedicadas como:
+- `createUser`: Ejecuta una sentencia `INSERT INTO users (email, password_hash)` retornando el nuevo registro de forma atómica.
+- `findUserByEmail`: Realiza una búsqueda veloz indexada `SELECT * FROM users WHERE email = ?` para verificar preexistencias.
 
-## 3. La Ruta Principal (user.routes.js)
-El corazón de la acción se da en \`userRouter.post('/', ...)\`. Cuando el cliente manda sus datos por POST:
-1. **Validamos**: Enviamos el cuerpo (body) a Zod.
-2. **Encriptamos**: Echamos a correr `bcrypt.hash` para generar la contraseña segura.
-3. **Guardamos**: Usamos nuestro \`userRepository\` para guardar el email y el hash en SQLite. Devuelve a `createdUser`.
-4. **Token de Correo**: Creamos un token secreto JWT (JSON Web Token), una cadenita de texto que adentro lleva cifrado el `id` y el `email` del nuevo pobre usuario que no sabe que se le enviará un correo, con vida útil de una hora.
-5. **Nodemailer**: Llamamos a `nodemailerService.sendMail(...)`. Este servicio usa Gmail y la "contraseña de aplicación" que pusimos en `.env` para mandar un correo HTML al destino, incluyendo un enlace que, al hacerle click, enviará el "token" como pase de verificación.
-6. Si algo explota (como que SQLite retorne "este correo ya existe"), borramos al usuario si se guardó por la mitad, y enviamos el Error de regreso.
+## 3. El Flujo de Registro (user.routes.js)
+Cuando el cliente envía el formulario de registro desde el frontend a la ruta \`POST /api/user\`, se desencadena una orquestación precisa:
+1. **Inspección Zod**: Se analiza y sanitiza el objeto de datos.
+2. **Criptografía**: Se invoca `bcrypt.hash(password, 10)` para transformar la contraseña en un hash unidireccional altamente seguro.
+3. **Persistencia Inicial**: El repositorio almacena el usuario en SQLite con su bandera `email_verified` en estado inactivo (`0`).
+4. **Firma de Token (JWT)**: Se genera un JSON Web Token secreto con un tiempo de caducidad estricto de 1 hora. Este token encripta en su interior el `id` y el `email` del usuario.
+5. **Despacho Nodemailer**: Se invoca el servicio `nodemailerService.sendMail(...)` para conectar con los servidores SMTP de Google mediante una contraseña de aplicación segura. Se envía un correo electrónico con plantilla HTML profesional que incluye un botón de confirmación enlazado a la ruta de verificación.
+6. **Manejo de Transacciones y Errores**: Si ocurre cualquier fallo durante el envío del correo o si la base de datos detecta un correo duplicado, el sistema maneja la excepción con total pulcritud, eliminando registros inconclusos si es necesario y notificando al cliente.

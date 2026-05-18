@@ -1,68 +1,79 @@
-# 7. Frontend Visual (Astro + Tailwind)
+# 7. Frontend Visual y Arquitectura de Interfaz (Astro + Tailwind v4)
 
-El frontend de tu sistema de facturación está construido con **Astro** y estilizado con **Tailwind CSS v4**. Vive en la carpeta `apps/client/`.
+El frontend de la plataforma de facturación está diseñado bajo estrictos estándares de usabilidad, estética moderna (glassmorphism, gradientes fluidos y micro-animaciones) y alto rendimiento. Está desarrollado con **Astro 6** y estilizado de forma nativa con **Tailwind CSS v4**.
 
-## Estructura del Frontend
+## Estructura del Proyecto Web (`apps/client/src/`)
 
 ```text
 apps/client/src/
 ├── components/
 │   ├── navigation/
-│   │   ├── Navbar.astro       # Barra de navegación con toggle de tema
-│   │   └── utils.js           # Links y botones dinámicos del menú
-│   ├── notification/          # Sistema de notificaciones (toasts)
-│   └── Spinner.astro          # Indicador de carga animado
+│   │   ├── Navbar.astro       # Barra superior con menús dinámicos y toggle solar/lunar
+│   │   └── utils.js           # Lógica utilitaria de rutas y enlaces
+│   ├── notification/          # Sistema de notificaciones emergentes (Toasts)
+│   └── Spinner.astro          # Indicadores visuales de carga
 ├── features/
-│   ├── auth/                  # Servicio de autenticación del cliente
-│   └── contacts/              # (Heredado del profesor, se reemplazará por productos)
+│   ├── auth/                  # Capa de servicios y almacenamiento reactivo para autenticación
+│   └── inventory/             # Almacenamiento atómico en NanoStores y servicios de catálogo
 ├── layout/
-│   ├── PageLayout.astro       # Layout base: incluye Navbar, dark mode y scripts
-│   ├── PrivateRoute.astro     # Rutas que requieren estar logueado
-│   └── PublicRoute.astro      # Rutas públicas (login, registro)
+│   ├── AppLayout.astro        # Plantilla maestra para el panel de administración (Dashboard/POS)
+│   ├── PageLayout.astro       # Plantilla maestra para páginas de aterrizaje y acceso público
+│   ├── PrivateRoute.astro     # Componente guardia para bloquear accesos no autorizados
+│   └── PublicRoute.astro      # Componente guardia para redireccionar si ya existe sesión
 ├── pages/
-│   ├── index.astro            # Página de inicio con tarjetas y botones
-│   ├── login.astro            # Formulario de inicio de sesión
-│   ├── signup.astro           # Formulario de registro con validación
-│   └── verify/                # Página de verificación de correo
+│   ├── dashboard.astro        # Centro de estadísticas e indicadores clave en tiempo real
+│   ├── forgot-password.astro  # Interfaz de solicitud de recuperación de contraseñas
+│   ├── history.astro          # Registro histórico interactivo de facturas con modal lateral
+│   ├── index.astro            # Página de inicio de aterrizaje comercial (Landing Page)
+│   ├── inventory.astro        # Módulo de administración de productos y existencias
+│   ├── login.astro            # Formulario de autenticación segura
+│   ├── reset-password.astro   # Formulario seguro para el establecimiento de nueva clave
+│   ├── sales.astro            # Interfaz bimonetaria de Punto de Venta (POS)
+│   ├── signup.astro           # Registro de nuevos comercios con validación reactiva
+│   └── verify/                # Páginas de confirmación de correo
 └── styles/
-    └── global.css             # Importa Tailwind y configura dark mode
+    └── global.css             # Directivas globales e inicialización de Tailwind v4
 ```
 
-## Modo Oscuro / Claro (Dark Mode Toggle)
+---
 
-El sistema de temas funciona con 3 piezas:
+## Sistema de Temas Oscuro / Claro (Dark Mode Toggle)
 
-### 1. `global.css` — Configuración de Tailwind
+La alternancia entre apariencias visuales está optimizada para eliminar parpadeos molestos ("white flash") durante la carga inicial:
+
+### 1. `global.css` — Configuración Variante Tailwind v4
 ```css
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 ```
-La línea `@custom-variant` le dice a Tailwind v4 que active las clases `dark:` cuando el elemento `<html>` tenga la clase CSS `dark`, en vez de depender solo de la preferencia del sistema operativo.
+La directiva `@custom-variant` le indica al compilador de Tailwind v4 que active las reglas prefijadas con `dark:` cuando el nodo raíz `<html>` contenga la clase CSS `dark`.
 
-### 2. `PageLayout.astro` — Script anti-flash
-En el `<head>` del layout hay un script inline que se ejecuta **antes** de que la página se pinte. Lee `localStorage` para saber si el usuario ya eligió un tema y aplica la clase `dark` inmediatamente, evitando el molesto "flash blanco" al cargar.
+### 2. Bloqueo Anti-Parpadeo (Inline Script)
+En las cabeceras HTML de las plantillas base se inyecta un script síncrono que se ejecuta antes del renderizado de la página. Este script evalúa `localStorage` o la preferencia del sistema operativo (`window.matchMedia('(prefers-color-scheme: dark)')`), aplicando de inmediato la clase `dark` al DOM para asegurar una transición visual fluida.
 
-### 3. `Navbar.astro` — Botón de toggle
-El botón con el icono de sol/luna en la barra de navegación:
-- Alterna la clase `dark` en el `<html>`
-- Guarda la preferencia en `localStorage` (persiste al cerrar el navegador)
-- Cambia el icono visible (sol cuando estás en oscuro, luna cuando estás en claro)
+### 3. `Navbar.astro` — Interactividad del Usuario
+El botón de alternancia en la barra de navegación conmuta la clase `dark` en el documento, guarda la elección en `localStorage` para garantizar persistencia entre visitas y actualiza el icono visible de Sol a Luna instantáneamente.
 
-## Páginas Principales
+---
 
-### Inicio (`index.astro`)
-- Título con degradado (gradiente) usando `bg-linear-to-r` (sintaxis Tailwind v4)
-- 3 tarjetas informativas: Seguridad, Inventario, Ventas
-- Botones centrados de "Iniciar Sesión" y "Registrar mi PyME"
-- Todo el contenido cabe en la pantalla sin necesidad de hacer scroll
+## Catálogo de Vistas Principales
 
-### Login (`login.astro`)
-- Formulario con icono de usuario, inputs estilizados con fondo adaptable
-- Botón índigo con efecto de escala al hacer hover/click
-- Enlace cruzado al registro ("¿No tienes cuenta?")
+### 1. Página de Aterrizaje (`index.astro`)
+- Titulares con gradientes modernos mediante la sintaxis `bg-linear-to-r from-indigo-600 to-violet-600`.
+- Tarjetas informativas con efecto glassmorphism (transparencias y desenfoque de fondo).
+- Diseño totalmente adaptativo (Mobile-First) con llamadas a la acción (CTAs) directas a los formularios de ingreso y registro.
 
-### Registro (`signup.astro`)
-- Validación en tiempo real con iconos de check/cross (usando Zod)
-- Requisitos de contraseña visibles (8 chars, mayúscula, minúscula, número)
-- Spinner de carga al enviar el formulario
-- Enlace cruzado al login ("¿Ya tienes cuenta?")
+### 2. Módulo de Autenticación (`login.astro` & `signup.astro`)
+- Formularios interactivos con validación estricta del lado del cliente mediante Zod.
+- Indicación visual instantánea de cumplimiento de contraseñas (longitud, mayúsculas, números).
+- Indicadores de carga animados (Spinners) y notificaciones emergentes (Toasts) ante fallos o éxitos.
+
+### 3. Recuperación de Credenciales (`forgot-password.astro` & `reset-password.astro`)
+- Flujo en dos pasos limpio y seguro.
+- Captura del token efímero directamente desde los parámetros de la URL.
+- Estructura y diseño alineados a las mejores prácticas corporativas.
+
+### 4. Panel de Control Comercial (`dashboard.astro`)
+- Tarjetas de resumen estadístico que muestran: Total de productos registrados, Ventas emitidas en la jornada y Alertas tempranas de stock crítico (unidades ≤ 5).
+- **Cálculo de Ingresos Bimonetarios**: Sumatoria de ventas en Bolívares con conversión al vuelo a Dólares calculada mediante la consulta automatizada a la API del BCV en segundo plano.
+- Enlaces de acción rápida para iniciar una nueva venta o incorporar existencias.

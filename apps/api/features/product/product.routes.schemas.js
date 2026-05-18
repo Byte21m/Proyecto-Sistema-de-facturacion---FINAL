@@ -5,6 +5,7 @@ export const createProductRouteSchema = {
     nombre: z.string().min(2),
     precio_dolar: z.number().positive(),
     stock: z.number().int().nonnegative(),
+    exento_iva: z.boolean().optional().default(false),
   }),
 };
 
@@ -16,6 +17,7 @@ export const updateProductRouteSchema = {
     nombre: z.string().min(2),
     precio_dolar: z.number().positive(),
     stock: z.number().int().nonnegative(),
+    exento_iva: z.boolean().optional().default(false),
   }),
 };
 

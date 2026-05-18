@@ -1,78 +1,48 @@
-# 6. Librerias (NPM) y Extensiones de VSCode
+# 6. Librerías (NPM) y Extensiones de VSCode
 
-> **Tip:** Presiona `Ctrl + Shift + V` para ver este documento con formato bonito.
+> **Tip:** Presiona `Ctrl + Shift + V` para visualizar este documento renderizado con todas las tablas y formato.
 
-## 1. Librerias Instaladas en tu Backend (Dependencias)
+Para el desarrollo del sistema de facturación se ha implementado un stack tecnológico de vanguardia, dividiendo las dependencias entre el backend (Express) y el frontend (Astro).
 
-Estas se instalan en la carpeta `node_modules` cuando ejecutas `npm install`.
+## 1. Librerías del Servidor Backend (`apps/api/package.json`)
 
-| Libreria | Para que sirve |
-|---|---|
-| **express** | Crea el servidor web y maneja las rutas HTTP (GET, POST, PATCH, etc.) |
-| **better-sqlite3** | Conecta con la base de datos SQLite. Guarda todo en un archivo `.db` |
-| **bcrypt** | Encripta las contraseñas. Convierte "Password123" en un hash imposible de revertir |
-| **jsonwebtoken** | Crea y verifica los tokens JWT (pasaportes digitales de sesion) |
-| **zod** | Valida los datos de entrada (que el correo sea correo, que la clave tenga 8 chars) |
-| **nodemailer** | Envia correos electronicos automaticos usando tu cuenta de Gmail |
-| **cors** | Permite que el Frontend (puerto 4321) se comunique con el Backend (puerto 3000) |
-| **cookie-parser** | Lee las cookies del navegador donde guardamos el Refresh Token |
+Estas dependencias constituyen el motor lógico, de persistencia y de seguridad de la API:
 
----
-
-## 2. Extensiones de VSCode (Instaladas)
-
-Estas son las extensiones que necesitas tener instaladas en Visual Studio Code para trabajar correctamente con el proyecto:
-
-### Extensiones Esenciales
-
-| Extensión | ID en VSCode | Para qué sirve | Cómo se usa |
-|---|---|---|---|
-| **REST Client** o **HttpYac** | `humao.rest-client` | Probar tus rutas del backend sin salir de VSCode | Abre `test.http`, verás botones "Send Request" encima de cada petición. Haz clic para enviar |
-| **Astro** | `astro-build.astro-vscode` | Resaltado de sintaxis y autocompletado para archivos `.astro` | Se activa automáticamente al abrir archivos `.astro` |
-
-### Extensiones Recomendadas
-
-| Extensión | ID en VSCode | Para qué sirve | Cómo se usa |
-|---|---|---|---|
-| **Markdown Preview Enhanced** | `shd101wyy.markdown-preview-enhanced` | Ver los archivos `.md` con formato bonito y diagramas Mermaid renderizados | Abre un `.md` y presiona `Ctrl + Shift + V` para ver la vista previa |
-| **SQLite Viewer** | `qwtel.sqlite-viewer` | Ver el contenido de tu base de datos como si fuera Excel | Haz doble clic en el archivo `database.db` y se abre como tabla |
-| **Tailwind CSS IntelliSense** | `bradlc.vscode-tailwindcss` | Autocompletado y preview de colores para clases de Tailwind | Se activa automáticamente al escribir clases CSS en los archivos |
-
-### Cómo instalar una extensión
-
-1. Presiona `Ctrl + Shift + X` para abrir el panel de extensiones
-2. Escribe el nombre de la extensión en el buscador
-3. Haz clic en **Install**
+| Librería | Versión | Rol Arquitectónico |
+|---|---|---|
+| **express** | `^5.2.1` | Framework principal del servidor web. Orquesta el enrutamiento y la pila de middlewares. |
+| **better-sqlite3** | `^12.9.0` | Driver síncrono ultrarrápido para SQLite. Opera en modo WAL para transacciones concurrentes. |
+| **bcrypt** | `^5.1.1` | Algoritmo criptográfico de derivación de claves para hashear contraseñas de forma segura. |
+| **jsonwebtoken** | `^9.0.2` | Generador y validador de pasaportes digitales JWT (Access Tokens, Refresh Tokens, Email Tokens). |
+| **zod** | `^3.22.4` | Validador estricto de esquemas de datos entrantes (cuerpos de peticiones HTTP). |
+| **nodemailer** | `^8.0.6` | Motor de mensajería SMTP para la entrega automatizada de correos de confirmación y recuperación. |
+| **cors** | `^2.8.6` | Middleware de seguridad que autoriza peticiones cruzadas (Cross-Origin) desde el cliente web. |
+| **cookie-parser** | `^1.4.7` | Analizador de cabeceras de cookies para la gestión e intercepción segura del Refresh Token. |
 
 ---
 
-## 3. Diagrama: Como se conectan las herramientas
+## 2. Librerías del Cliente Visual Frontend (`apps/client/package.json`)
 
-```mermaid
-flowchart LR
-    subgraph "VSCode (Tu editor)"
-        A["REST Client"] --> B["test.http"]
-        C["SQLite Viewer"] --> D["database.db"]
-        E["Markdown Preview"] --> F["documentacion/*.md"]
-    end
-    subgraph "Backend (Puerto 3000)"
-        G["Express + Rutas"]
-        H["Zod (Validacion)"]
-        I["bcrypt (Passwords)"]
-        J["JWT (Tokens)"]
-        K["Nodemailer (Correos)"]
-        L["SQLite (Base de datos)"]
-    end
-    subgraph "Frontend (Puerto 4321)"
-        M["Astro + Tailwind"]
-        N["Paginas: index, login, signup"]
-    end
-    B --> G
-    G --> H
-    H --> I
-    I --> L
-    G --> J
-    G --> K
-    M --> G
-    D --> L
-```
+Estas dependencias impulsan la interactividad, estilización y reactividad de la interfaz web:
+
+| Librería | Versión | Rol Arquitectónico |
+|---|---|---|
+| **astro** | `^6.0.5` | Framework web de alto rendimiento y arquitectura de islas para generar las páginas estáticas y dinámicas. |
+| **tailwindcss** | `^4.2.1` | Framework CSS utilitario en su versión más reciente v4 con motor Vite integrado. |
+| **ky** | `^2.0.0` | Cliente HTTP avanzado y ergonómico basado en la API nativa de Fetch. Maneja intercepción y parseo JSON. |
+| **nanostores** | `^1.2.0` | Gestor de estado atómico y reactivo ultraligero. Sincroniza el inventario y el carrito en tiempo real entre componentes. |
+| **zod** | `^4.3.6` | Replicación de esquemas de validación en el cliente para dar retroalimentación visual inmediata en formularios. |
+
+---
+
+## 3. Extensiones de VSCode Esenciales
+
+Para un desarrollo óptimo y eficiente dentro del entorno de Visual Studio Code, se recomiendan las siguientes herramientas:
+
+| Extensión | ID de Catálogo | Propósito y Uso |
+|---|---|---|
+| **REST Client** o **HttpYac** | `humao.rest-client` | Permite ejecutar peticiones HTTP directamente desde el archivo `test.http` sin necesidad de Postman. |
+| **Astro** | `astro-build.astro-vscode` | Habilita resaltado de sintaxis, formateo y autocompletado avanzado para los archivos `.astro`. |
+| **Markdown Preview Enhanced** | `shd101wyy.markdown-preview-enhanced` | Permite previsualizar este y otros documentos con renderizado nativo de diagramas Mermaid. |
+| **SQLite Viewer** | `qwtel.sqlite-viewer` | Interfaz gráfica integrada para explorar y auditar visualmente las tablas del archivo `database.db`. |
+| **Tailwind CSS IntelliSense** | `bradlc.vscode-tailwindcss` | Proporciona autocompletado instantáneo y previsualización de colores para las clases utilitarias. |

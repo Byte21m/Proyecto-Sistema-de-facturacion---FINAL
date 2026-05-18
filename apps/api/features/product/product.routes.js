@@ -29,6 +29,9 @@ productRouter.post('/', async (req, res, next) => {
     const product = await productRepository.createProduct({ ...body, user_id: req.user.id });
     res.status(201).json(product);
   } catch (error) {
+    if (error.code === 'SQLITE_CONSTRAINT_UNIQUE' || error.message.includes('UNIQUE constraint failed')) {
+      return res.status(409).json({ error: 'Ya existe un producto con ese nombre' });
+    }
     next(error);
   }
 });

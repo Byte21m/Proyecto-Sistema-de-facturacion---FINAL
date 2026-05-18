@@ -13,6 +13,22 @@ const createUsersTable = async () => {
   console.log('Tabla de usuarios (users) creada!');
 };
 
+const createBusinessProfileTable = async () => {
+  const statement = db.prepare(`
+    CREATE TABLE business_profile (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL UNIQUE,
+      razon_social TEXT NOT NULL,
+      rif TEXT NOT NULL,
+      direccion TEXT,
+      telefono TEXT,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+  `);
+  statement.run();
+  console.log('Tabla de perfil comercial (business_profile) creada!');
+};
+
 const createProductsTable = async () => {
   const statement = db.prepare(`
     CREATE TABLE products (
@@ -20,6 +36,7 @@ const createProductsTable = async () => {
       nombre TEXT NOT NULL,
       precio_dolar REAL NOT NULL,
       stock INTEGER DEFAULT 0,
+      exento_iva BOOLEAN DEFAULT 0,
       user_id INTEGER NOT NULL,
       FOREIGN KEY (user_id) REFERENCES users(id),
       UNIQUE(nombre, user_id)
@@ -33,10 +50,18 @@ const createSalesTable = async () => {
   const statement = db.prepare(`
     CREATE TABLE sales (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
+      numero_factura TEXT,
       fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+      subtotal_usd REAL DEFAULT 0,
+      monto_exento_bs REAL DEFAULT 0,
+      iva_porcentaje REAL DEFAULT 16,
+      iva_monto_bs REAL DEFAULT 0,
       total_bs REAL NOT NULL,
+      nombre_cliente TEXT,
+      cedula_cliente TEXT,
       id_usuario INTEGER NOT NULL,
-      FOREIGN KEY (id_usuario) REFERENCES users(id)
+      FOREIGN KEY (id_usuario) REFERENCES users(id),
+      UNIQUE(numero_factura, id_usuario)
     )
   `);
   statement.run();
@@ -52,6 +77,7 @@ const createSaleDetailsTable = async () => {
       tasa_dia REAL NOT NULL,
       cantidad INTEGER NOT NULL,
       precio_momento REAL NOT NULL,
+      exento_iva BOOLEAN DEFAULT 0,
       FOREIGN KEY (id_venta) REFERENCES sales(id),
       FOREIGN KEY (id_producto) REFERENCES products(id)
     )
@@ -79,6 +105,7 @@ const resetDb = async () => {
   db.prepare('DROP TABLE IF EXISTS sales').run();
   db.prepare('DROP TABLE IF EXISTS sessions').run();
   db.prepare('DROP TABLE IF EXISTS products').run();
+  db.prepare('DROP TABLE IF EXISTS business_profile').run();
   db.prepare('DROP TABLE IF EXISTS users').run();
   console.log('Tablas eliminadas (reinicio).');
 };
@@ -86,6 +113,7 @@ const resetDb = async () => {
 export const createTables = async () => {
   await resetDb();
   await createUsersTable();
+  await createBusinessProfileTable();
   await createProductsTable();
   await createSalesTable();
   await createSaleDetailsTable();

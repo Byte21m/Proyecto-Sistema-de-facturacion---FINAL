@@ -2,6 +2,8 @@ import { Router } from 'express';
 import saleRepository from './sale.repository.js';
 import { authenticate } from '../auth/auth.middlewares.js';
 import { createSaleRouteSchema } from './sale.routes.schemas.js';
+import { generateInvoiceHtml } from '../../services/invoice-template.js';
+import nodemailerService from '../../services/nodemailer.js';
 
 const saleRouter = Router();
 
@@ -13,7 +15,13 @@ saleRouter.post('/', async (req, res, next) => {
   try {
     const body = createSaleRouteSchema.body.parse(req.body);
     const sale = saleRepository.createSale({
+      subtotal_usd: body.subtotal_usd,
+      monto_exento_bs: body.monto_exento_bs,
+      iva_porcentaje: body.iva_porcentaje,
+      iva_monto_bs: body.iva_monto_bs,
       total_bs: body.total_bs,
+      nombre_cliente: body.nombre_cliente,
+      cedula_cliente: body.cedula_cliente,
       id_usuario: req.user.id,
       items: body.items,
     });
@@ -48,6 +56,62 @@ saleRouter.get('/history/items', async (req, res, next) => {
   try {
     const history = saleRepository.findSalesHistory(req.user.id);
     res.json(history);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Reporte mensual de IVA
+saleRouter.get('/report/monthly', async (req, res, next) => {
+  try {
+    const year = parseInt(req.query.year) || new Date().getFullYear();
+    const month = parseInt(req.query.month) || (new Date().getMonth() + 1);
+    const report = saleRepository.findMonthlyReport(req.user.id, year, month);
+    res.json(report);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Obtener HTML de la factura para impresión
+saleRouter.get('/:id/invoice', async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id);
+    const sale = saleRepository.findSaleById(id, req.user.id);
+    if (!sale) {
+      return res.status(404).json({ error: 'Venta no encontrada' });
+    }
+    const html = generateInvoiceHtml(sale, sale.businessProfile);
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.send(html);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Enviar factura por correo electrónico
+saleRouter.post('/:id/invoice/email', async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id);
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Correo del destinatario requerido' });
+
+    const sale = saleRepository.findSaleById(id, req.user.id);
+    if (!sale) {
+      return res.status(404).json({ error: 'Venta no encontrada' });
+    }
+
+    const html = generateInvoiceHtml(sale, sale.businessProfile);
+    const emisorNombre = sale.businessProfile?.razon_social || 'FacturaApp';
+
+    await nodemailerService.sendMail({
+      from: `"${emisorNombre}" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: `📄 Factura ${sale.numero_factura || ''} — ${emisorNombre}`,
+      html: html,
+    });
+
+    return res.status(200).json({ message: 'Factura enviada exitosamente al correo' });
   } catch (error) {
     next(error);
   }

@@ -1,0 +1,160 @@
+---
+import AppLayout from '../layout/AppLayout.astro';
+---
+
+<AppLayout title="Reporte IVA | FacturaApp" activePage="reports">
+  <div class="p-6 md:p-8 w-full max-w-5xl mx-auto space-y-6 animate-fade-in">
+    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+      <div>
+        <h1 class="text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight">Reporte de IVA</h1>
+        <p class="text-gray-500 dark:text-gray-400 font-medium mt-1">Resumen mensual de IVA cobrado, base imponible y ventas exentas.</p>
+      </div>
+      <!-- Month/Year Selector -->
+      <div class="flex items-center gap-2">
+        <select id="select-month" class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/50 outline-none">
+          <option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option>
+          <option value="4">Abril</option><option value="5">Mayo</option><option value="6">Junio</option>
+          <option value="7">Julio</option><option value="8">Agosto</option><option value="9">Septiembre</option>
+          <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+        </select>
+        <input type="number" id="input-year" min="2020" max="2099" class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-900 dark:text-white w-24 focus:ring-2 focus:ring-indigo-500/50 outline-none" />
+        <button id="btn-load" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition-all">Consultar</button>
+        <button id="btn-print-report" class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2.5 rounded-xl font-bold text-sm transition-all hidden">🖨️ Imprimir</button>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div id="summary-cards" class="grid-cols-2 md:grid-cols-4 gap-4" style="display:none;">
+      <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/60 dark:border-gray-800/60 p-5">
+        <p class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Base Imponible</p>
+        <p id="card-base-bs" class="text-xl font-black text-gray-900 dark:text-white mt-1">Bs 0.00</p>
+      </div>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/60 dark:border-gray-800/60 p-5">
+        <p class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Ventas Exentas</p>
+        <p id="card-exento-bs" class="text-xl font-black text-emerald-600 dark:text-emerald-400 mt-1">Bs 0.00</p>
+      </div>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/60 dark:border-gray-800/60 p-5">
+        <p class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">IVA Cobrado (16%)</p>
+        <p id="card-iva-bs" class="text-xl font-black text-indigo-600 dark:text-indigo-400 mt-1">Bs 0.00</p>
+      </div>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/60 dark:border-gray-800/60 p-5">
+        <p class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Facturado</p>
+        <p id="card-total-bs" class="text-xl font-black text-gray-900 dark:text-white mt-1">Bs 0.00</p>
+        <p id="card-facturas" class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">0 facturas</p>
+      </div>
+    </div>
+
+    <!-- Invoices Table -->
+    <div id="table-section" class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/60 dark:border-gray-800/60 shadow-sm overflow-hidden hidden">
+      <div class="px-6 py-4 border-b border-gray-200/60 dark:border-gray-800/60 bg-gray-50/50 dark:bg-gray-800/50">
+        <h2 class="text-lg font-bold text-gray-900 dark:text-white">📋 Detalle de Facturas del Mes</h2>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-gray-50/50 dark:bg-gray-800/50">
+              <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">N° Factura</th>
+              <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Fecha / Hora</th>
+              <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Cliente</th>
+              <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase text-right">Base Imp.</th>
+              <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase text-right">IVA</th>
+              <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase text-right">Total Bs</th>
+            </tr>
+          </thead>
+          <tbody id="report-table-body" class="divide-y divide-gray-100 dark:divide-gray-800"></tbody>
+        </table>
+      </div>
+      <div id="report-empty" class="p-12 text-center hidden">
+        <div class="text-5xl mb-3">📭</div>
+        <p class="text-sm font-bold text-gray-900 dark:text-white">Sin facturas este mes</p>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading" class="justify-center py-12" style="display:none;">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
+    </div>
+  </div>
+</AppLayout>
+
+<script>
+  import inventoryService from '../features/inventory/inventoryService';
+
+  const selectMonth = document.getElementById('select-month');
+  const inputYear = document.getElementById('input-year');
+  const btnLoad = document.getElementById('btn-load');
+  const btnPrint = document.getElementById('btn-print-report');
+  const summaryCards = document.getElementById('summary-cards');
+  const tableSection = document.getElementById('table-section');
+  const tableBody = document.getElementById('report-table-body');
+  const reportEmpty = document.getElementById('report-empty');
+  const loading = document.getElementById('loading');
+
+  // Set current month/year
+  const now = new Date();
+  selectMonth.value = String(now.getMonth() + 1);
+  inputYear.value = String(now.getFullYear());
+
+  const loadReport = async () => {
+    const year = parseInt(inputYear.value);
+    const month = parseInt(selectMonth.value);
+    loading.style.display = 'flex';
+    summaryCards.style.display = 'none';
+    tableSection.classList.add('hidden');
+    btnPrint.classList.add('hidden');
+
+    const data = await inventoryService.getMonthlyReport(year, month);
+    loading.style.display = 'none';
+
+    if (!data) return;
+
+    const s = data.summary;
+    // Calculate base imponible in Bs (subtotal_usd needs tasa, approximate from total)
+    const baseUsd = parseFloat(s.base_imponible_usd) || 0;
+    const totalBs = parseFloat(s.total_facturado_bs) || 0;
+    const ivaBs = parseFloat(s.total_iva_bs) || 0;
+    const exentoBs = parseFloat(s.total_exento_bs) || 0;
+    const baseBs = totalBs - ivaBs - exentoBs;
+
+    document.getElementById('card-base-bs').textContent = `Bs ${baseBs.toFixed(2)}`;
+    document.getElementById('card-exento-bs').textContent = `Bs ${exentoBs.toFixed(2)}`;
+    document.getElementById('card-iva-bs').textContent = `Bs ${ivaBs.toFixed(2)}`;
+    document.getElementById('card-total-bs').textContent = `Bs ${totalBs.toFixed(2)}`;
+    document.getElementById('card-facturas').textContent = `${s.total_facturas} factura(s)`;
+
+    summaryCards.style.display = 'grid';
+    tableSection.classList.remove('hidden');
+    btnPrint.classList.remove('hidden');
+
+    // Render table
+    tableBody.innerHTML = '';
+    if (data.facturas.length === 0) {
+      reportEmpty.classList.remove('hidden');
+    } else {
+      reportEmpty.classList.add('hidden');
+      data.facturas.forEach(f => {
+        const fechaObj = new Date(f.fecha);
+        const fechaStr = fechaObj.toLocaleDateString();
+        const horaStr = fechaObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const fBaseBs = parseFloat(f.total_bs) - parseFloat(f.iva_monto_bs) - parseFloat(f.monto_exento_bs);
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-gray-50/80 dark:hover:bg-gray-800/40 transition-colors';
+        tr.innerHTML = `
+          <td class="px-5 py-3 text-sm font-bold text-indigo-600 dark:text-indigo-400">${f.numero_factura || '—'}</td>
+          <td class="px-5 py-3 text-sm text-gray-600 dark:text-gray-400"><span class="font-medium text-gray-900 dark:text-white">${fechaStr}</span> <span class="text-xs text-gray-400">${horaStr}</span></td>
+          <td class="px-5 py-3 text-sm text-gray-600 dark:text-gray-400">${f.nombre_cliente || 'Cliente de paso'}</td>
+          <td class="px-5 py-3 text-sm text-right text-gray-700 dark:text-gray-300 font-medium">Bs ${fBaseBs.toFixed(2)}</td>
+          <td class="px-5 py-3 text-sm text-right text-indigo-600 dark:text-indigo-400 font-bold">Bs ${parseFloat(f.iva_monto_bs).toFixed(2)}</td>
+          <td class="px-5 py-3 text-sm text-right font-bold text-gray-900 dark:text-white">Bs ${parseFloat(f.total_bs).toFixed(2)}</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+  };
+
+  btnLoad?.addEventListener('click', loadReport);
+  btnPrint?.addEventListener('click', () => window.print());
+
+  // Auto-load current month
+  loadReport();
+</script>

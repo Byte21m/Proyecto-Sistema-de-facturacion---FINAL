@@ -1,0 +1,113 @@
+---
+import '../styles/global.css';
+---
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <title>Factura - FacturaApp</title>
+    <style>
+      .action-bar { position: sticky; top: 0; z-index: 10; }
+      @media print { .action-bar { display: none !important; } body { background: #fff !important; } }
+    </style>
+    <script is:inline>
+      (function() {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+  </head>
+  <body class="bg-gray-100 dark:bg-gray-950 min-h-screen">
+    <!-- Action Bar (hidden on print) -->
+    <div class="action-bar bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800 px-6 py-3 flex items-center justify-between gap-4">
+      <a href="/history" class="text-sm font-bold text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center gap-1 transition-colors">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+        Volver al Historial
+      </a>
+      <div class="flex items-center gap-2">
+        <button id="btn-email" class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition-all">
+          📧 Enviar por Correo
+        </button>
+        <button id="btn-print" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition-all shadow-md shadow-indigo-500/20">
+          🖨️ Imprimir
+        </button>
+      </div>
+    </div>
+
+    <!-- Email mini form (hidden by default) -->
+    <div id="email-form" class="action-bar bg-indigo-50 dark:bg-indigo-500/10 border-b border-indigo-200 dark:border-indigo-800 px-6 py-3 hidden">
+      <form id="email-submit-form" class="flex items-center gap-3 max-w-lg mx-auto">
+        <input type="email" id="email-input" required placeholder="correo@ejemplo.com" class="flex-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl py-2 px-4 text-sm focus:ring-2 focus:ring-indigo-500/50 outline-none text-gray-900 dark:text-white" />
+        <button type="submit" id="email-send-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Enviar</button>
+        <button type="button" id="email-cancel" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-sm font-bold">Cancelar</button>
+      </form>
+    </div>
+
+    <!-- Invoice Content -->
+    <div id="invoice-container" class="py-8 px-4">
+      <div class="flex justify-center items-center h-40">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
+      </div>
+    </div>
+  </body>
+</html>
+
+<script>
+  import { getPrivateKy } from '../features/auth/auth.service';
+  import inventoryService from '../features/inventory/inventoryService';
+
+  const params = new URLSearchParams(window.location.search);
+  const saleId = params.get('id');
+  const container = document.getElementById('invoice-container');
+
+  if (!saleId) {
+    container.innerHTML = '<p class="text-center text-gray-500 py-20">ID de factura no proporcionado.</p>';
+  } else {
+    // Load invoice HTML from backend
+    (async () => {
+      try {
+        const privateKy = getPrivateKy();
+        const html = await privateKy.get(`/api/sale/${saleId}/invoice`).text();
+        container.innerHTML = html;
+        document.title = `Factura - FacturaApp`;
+      } catch {
+        container.innerHTML = '<p class="text-center text-red-500 py-20 font-bold">Error al cargar la factura.</p>';
+      }
+    })();
+  }
+
+  // Print
+  document.getElementById('btn-print')?.addEventListener('click', () => window.print());
+
+  // Email toggle
+  const emailForm = document.getElementById('email-form');
+  document.getElementById('btn-email')?.addEventListener('click', () => {
+    emailForm?.classList.toggle('hidden');
+    document.getElementById('email-input')?.focus();
+  });
+  document.getElementById('email-cancel')?.addEventListener('click', () => emailForm?.classList.add('hidden'));
+
+  // Email send
+  document.getElementById('email-submit-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email-input')?.value;
+    const btn = document.getElementById('email-send-btn');
+    if (!email || !saleId) return;
+    btn.textContent = 'Enviando...';
+    btn.disabled = true;
+    const result = await inventoryService.sendInvoiceEmail(saleId, email);
+    if (result) {
+      emailForm?.classList.add('hidden');
+      alert('✅ Factura enviada exitosamente al correo');
+    } else {
+      alert('❌ Error al enviar la factura');
+    }
+    btn.textContent = 'Enviar';
+    btn.disabled = false;
+  });
+</script>
