@@ -31,14 +31,25 @@ A lo largo de las sesiones de pair-programming, transformamos la base inicial de
 - **Dashboard Estadístico**: Indicadores clave de desempeño calculados al instante (ventas de la jornada, ingresos bimonetarios y tabla de alertas tempranas para stock bajo o agotado ≤ 5 unidades).
 - **Historial Interactivo (`history.astro`)**: Registro auditable de todas las facturas emitidas, con filtrado por fecha y un panel lateral deslizable que muestra el desglose exacto de los artículos adquiridos en cada transacción.
 
+### 📜 Facturación y Perfil Comercial (Fiscal)
+- **Aislamiento Fiscal (`business_profile`)**: Estructura relacional uno-a-uno (`user_id UNIQUE`) para almacenar la razón social, RIF, dirección y teléfono de cada empresa registrada.
+- **Módulo de Gestión (`/api/user/business`)**: Endpoints dedicados (`GET` y `PUT`) para la configuración fiscal, desacoplados del perfil de usuario base para mantener separación de responsabilidades.
+
 ---
 
-## 2. Decálogo Arquitectónico para Futuras Expansiones
+## 2. Herramientas de Mantenimiento y Reinicio de Entorno
+
+Para entornos de desarrollo o pruebas en limpio, la arquitectura incluye scripts de purga y reconstrucción de la base de datos WAL:
+- **Reinicio Total de BD**: Ejecutando `npm run tables:create -w api` (o `node db/tables.js`), el sistema destruye todas las tablas transaccionales y maestras, reconstruyéndolas limpias y verificando todas las llaves foráneas.
+
+---
+
+## 3. Decálogo Arquitectónico para Futuras Expansiones
 
 Para mantener la excelencia y estabilidad de este sistema en el futuro, recuerda siempre estos 5 mandamientos de desarrollo:
 
-1. **Aislamiento Estricto de Datos**: Toda nueva tabla transaccional o de catálogo debe incluir una llave foránea al `user_id`. Nunca realices un `SELECT`, `UPDATE` o `DELETE` sin incluir la cláusula `WHERE user_id = req.user.id`.
-2. **Validación Perimetral**: No confíes únicamente en las validaciones de formulario del frontend. Todo nuevo endpoint en Express debe contar con su esquema estricto en Zod.
+1. **Aislamiento Estricto de Datos (Multi-Tenant)**: Toda nueva tabla transaccional o de catálogo debe incluir una llave foránea al `user_id`. Nunca realices un `SELECT`, `UPDATE` o `DELETE` sin incluir la cláusula `WHERE user_id = req.user.id`.
+2. **Validación y Manejo de Conflictos (409)**: Los catálogos restringen duplicados por cuenta (`UNIQUE(nombre, user_id)`). Si ocurre una colisión, Express captura el código SQLite y responde con un código de estado HTTP `409 Conflict`.
 3. **Atomicidad en Escrituras Múltiples**: Si una acción requiere escribir en más de una tabla (ej. crear cliente y asignarle una factura), utiliza siempre `db.transaction()`.
 4. **Estado Atómico en Memoria**: Para nuevas pantallas interactivas en Astro, utiliza NanoStores (`nanostores`) en lugar de almacenar estado disperso en el DOM.
 5. **Inmutabilidad Financiera**: En las tablas de detalles transaccionales (`sale_details`), guarda siempre el precio unitario y la cotización de la moneda al momento del hecho. Nunca enlaces el histórico a precios dinámicos del catálogo.
