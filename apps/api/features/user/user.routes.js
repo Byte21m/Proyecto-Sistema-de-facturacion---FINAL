@@ -19,7 +19,13 @@ userRouter.post('/', async (req, res, next) => {
     const passwordHash = await bcrypt.hash(body.password, 10);
 
     // 3. Guardar en la base datos
-    createdUser = await userRepository.createUser({ email: body.email, passwordHash });
+    createdUser = await userRepository.createUser({
+      nombre: body.nombre,
+      email: body.email,
+      passwordHash,
+      razon_social: body.razon_social,
+      rif: body.rif || '',
+    });
 
     // 4. Enviar el correo de validación
     const emailToken = jwt.sign(

@@ -57,6 +57,7 @@
   import inventoryService from './inventoryService';
   import { createProductSchema } from './schemas';
   import { showToast } from '../../components/notification/notification';
+  import { HTTPError } from 'ky';
 
   const form = document.querySelector('#main-form');
   const inputNombre = document.querySelector('#nombre-input');
@@ -94,8 +95,17 @@
       showToast({ text: `Producto "${result.data.nombre}" añadido`, type: 'success' });
       form.reset();
       validate();
-    } catch {
-      showToast({ text: 'Error al añadir producto', type: 'error' });
+    } catch (err) {
+      let errorMsg = 'Error al añadir producto';
+      if (err instanceof HTTPError) {
+        try {
+          const errData = await err.response.json();
+          if (errData && errData.error) {
+            errorMsg = errData.error;
+          }
+        } catch (_) {}
+      }
+      showToast({ text: errorMsg, type: 'error' });
     }
   });
 </script>

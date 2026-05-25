@@ -11,7 +11,7 @@ businessRouter.use(authenticate);
 // Esquema de validación del perfil comercial
 const businessProfileSchema = z.object({
   razon_social: z.string().min(2, 'La razón social debe tener al menos 2 caracteres'),
-  rif: z.string().min(5, 'El RIF debe tener al menos 5 caracteres'),
+  rif: z.string().optional().or(z.literal('')),
   direccion: z.string().optional(),
   telefono: z.string().optional(),
 });

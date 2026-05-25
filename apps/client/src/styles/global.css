@@ -67,3 +67,22 @@
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #4b5563;
 }
+
+/* Sobrescribir el fondo blanco/azul de autocompletado en navegadores */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #1f2937 !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover, 
+.dark input:-webkit-autofill:focus,
+.dark input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0px 1000px #1e293b inset !important; /* slate-800 */
+  -webkit-text-fill-color: #f8fafc !important; /* slate-50 */
+  transition: background-color 5000s ease-in-out 0s;
+}

@@ -3,19 +3,33 @@ import db from '../../db/index.js';
 /** @typedef {import('./user.schemas.js').User} User */
 
 /**
- * Crea un usuario en la base de datos
+ * Crea un usuario en la base de datos junto con su perfil de negocio en una transacción
  * @param {Object} payload
+ * @param {string} payload.nombre - El nombre completo del usuario
  * @param {User['email']} payload.email - El correo del usuario
  * @param {User['password_hash']} payload.passwordHash - La contraseña encriptada
+ * @param {string} payload.razon_social - Razón social de la PYME
+ * @param {string|null} [payload.rif] - RIF de la PYME (opcional)
  * @returns {Promise<User>} El usuario creado
  */
-const createUser = async ({ email, passwordHash }) => {
-  const createUserQuery = db.prepare(`
-    INSERT INTO users (email, password_hash)
-    VALUES (?, ?) RETURNING *
-  `);
-  const createdUser = createUserQuery.get(email, passwordHash);
-  return createdUser;
+const createUser = async ({ nombre, email, passwordHash, razon_social, rif }) => {
+  const transaction = db.transaction(() => {
+    const createUserQuery = db.prepare(`
+      INSERT INTO users (nombre, email, password_hash)
+      VALUES (?, ?, ?) RETURNING *
+    `);
+    const createdUser = createUserQuery.get(nombre, email, passwordHash);
+
+    const createBusinessQuery = db.prepare(`
+      INSERT INTO business_profile (user_id, razon_social, rif)
+      VALUES (?, ?, ?)
+    `);
+    createBusinessQuery.run(createdUser.id, razon_social, rif || '');
+
+    return createdUser;
+  });
+
+  return transaction();
 };
 
 /**

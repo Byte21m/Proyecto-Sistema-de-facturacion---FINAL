@@ -24,70 +24,74 @@ import AppLayout from '../layout/AppLayout.astro';
 
     <!-- Contenedor de Facturas (Invoices) -->
     <div id="view-invoices" class="glass-card rounded-3xl overflow-hidden animate-fade-in">
-      <div class="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-white/50 dark:bg-gray-900/50">
-        <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-          <span class="text-indigo-500">🧾</span> Registro de Facturas
-        </h2>
-        <div class="loading-indicator hidden">
-          <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-500"></div>
+      <div class="flex flex-col h-[460px] md:h-[500px]">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-white/50 dark:bg-gray-900/50 flex-shrink-0">
+          <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <span class="text-indigo-500">🧾</span> Registro de Facturas
+          </h2>
+          <div class="loading-indicator hidden">
+            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-500"></div>
+          </div>
         </div>
-      </div>
 
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="bg-gray-50/50 dark:bg-gray-800/50">
-              <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Factura N°</th>
-              <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Fecha / Hora</th>
-              <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Vendedor</th>
-              <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">Total Factura</th>
-            </tr>
-          </thead>
-          <tbody id="invoices-table-body" class="divide-y divide-gray-100 dark:divide-gray-800">
-            <!-- Renderizado dinámico aquí -->
-          </tbody>
-        </table>
-      </div>
-
-      <div id="invoices-empty-state" class="p-12 text-center hidden">
-        <div class="text-6xl mb-4">📄</div>
-        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Sin facturas</h3>
-        <p class="text-gray-500 dark:text-gray-400">Aún no se han emitido facturas en el sistema.</p>
+        <div id="invoices-table-wrapper" class="overflow-auto flex-1 flex flex-col relative">
+          <table class="w-full text-left border-collapse">
+            <thead class="sticky top-0 z-10 bg-gray-50/95 dark:bg-gray-800/95 backdrop-blur-sm shadow-sm">
+              <tr>
+                <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Factura N°</th>
+                <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Fecha / Hora</th>
+                <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Vendedor</th>
+                <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">Total Factura</th>
+              </tr>
+            </thead>
+            <tbody id="invoices-table-body" class="divide-y divide-gray-100 dark:divide-gray-800">
+              <!-- Renderizado dinámico aquí -->
+            </tbody>
+          </table>
+          
+          <div id="invoices-empty-state" class="m-auto p-12 text-center hidden">
+            <div class="text-6xl mb-4 opacity-80">📄</div>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Sin facturas</h3>
+            <p class="text-gray-500 dark:text-gray-400">Aún no se han emitido facturas en el sistema.</p>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Contenedor de Detalles de Venta (Items) -->
     <div id="view-items" class="glass-card rounded-3xl overflow-hidden animate-fade-in hidden">
-      <div class="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-white/50 dark:bg-gray-900/50">
-        <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-          <span class="text-emerald-500">🛍️</span> Productos Vendidos
-        </h2>
-        <div class="loading-indicator hidden">
-          <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-500"></div>
+      <div class="flex flex-col h-[460px] md:h-[500px]">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-white/50 dark:bg-gray-900/50 flex-shrink-0">
+          <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <span class="text-emerald-500">🛍️</span> Productos Vendidos
+          </h2>
+          <div class="loading-indicator hidden">
+            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-500"></div>
+          </div>
         </div>
-      </div>
 
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="bg-gray-50/50 dark:bg-gray-800/50">
-              <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Fecha / Hora</th>
-              <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Factura N°</th>
-              <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Producto</th>
-              <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-center">Cantidad</th>
-              <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">Precio de Venta</th>
-            </tr>
-          </thead>
-          <tbody id="items-table-body" class="divide-y divide-gray-100 dark:divide-gray-800">
-            <!-- Renderizado dinámico aquí -->
-          </tbody>
-        </table>
-      </div>
-
-      <div id="items-empty-state" class="p-12 text-center hidden">
-        <div class="text-6xl mb-4">📈</div>
-        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Sin productos vendidos</h3>
-        <p class="text-gray-500 dark:text-gray-400">Las ventas de productos detalladas aparecerán aquí.</p>
+        <div id="items-table-wrapper" class="overflow-auto flex-1 flex flex-col relative">
+          <table class="w-full text-left border-collapse">
+            <thead class="sticky top-0 z-10 bg-gray-50/95 dark:bg-gray-800/95 backdrop-blur-sm shadow-sm">
+              <tr>
+                <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Fecha / Hora</th>
+                <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Factura N°</th>
+                <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Producto</th>
+                <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-center">Cantidad</th>
+                <th class="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">Precio de Venta</th>
+              </tr>
+            </thead>
+            <tbody id="items-table-body" class="divide-y divide-gray-100 dark:divide-gray-800">
+              <!-- Renderizado dinámico aquí -->
+            </tbody>
+          </table>
+          
+          <div id="items-empty-state" class="m-auto p-12 text-center hidden">
+            <div class="text-6xl mb-4">📈</div>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Sin productos vendidos</h3>
+            <p class="text-gray-500 dark:text-gray-400">Las ventas de productos detalladas aparecerán aquí.</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>

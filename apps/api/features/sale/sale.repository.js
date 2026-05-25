@@ -36,8 +36,8 @@ const createSale = (params) => {
   const { subtotal_usd, monto_exento_bs, iva_porcentaje, iva_monto_bs, total_bs, nombre_cliente, cedula_cliente, id_usuario, items } = params;
 
   const insertSale = db.prepare(`
-    INSERT INTO sales (numero_factura, subtotal_usd, monto_exento_bs, iva_porcentaje, iva_monto_bs, total_bs, nombre_cliente, cedula_cliente, id_usuario)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *
+    INSERT INTO sales (numero_factura, fecha, subtotal_usd, monto_exento_bs, iva_porcentaje, iva_monto_bs, total_bs, nombre_cliente, cedula_cliente, id_usuario)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *
   `);
 
   const insertDetail = db.prepare(`
@@ -52,9 +52,13 @@ const createSale = (params) => {
   const transaction = db.transaction(() => {
     const numeroFactura = getNextInvoiceNumber(id_usuario);
 
+    // Generar fecha/hora local (evita UTC de CURRENT_TIMESTAMP)
+    const now = new Date();
+    const localISO = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 19).replace('T', ' ');
+
     // 1. Crear la venta con campos fiscales
     const sale = insertSale.get(
-      numeroFactura, subtotal_usd, monto_exento_bs, iva_porcentaje, iva_monto_bs, total_bs,
+      numeroFactura, localISO, subtotal_usd, monto_exento_bs, iva_porcentaje, iva_monto_bs, total_bs,
       nombre_cliente || null, cedula_cliente || null, id_usuario
     );
 
@@ -114,7 +118,7 @@ const findTodaySales = (id_usuario) => {
            (SELECT COALESCE(SUM(sd.precio_momento * sd.cantidad), 0) FROM sale_details sd WHERE sd.id_venta = s.id) as total_usd
     FROM sales s
     LEFT JOIN users u ON s.id_usuario = u.id
-    WHERE date(s.fecha) = date('now') AND s.id_usuario = ?
+    WHERE date(s.fecha) = date('now', 'localtime') AND s.id_usuario = ?
     ORDER BY s.fecha DESC
   `);
   return statement.all(id_usuario);

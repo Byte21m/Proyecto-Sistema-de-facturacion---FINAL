@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch --env-file=.env index.js",
-    "tables:create": "node db/tables.js"
+    "tables:create": "node db/tables.js",
+    "test": "node --test"
   },
   "keywords": [],
   "author": "",

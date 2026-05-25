@@ -26,20 +26,21 @@ export function generateInvoiceHtml(saleData, businessProfile) {
   const baseImponibleBs = subtotal_usd * tasaDia;
 
   // Generar filas de la tabla de productos
-  const productRows = (details || []).map(item => {
+  const productRows = (details || []).map((item, idx) => {
     const subtotalUsd = item.precio_momento * item.cantidad;
     const subtotalBs = subtotalUsd * item.tasa_dia;
-    const exentoLabel = item.exento_iva ? '<span style="color:#059669;font-size:10px;font-weight:700;background:#ecfdf5;padding:1px 6px;border-radius:4px;margin-left:4px;">EXENTO</span>' : '';
+    const exentoLabel = item.exento_iva ? '<span style="color:#059669;font-size:9px;font-weight:700;background:#ecfdf5;padding:2px 8px;border-radius:6px;margin-left:6px;letter-spacing:0.5px;">EXENTO</span>' : '';
+    const bgColor = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
 
     return `
-      <tr>
-        <td style="padding:10px 12px;border-bottom:1px solid #f1f5f9;font-size:13px;color:#334155;">
+      <tr style="background:${bgColor};">
+        <td style="padding:14px 16px;border-bottom:1px solid #f1f5f9;font-size:13px;color:#1e293b;font-weight:500;">
           ${item.producto_nombre || 'Producto'}${exentoLabel}
         </td>
-        <td style="padding:10px 12px;border-bottom:1px solid #f1f5f9;font-size:13px;color:#64748b;text-align:center;">${item.cantidad}</td>
-        <td style="padding:10px 12px;border-bottom:1px solid #f1f5f9;font-size:13px;color:#64748b;text-align:right;">$${item.precio_momento.toFixed(2)}</td>
-        <td style="padding:10px 12px;border-bottom:1px solid #f1f5f9;font-size:13px;color:#64748b;text-align:right;">Bs ${(item.precio_momento * item.tasa_dia).toFixed(2)}</td>
-        <td style="padding:10px 12px;border-bottom:1px solid #f1f5f9;font-size:13px;color:#1e293b;font-weight:700;text-align:right;">Bs ${subtotalBs.toFixed(2)}</td>
+        <td style="padding:14px 16px;border-bottom:1px solid #f1f5f9;font-size:13px;color:#64748b;text-align:center;font-weight:600;">${item.cantidad}</td>
+        <td style="padding:14px 16px;border-bottom:1px solid #f1f5f9;font-size:13px;color:#64748b;text-align:right;">$${item.precio_momento.toFixed(2)}</td>
+        <td style="padding:14px 16px;border-bottom:1px solid #f1f5f9;font-size:13px;color:#64748b;text-align:right;">Bs ${(item.precio_momento * item.tasa_dia).toFixed(2)}</td>
+        <td style="padding:14px 16px;border-bottom:1px solid #f1f5f9;font-size:13px;color:#1e293b;font-weight:700;text-align:right;">Bs ${subtotalBs.toFixed(2)}</td>
       </tr>
     `;
   }).join('');
@@ -56,33 +57,106 @@ export function generateInvoiceHtml(saleData, businessProfile) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Factura ${numero_factura || ''}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; color: #1e293b; background: #f8fafc; }
-    .invoice-container { max-width: 800px; margin: 20px auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); overflow: hidden; }
-    .invoice-header { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; padding: 32px; display: flex; justify-content: space-between; align-items: flex-start; }
-    .invoice-header h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
-    .invoice-header .factura-num { font-size: 16px; font-weight: 700; opacity: 0.9; margin-top: 4px; }
-    .invoice-header .right { text-align: right; }
-    .invoice-header .right p { font-size: 13px; opacity: 0.85; line-height: 1.6; }
-    .info-section { display: flex; justify-content: space-between; padding: 24px 32px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; gap: 24px; }
+    body { font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; color: #1e293b; background: #f1f5f9; }
+    .invoice-container { max-width: 800px; margin: 24px auto; background: #fff; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.08); overflow: hidden; }
+
+    /* ── Header ── */
+    .invoice-header {
+      background: linear-gradient(135deg, #312e81 0%, #4f46e5 40%, #7c3aed 100%);
+      color: #fff; padding: 36px 40px; display: flex; justify-content: space-between; align-items: flex-start;
+      position: relative; overflow: hidden;
+    }
+    .invoice-header::before {
+      content: ''; position: absolute; top: -40%; right: -10%; width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .invoice-header::after {
+      content: ''; position: absolute; bottom: -30%; left: 20%; width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .invoice-header h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; position: relative; z-index: 1; }
+    .invoice-header .factura-badge {
+      display: inline-block; background: rgba(255,255,255,0.18); backdrop-filter: blur(4px);
+      padding: 5px 14px; border-radius: 8px; font-size: 13px; font-weight: 700;
+      margin-top: 8px; letter-spacing: 0.5px; position: relative; z-index: 1;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .invoice-header .right { text-align: right; position: relative; z-index: 1; }
+    .invoice-header .right p { font-size: 13px; opacity: 0.85; line-height: 1.8; }
+    .invoice-header .right .rif-badge {
+      display: inline-block; background: rgba(255,255,255,0.15); padding: 3px 12px;
+      border-radius: 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    /* ── Info Section ── */
+    .info-section {
+      display: flex; justify-content: space-between; padding: 28px 40px;
+      background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+      border-bottom: 1px solid #e2e8f0; gap: 32px;
+    }
     .info-block { flex: 1; }
-    .info-block h3 { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #94a3b8; margin-bottom: 8px; }
-    .info-block p { font-size: 13px; color: #475569; line-height: 1.7; }
-    .info-block p strong { color: #1e293b; }
-    .table-section { padding: 0 32px 24px; }
-    .table-section table { width: 100%; border-collapse: collapse; margin-top: 16px; }
-    .table-section thead th { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; padding: 12px; text-align: left; border-bottom: 2px solid #e2e8f0; }
-    .totals-section { padding: 0 32px 32px; }
-    .totals-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px 24px; }
-    .totals-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
-    .totals-row .label { color: #64748b; }
+    .info-block h3 {
+      font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;
+      color: #4f46e5; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+    }
+    .info-block h3::before {
+      content: ''; display: inline-block; width: 3px; height: 14px;
+      background: linear-gradient(180deg, #4f46e5, #7c3aed); border-radius: 2px;
+    }
+    .info-block p { font-size: 13px; color: #475569; line-height: 1.8; }
+    .info-block p strong { color: #1e293b; font-weight: 600; }
+
+    /* ── Products Table ── */
+    .table-section { padding: 8px 40px 28px; }
+    .table-section table { width: 100%; border-collapse: collapse; margin-top: 8px; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+    .table-section thead th {
+      font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+      color: #fff; padding: 14px 16px; text-align: left;
+      background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+    }
+
+    /* ── Totals ── */
+    .totals-section { padding: 0 40px 36px; }
+    .totals-box {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px 28px;
+      position: relative; overflow: hidden;
+    }
+    .totals-box::before {
+      content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+      background: linear-gradient(180deg, #4f46e5, #7c3aed); border-radius: 4px 0 0 4px;
+    }
+    .totals-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 13px; }
+    .totals-row .label { color: #64748b; font-weight: 500; }
     .totals-row .value { font-weight: 600; color: #1e293b; }
-    .totals-row.grand { padding: 12px 0 4px; margin-top: 8px; border-top: 2px solid #e2e8f0; }
+    .totals-row.grand {
+      padding: 16px 0 6px; margin-top: 12px;
+      border-top: 2px dashed #cbd5e1;
+    }
     .totals-row.grand .label { font-size: 16px; font-weight: 800; color: #1e293b; }
-    .totals-row.grand .value { font-size: 18px; font-weight: 900; color: #4f46e5; }
-    .footer { text-align: center; padding: 20px 32px; background: #f8fafc; border-top: 1px solid #e2e8f0; }
-    .footer p { font-size: 11px; color: #94a3b8; line-height: 1.6; }
+    .totals-row.grand .value { font-size: 20px; font-weight: 900; color: #4f46e5; }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center; padding: 24px 40px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      border-top: 1px solid #e2e8f0;
+    }
+    .footer p { font-size: 11px; color: #94a3b8; line-height: 1.7; }
+    .footer .brand-line {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-weight: 700; color: #4f46e5; font-size: 11px;
+      background: #eef2ff; padding: 4px 14px; border-radius: 20px; margin-top: 8px;
+    }
+
     .no-print { display: block; }
     @media print {
       body { background: #fff; }
@@ -98,12 +172,12 @@ export function generateInvoiceHtml(saleData, businessProfile) {
     <div class="invoice-header">
       <div>
         <h1>${emisorNombre}</h1>
-        <p class="factura-num">${numero_factura || 'SIN NÚMERO'}</p>
+        <div class="factura-badge">📄 ${numero_factura || 'SIN NÚMERO'}</div>
       </div>
       <div class="right">
-        ${emisorRif ? `<p><strong>RIF:</strong> ${emisorRif}</p>` : ''}
-        ${emisorDireccion ? `<p>${emisorDireccion}</p>` : ''}
-        ${emisorTelefono ? `<p>Tel: ${emisorTelefono}</p>` : ''}
+        ${emisorRif ? `<p><span class="rif-badge">RIF: ${emisorRif}</span></p>` : ''}
+        ${emisorDireccion ? `<p style="margin-top:6px;">${emisorDireccion}</p>` : ''}
+        ${emisorTelefono ? `<p>📞 ${emisorTelefono}</p>` : ''}
       </div>
     </div>
 
@@ -118,7 +192,7 @@ export function generateInvoiceHtml(saleData, businessProfile) {
       </div>
       <div class="info-block">
         <h3>Datos del Cliente</h3>
-        ${nombre_cliente ? `<p><strong>Nombre:</strong> ${nombre_cliente}</p>` : '<p style="color:#94a3b8;">Cliente de paso</p>'}
+        ${nombre_cliente ? `<p><strong>Nombre:</strong> ${nombre_cliente}</p>` : '<p style="color:#94a3b8;font-style:italic;">Cliente de paso</p>'}
         ${cedula_cliente ? `<p><strong>C.I. / RIF:</strong> ${cedula_cliente}</p>` : ''}
       </div>
     </div>
@@ -160,15 +234,19 @@ export function generateInvoiceHtml(saleData, businessProfile) {
         </div>
         <div class="totals-row grand">
           <span class="label">TOTAL A PAGAR</span>
-          <span class="value">$${totalUsd.toFixed(2)} — Bs ${total_bs.toFixed(2)}</span>
+          <span class="value" style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
+            <span style="font-size:18px;">$${totalUsd.toFixed(2)}</span>
+            <span style="font-size:20px;color:#059669;">Bs ${total_bs.toFixed(2)}</span>
+          </span>
         </div>
       </div>
     </div>
 
     <!-- Footer -->
     <div class="footer">
-      <p>Factura comercial generada por FacturaApp — ${fechaStr} — Tasa BCV: Bs ${tasaDia.toFixed(2)}/$</p>
-      <p style="margin-top:4px;">Gracias por su preferencia 🙌</p>
+      <p>Factura comercial generada el ${fechaStr} — Tasa BCV: Bs ${tasaDia.toFixed(2)}/$</p>
+      <div class="brand-line">⚡ FacturaApp</div>
+      <p style="margin-top:6px;">Gracias por su preferencia 🙌</p>
     </div>
   </div>
 </body>

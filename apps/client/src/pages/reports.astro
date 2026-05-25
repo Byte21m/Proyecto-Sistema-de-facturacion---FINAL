@@ -2,11 +2,11 @@
 import AppLayout from '../layout/AppLayout.astro';
 ---
 
-<AppLayout title="Reporte IVA | FacturaApp" activePage="reports">
+<AppLayout title="Reportes | FacturaApp" activePage="reports">
   <div class="p-6 md:p-8 w-full max-w-5xl mx-auto space-y-6 animate-fade-in">
     <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
       <div>
-        <h1 class="text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight">Reporte de IVA</h1>
+        <h1 class="text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight">Reportes</h1>
         <p class="text-gray-500 dark:text-gray-400 font-medium mt-1">Resumen mensual de IVA cobrado, base imponible y ventas exentas.</p>
       </div>
       <!-- Month/Year Selector -->
@@ -45,28 +45,33 @@ import AppLayout from '../layout/AppLayout.astro';
     </div>
 
     <!-- Invoices Table -->
-    <div id="table-section" class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/60 dark:border-gray-800/60 shadow-sm overflow-hidden hidden">
-      <div class="px-6 py-4 border-b border-gray-200/60 dark:border-gray-800/60 bg-gray-50/50 dark:bg-gray-800/50">
-        <h2 class="text-lg font-bold text-gray-900 dark:text-white">📋 Detalle de Facturas del Mes</h2>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="bg-gray-50/50 dark:bg-gray-800/50">
-              <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">N° Factura</th>
-              <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Fecha / Hora</th>
-              <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Cliente</th>
-              <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase text-right">Base Imp.</th>
-              <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase text-right">IVA</th>
-              <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase text-right">Total Bs</th>
-            </tr>
-          </thead>
-          <tbody id="report-table-body" class="divide-y divide-gray-100 dark:divide-gray-800"></tbody>
-        </table>
-      </div>
-      <div id="report-empty" class="p-12 text-center hidden">
-        <div class="text-5xl mb-3">📭</div>
-        <p class="text-sm font-bold text-gray-900 dark:text-white">Sin facturas este mes</p>
+    <div id="table-section" class="glass-card rounded-3xl overflow-hidden animate-fade-in hidden">
+      <div class="flex flex-col h-[380px] md:h-[420px]">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-white/50 dark:bg-gray-900/50 flex-shrink-0">
+          <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <span class="text-indigo-500">📋</span> Detalle de Facturas del Mes
+          </h2>
+        </div>
+        <div class="overflow-auto flex-1 flex flex-col relative">
+          <table class="w-full text-left border-collapse">
+            <thead class="sticky top-0 z-10 bg-gray-50/95 dark:bg-gray-800/95 backdrop-blur-sm shadow-sm">
+              <tr>
+                <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">N° Factura</th>
+                <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Fecha / Hora</th>
+                <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Cliente</th>
+                <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase text-right">Base Imp.</th>
+                <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase text-right">IVA</th>
+                <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase text-right">Total Bs</th>
+              </tr>
+            </thead>
+            <tbody id="report-table-body" class="divide-y divide-gray-100 dark:divide-gray-800"></tbody>
+          </table>
+          
+          <div id="report-empty" class="m-auto p-12 text-center hidden">
+            <div class="text-5xl mb-3">📭</div>
+            <p class="text-sm font-bold text-gray-900 dark:text-white">Sin facturas este mes</p>
+          </div>
+        </div>
       </div>
     </div>
 

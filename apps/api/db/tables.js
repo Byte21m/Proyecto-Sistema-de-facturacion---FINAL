@@ -4,6 +4,7 @@ const createUsersTable = async () => {
   const statement = db.prepare(`
     CREATE TABLE users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nombre TEXT,
       email TEXT UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
       email_verified BOOLEAN DEFAULT 0
@@ -19,7 +20,7 @@ const createBusinessProfileTable = async () => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL UNIQUE,
       razon_social TEXT NOT NULL,
-      rif TEXT NOT NULL,
+      rif TEXT,
       direccion TEXT,
       telefono TEXT,
       FOREIGN KEY (user_id) REFERENCES users(id)
