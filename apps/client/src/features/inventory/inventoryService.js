@@ -45,7 +45,7 @@ const updateProduct = async (id, payload) => {
   const privateKy = getPrivateKy();
   const updated = await privateKy.put(`/api/product/${id}`, { json: payload }).json();
   const products = inventoryStore.get();
-  inventoryStore.set(products.map((p) => (p.id === id ? { ...updated, isEditing: false } : p)));
+  inventoryStore.set(products.map((p) => (p.id === id ? { ...p, ...updated, isEditing: false } : p)));
 };
 
 /**
@@ -164,6 +164,22 @@ const getMonthlyReport = async (year, month) => {
   }
 };
 
+/**
+ * Obtiene el reporte dinámico por día, semana o mes
+ * @param {string} type - 'day' | 'week' | 'month'
+ * @param {string} date - Formato YYYY-MM-DD o YYYY-MM
+ */
+const getReport = async (type, date) => {
+  try {
+    const privateKy = getPrivateKy();
+    const data = await privateKy.get(`/api/sale/report?type=${type}&date=${date}`).json();
+    return data;
+  } catch (err) {
+    console.error('Error cargando reporte dinámico:', err);
+    return null;
+  }
+};
+
 const inventoryService = {
   addProduct,
   getInventory,
@@ -177,6 +193,7 @@ const inventoryService = {
   updateBusinessProfile,
   sendInvoiceEmail,
   getMonthlyReport,
+  getReport,
 };
 
 export default inventoryService;

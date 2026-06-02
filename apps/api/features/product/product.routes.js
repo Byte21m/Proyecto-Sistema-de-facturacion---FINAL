@@ -48,7 +48,7 @@ productRouter.put('/:id', async (req, res, next) => {
   }
 });
 
-// Eliminar producto
+// Eliminar producto (soft delete)
 productRouter.delete('/:id', async (req, res, next) => {
   try {
     const { id } = deleteProductRouteSchema.params.parse(req.params);

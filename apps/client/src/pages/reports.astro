@@ -4,22 +4,66 @@ import AppLayout from '../layout/AppLayout.astro';
 
 <AppLayout title="Reportes | FacturaApp" activePage="reports">
   <div class="p-6 md:p-8 w-full max-w-5xl mx-auto space-y-6 animate-fade-in">
-    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
       <div>
         <h1 class="text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight">Reportes</h1>
-        <p class="text-gray-500 dark:text-gray-400 font-medium mt-1">Resumen mensual de IVA cobrado, base imponible y ventas exentas.</p>
+        <p id="report-description" class="text-gray-500 dark:text-gray-400 font-medium mt-1">Resumen mensual de IVA cobrado, base imponible y ventas exentas.</p>
       </div>
-      <!-- Month/Year Selector -->
-      <div class="flex items-center gap-2">
-        <select id="select-month" class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/50 outline-none">
-          <option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option>
-          <option value="4">Abril</option><option value="5">Mayo</option><option value="6">Junio</option>
-          <option value="7">Julio</option><option value="8">Agosto</option><option value="9">Septiembre</option>
-          <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
-        </select>
-        <input type="number" id="input-year" min="2020" max="2099" class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-900 dark:text-white w-24 focus:ring-2 focus:ring-indigo-500/50 outline-none" />
-        <button id="btn-load" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition-all">Consultar</button>
-        <button id="btn-print-report" class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2.5 rounded-xl font-bold text-sm transition-all hidden">🖨️ Imprimir</button>
+      
+      <!-- Toolbar: Tabs + Inputs -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        <!-- Selector de Tipo (Tabs) -->
+        <div class="flex p-1 space-x-1 bg-gray-200/50 dark:bg-gray-800/50 rounded-xl w-full sm:w-max">
+          <button id="tab-day" class="tab-btn px-3 py-1.5 text-xs sm:text-sm font-bold rounded-lg transition-all text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 w-full sm:w-auto">
+            Día
+          </button>
+          <button id="tab-week" class="tab-btn px-3 py-1.5 text-xs sm:text-sm font-bold rounded-lg transition-all text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 w-full sm:w-auto">
+            Semana
+          </button>
+          <button id="tab-month" class="tab-btn active px-3 py-1.5 text-xs sm:text-sm font-bold rounded-lg transition-all text-indigo-700 bg-white shadow-sm dark:bg-gray-700 dark:text-white w-full sm:w-auto">
+            Mes
+          </button>
+        </div>
+
+        <!-- Inputs Container -->
+        <div class="flex items-center gap-2">
+          <!-- Calendario (para Día y Semana) -->
+          <input
+            type="date"
+            id="input-date"
+            class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/50 outline-none hidden w-[224px]"
+          />
+
+          <!-- Selector de Mes/Año (para Mes) -->
+          <div id="month-selectors" class="flex items-center gap-2 w-[224px]">
+            <select id="select-month" class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/50 outline-none flex-1">
+              <option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option>
+              <option value="4">Abril</option><option value="5">Mayo</option><option value="6">Junio</option>
+              <option value="7">Julio</option><option value="8">Agosto</option><option value="9">Septiembre</option>
+              <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+            </select>
+            <div class="relative w-24 shrink-0" id="year-combobox-container">
+              <input
+                type="text"
+                id="input-year"
+                maxlength="4"
+                pattern="[0-9]{4}"
+                inputmode="numeric"
+                placeholder="Año"
+                autocomplete="off"
+                class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-900 dark:text-white w-full focus:ring-2 focus:ring-indigo-500/50 outline-none text-center cursor-pointer"
+              />
+              <div
+                id="year-dropdown"
+                class="absolute z-20 left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg hidden divide-y divide-gray-100 dark:divide-gray-800"
+              >
+              </div>
+            </div>
+          </div>
+
+          <button id="btn-load" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition-all">Consultar</button>
+          <button id="btn-print-report" class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2.5 rounded-xl font-bold text-sm transition-all hidden">🖨️ Imprimir</button>
+        </div>
       </div>
     </div>
 
@@ -47,8 +91,8 @@ import AppLayout from '../layout/AppLayout.astro';
     <!-- Invoices Table -->
     <div id="table-section" class="glass-card rounded-3xl overflow-hidden animate-fade-in hidden">
       <div class="flex flex-col h-[380px] md:h-[420px]">
-        <div class="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-white/50 dark:bg-gray-900/50 flex-shrink-0">
-          <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-white/50 dark:bg-gray-900/50 shrink-0">
+          <h2 id="report-table-title" class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <span class="text-indigo-500">📋</span> Detalle de Facturas del Mes
           </h2>
         </div>
@@ -85,6 +129,15 @@ import AppLayout from '../layout/AppLayout.astro';
 <script>
   import inventoryService from '../features/inventory/inventoryService';
 
+  // State
+  let activeTab = 'month'; // 'day' | 'week' | 'month'
+
+  // DOM Elements
+  const tabDay = document.getElementById('tab-day');
+  const tabWeek = document.getElementById('tab-week');
+  const tabMonth = document.getElementById('tab-month');
+  const inputDate = document.getElementById('input-date');
+  const monthSelectors = document.getElementById('month-selectors');
   const selectMonth = document.getElementById('select-month');
   const inputYear = document.getElementById('input-year');
   const btnLoad = document.getElementById('btn-load');
@@ -94,28 +147,155 @@ import AppLayout from '../layout/AppLayout.astro';
   const tableBody = document.getElementById('report-table-body');
   const reportEmpty = document.getElementById('report-empty');
   const loading = document.getElementById('loading');
+  const reportDescription = document.getElementById('report-description');
+  const tableTitle = document.getElementById('report-table-title');
 
-  // Set current month/year
+  // Set current month/year and default date
   const now = new Date();
+  
+  // Populate custom year dropdown options dynamically
+  const currentYear = now.getFullYear();
+  const yearDropdown = document.getElementById('year-dropdown');
+  const comboboxContainer = document.getElementById('year-combobox-container');
+
+  if (yearDropdown && inputYear) {
+    yearDropdown.innerHTML = '';
+    for (let y = 2020; y <= currentYear + 10; y++) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'w-full text-center px-3 py-2 text-xs sm:text-sm font-bold text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700/60 transition-colors border-0 cursor-pointer block';
+      btn.textContent = String(y);
+      btn.dataset.value = String(y);
+      
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        inputYear.value = String(y);
+        yearDropdown.classList.add('hidden');
+        loadReport();
+      });
+      yearDropdown.appendChild(btn);
+    }
+
+    inputYear.value = String(currentYear);
+
+    // Show dropdown on click/focus
+    inputYear.addEventListener('click', (e) => {
+      e.stopPropagation();
+      // Show all options initially
+      const buttons = yearDropdown.querySelectorAll('button');
+      buttons.forEach(btn => btn.classList.remove('hidden'));
+      yearDropdown.classList.remove('hidden');
+    });
+
+    inputYear.addEventListener('focus', () => {
+      // Show all options initially
+      const buttons = yearDropdown.querySelectorAll('button');
+      buttons.forEach(btn => btn.classList.remove('hidden'));
+      yearDropdown.classList.remove('hidden');
+    });
+
+    // Filter dropdown options while typing
+    inputYear.addEventListener('input', () => {
+      const val = inputYear.value.trim();
+      const buttons = yearDropdown.querySelectorAll('button');
+      let visibleCount = 0;
+      buttons.forEach(btn => {
+        if (!val || btn.dataset.value.includes(val)) {
+          btn.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          btn.classList.add('hidden');
+        }
+      });
+      if (visibleCount > 0) {
+        yearDropdown.classList.remove('hidden');
+      } else {
+        yearDropdown.classList.add('hidden');
+      }
+    });
+
+    // Hide dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (comboboxContainer && !comboboxContainer.contains(e.target)) {
+        yearDropdown.classList.add('hidden');
+      }
+    });
+  }
+
   selectMonth.value = String(now.getMonth() + 1);
-  inputYear.value = String(now.getFullYear());
+  
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  if (inputDate) inputDate.value = todayStr;
+
+  const switchTab = (tab) => {
+    activeTab = tab;
+    
+    // Reset tab active classes
+    const tabs = [tabDay, tabWeek, tabMonth];
+    tabs.forEach(t => {
+      if (t) {
+        t.classList.remove('text-indigo-700', 'bg-white', 'shadow-sm', 'dark:bg-gray-700', 'dark:text-white');
+        t.classList.add('text-gray-500');
+      }
+    });
+
+    const activeEl = tab === 'day' ? tabDay : tab === 'week' ? tabWeek : tabMonth;
+    if (activeEl) {
+      activeEl.classList.add('text-indigo-700', 'bg-white', 'shadow-sm', 'dark:bg-gray-700', 'dark:text-white');
+      activeEl.classList.remove('text-gray-500');
+    }
+
+    // Show/hide inputs
+    if (tab === 'day' || tab === 'week') {
+      inputDate?.classList.remove('hidden');
+      monthSelectors?.classList.add('hidden');
+    } else {
+      inputDate?.classList.add('hidden');
+      monthSelectors?.classList.remove('hidden');
+    }
+
+    // Set descriptions
+    if (reportDescription) {
+      if (tab === 'day') {
+        reportDescription.textContent = 'Resumen diario de IVA cobrado, base imponible y ventas exentas.';
+      } else if (tab === 'week') {
+        reportDescription.textContent = 'Resumen semanal (Lunes a Domingo) de IVA cobrado, base imponible y ventas exentas.';
+      } else {
+        reportDescription.textContent = 'Resumen mensual de IVA cobrado, base imponible y ventas exentas.';
+      }
+    }
+  };
+
+  tabDay?.addEventListener('click', () => switchTab('day'));
+  tabWeek?.addEventListener('click', () => switchTab('week'));
+  tabMonth?.addEventListener('click', () => switchTab('month'));
 
   const loadReport = async () => {
-    const year = parseInt(inputYear.value);
-    const month = parseInt(selectMonth.value);
     loading.style.display = 'flex';
     summaryCards.style.display = 'none';
     tableSection.classList.add('hidden');
     btnPrint.classList.add('hidden');
 
-    const data = await inventoryService.getMonthlyReport(year, month);
+    let dateParam;
+    if (activeTab === 'day' || activeTab === 'week') {
+      dateParam = inputDate.value;
+      if (!dateParam) {
+        alert('Por favor selecciona una fecha');
+        loading.style.display = 'none';
+        return;
+      }
+    } else {
+      const year = parseInt(inputYear.value) || new Date().getFullYear();
+      const month = parseInt(selectMonth.value) || (new Date().getMonth() + 1);
+      dateParam = `${year}-${String(month).padStart(2, '0')}-01`;
+    }
+
+    const data = await inventoryService.getReport(activeTab, dateParam);
     loading.style.display = 'none';
 
     if (!data) return;
 
     const s = data.summary;
-    // Calculate base imponible in Bs (subtotal_usd needs tasa, approximate from total)
-    const baseUsd = parseFloat(s.base_imponible_usd) || 0;
     const totalBs = parseFloat(s.total_facturado_bs) || 0;
     const ivaBs = parseFloat(s.total_iva_bs) || 0;
     const exentoBs = parseFloat(s.total_exento_bs) || 0;
@@ -126,6 +306,34 @@ import AppLayout from '../layout/AppLayout.astro';
     document.getElementById('card-iva-bs').textContent = `Bs ${ivaBs.toFixed(2)}`;
     document.getElementById('card-total-bs').textContent = `Bs ${totalBs.toFixed(2)}`;
     document.getElementById('card-facturas').textContent = `${s.total_facturas} factura(s)`;
+
+    // Update table header text and empty state text
+    const emptyStateText = document.querySelector('#report-empty p');
+    if (emptyStateText) {
+      emptyStateText.textContent = `Sin facturas para este ${activeTab === 'day' ? 'día' : activeTab === 'week' ? 'semana' : 'mes'}`;
+    }
+
+    if (tableTitle) {
+      if (activeTab === 'day') {
+        const [yr, mo, dy] = dateParam.split('-');
+        tableTitle.innerHTML = `<span class="text-indigo-500">📋</span> Detalle de Facturas del Día (${dy}/${mo}/${yr})`;
+      } else if (activeTab === 'week') {
+        const [yr, mo, dy] = dateParam.split('-').map(Number);
+        const chosen = new Date(yr, mo - 1, dy);
+        const day = chosen.getDay();
+        const diffToMonday = chosen.getDate() - day + (day === 0 ? -6 : 1);
+        const monday = new Date(chosen.setDate(diffToMonday));
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+        
+        const monStr = `${String(monday.getDate()).padStart(2, '0')}/${String(monday.getMonth() + 1).padStart(2, '0')}/${monday.getFullYear()}`;
+        const sunStr = `${String(sunday.getDate()).padStart(2, '0')}/${String(sunday.getMonth() + 1).padStart(2, '0')}/${sunday.getFullYear()}`;
+        tableTitle.innerHTML = `<span class="text-indigo-500">📋</span> Detalle de Facturas de la Semana (${monStr} al ${sunStr})`;
+      } else {
+        const monthText = selectMonth.options[selectMonth.selectedIndex]?.text || '';
+        tableTitle.innerHTML = `<span class="text-indigo-500">📋</span> Detalle de Facturas de ${monthText} ${inputYear.value}`;
+      }
+    }
 
     summaryCards.style.display = 'grid';
     tableSection.classList.remove('hidden');

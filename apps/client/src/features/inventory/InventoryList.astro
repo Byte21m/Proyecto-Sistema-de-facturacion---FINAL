@@ -5,7 +5,7 @@ import ProductItem from './ProductItem.astro';
 <div class="flex flex-col gap-6">
   <!-- Listado Principal -->
   <div class="glass-card rounded-3xl overflow-hidden animate-fade-in flex flex-col h-[460px] md:h-[600px]">
-    <div class="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-white/50 dark:bg-gray-900/50 flex-shrink-0">
+    <div class="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-white/50 dark:bg-gray-900/50 shrink-0">
       <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
         <span class="text-indigo-500">📋</span> Listado de Productos
       </h2>
@@ -80,10 +80,6 @@ import ProductItem from './ProductItem.astro';
 
         if (product.tiene_ventas) {
           nombreText.innerHTML = `${product.nombre} <span class="ml-2 px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 uppercase">Vendido</span>`;
-          deleteBtn.disabled = true;
-          deleteBtn.classList.replace('hover:text-red-600', 'cursor-not-allowed');
-          deleteBtn.classList.replace('hover:bg-red-50', 'opacity-50');
-          deleteBtn.title = "No se puede eliminar porque tiene ventas asociadas";
         } else {
           nombreText.textContent = product.nombre;
         }
@@ -145,8 +141,6 @@ import ProductItem from './ProductItem.astro';
 
         // ===== ELIMINAR =====
         deleteBtn.addEventListener('click', async () => {
-          if (product.tiene_ventas) return;
-
           if (confirm(`¿Eliminar "${product.nombre}"?`)) {
             try {
               await inventoryService.deleteProduct(product.id);

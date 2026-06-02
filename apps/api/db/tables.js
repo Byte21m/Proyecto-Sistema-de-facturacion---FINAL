@@ -38,6 +38,7 @@ const createProductsTable = async () => {
       precio_dolar REAL NOT NULL,
       stock INTEGER DEFAULT 0,
       exento_iva BOOLEAN DEFAULT 0,
+      is_deleted BOOLEAN DEFAULT 0,
       user_id INTEGER NOT NULL,
       FOREIGN KEY (user_id) REFERENCES users(id),
       UNIQUE(nombre, user_id)
@@ -75,6 +76,7 @@ const createSaleDetailsTable = async () => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       id_venta INTEGER NOT NULL,
       id_producto INTEGER NOT NULL,
+      producto_nombre TEXT NOT NULL,
       tasa_dia REAL NOT NULL,
       cantidad INTEGER NOT NULL,
       precio_momento REAL NOT NULL,

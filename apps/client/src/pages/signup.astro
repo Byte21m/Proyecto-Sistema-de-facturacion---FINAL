@@ -6,7 +6,6 @@ import PageLayout from '../layout/PageLayout.astro';
 
 <PageLayout title="Registro - FacturacionApp">
   <div class="relative h-full flex justify-center items-center p-4 bg-mesh overflow-hidden">
-    <!-- Decoración de fondo -->
     <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-30">
       <div class="absolute -bottom-[10%] -left-[10%] w-[40%] h-[40%] bg-indigo-500 rounded-full blur-[120px]"></div>
       <div class="absolute top-[10%] -right-[10%] w-[40%] h-[40%] bg-pink-500 rounded-full blur-[120px]"></div>
@@ -27,9 +26,7 @@ import PageLayout from '../layout/PageLayout.astro';
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
-        <!-- Columna Izquierda: Datos del Usuario (3 campos) -->
         <div class="space-y-3">
-          <!-- Nombre completo -->
           <div class="space-y-1">
             <label for="nombre" class="text-xs font-bold text-gray-700 dark:text-gray-300 ml-1">Nombre completo</label>
             <div class="relative group">
@@ -47,7 +44,6 @@ import PageLayout from '../layout/PageLayout.astro';
             <p id="nombre-error" class="text-[10px] text-red-500 dark:text-red-400 font-semibold px-1 mt-1 hidden"></p>
           </div>
 
-          <!-- Correo electrónico -->
           <div class="space-y-1">
             <label for="email" class="text-xs font-bold text-gray-700 dark:text-gray-300 ml-1">Correo electrónico</label>
             <div class="relative group">
@@ -65,7 +61,6 @@ import PageLayout from '../layout/PageLayout.astro';
             <p id="email-error" class="text-[10px] text-red-500 dark:text-red-400 font-semibold px-1 mt-1 hidden"></p>
           </div>
 
-          <!-- Contraseña segura -->
           <div class="space-y-1">
             <label for="password" class="text-xs font-bold text-gray-700 dark:text-gray-300 ml-1">Contraseña segura</label>
             <div class="relative group">
@@ -87,10 +82,8 @@ import PageLayout from '../layout/PageLayout.astro';
           </div>
         </div>
 
-        <!-- Columna Derecha: Datos de la Empresa y Botón (2 campos + Botón) -->
         <div class="flex flex-col justify-between gap-5 md:gap-6">
           <div class="space-y-3">
-            <!-- Nombre de la PYME o Kiosco -->
             <div class="space-y-1">
               <label for="razon_social" class="text-xs font-bold text-gray-700 dark:text-gray-300 ml-1">Nombre de la PYME o Kiosco</label>
               <div class="relative group">
@@ -108,7 +101,6 @@ import PageLayout from '../layout/PageLayout.astro';
               <p id="razon_social-error" class="text-[10px] text-red-500 dark:text-red-400 font-semibold px-1 mt-1 hidden"></p>
             </div>
 
-            <!-- RIF de la Empresa (Opcional) -->
             <div class="space-y-1">
               <label for="rif" class="text-xs font-bold text-gray-700 dark:text-gray-300 ml-1">RIF de la Empresa (Opcional)</label>
               <div class="relative group">
@@ -128,19 +120,19 @@ import PageLayout from '../layout/PageLayout.astro';
             </div>
           </div>
 
-          <!-- Botón y Link a Login -->
           <div class="space-y-3 pt-2">
             <button
               type="submit"
               class="group relative w-full bg-indigo-600 py-3.5 rounded-lg text-white font-bold text-sm shadow-xl shadow-indigo-500/20 hover:shadow-indigo-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-300 overflow-hidden flex items-center justify-center gap-3"
             >
               <span class="relative z-10">Crear cuenta gratis</span>
-              <Spinner color="fill-white" />
+              <Spinner id="spinner" color="fill-white" class="hidden" />
               <div class="absolute inset-0 bg-linear-to-r from-indigo-500 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
             </button>
 
             <p class="text-center text-xs font-semibold text-gray-500 dark:text-gray-400">
-              ¿Ya eres usuario? <a href="/login" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline underline-offset-4">Inicia sesión</a>
+              ¿Ya eres usuario?
+              <a href="/login" class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline underline-offset-4">Inicia sesión</a>
             </p>
           </div>
         </div>
@@ -149,13 +141,12 @@ import PageLayout from '../layout/PageLayout.astro';
   </div>
 </PageLayout>
 
-
 <script>
-  // Validation Regex Variables
   import { z } from 'astro/zod';
   import ky, { HTTPError } from 'ky';
   import { showToast } from '../components/notification/notification';
 
+  // Esquema Zod Reforzado y Adaptado
   const formUserSchema = z.object({
     nombre: z.string()
       .min(2, { message: 'El nombre debe tener al menos 2 caracteres' })
@@ -164,7 +155,10 @@ import PageLayout from '../layout/PageLayout.astro';
     password: z.string().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/, {
       message: 'La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula y un número',
     }),
-    razon_social: z.string().min(2, { message: 'El nombre de la empresa debe tener al menos 2 caracteres' }),
+    // VALIDACIÓN OPTIMIZADA: Permite letras, números, espacios y caracteres de puntuación mercantil comunes (. , -)
+    razon_social: z.string()
+      .min(2, { message: 'El nombre de la empresa debe tener al menos 2 caracteres' })
+      .regex(/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\s.,-]+$/, { message: 'Caracteres no válidos en el nombre de empresa' }),
     rif: z.string().regex(/^\d{9}$/, { message: 'El RIF debe tener exactamente 9 números' }).optional().or(z.literal('')),
   });
 
@@ -177,19 +171,21 @@ import PageLayout from '../layout/PageLayout.astro';
   const rifInput = document.querySelector('#rif');
   const spinner = document.querySelector('#spinner');
 
-  // Reusable validation function
+  // Función de validación visual robusta y desacoplada
   function validateField(inputElement, success, errorMessage = '') {
     if (!inputElement) return;
-    const nextDiv = inputElement.nextElementSibling;
-    if (!nextDiv || nextDiv.children.length < 2) return;
-    const checkIcon = nextDiv.children[0];
-    const crossIcon = nextDiv.children[1];
-    const value = inputElement.value;
+    
+    // En lugar de usar nextElementSibling de forma rígida, buscamos dentro de su contenedor de grupo
+    const groupContainer = inputElement.closest('.relative');
+    if (!groupContainer) return;
+    
+    const checkIcon = groupContainer.querySelector(`#${inputElement.id}-check`);
+    const crossIcon = groupContainer.querySelector(`#${inputElement.id}-cross`);
     const errorEl = document.getElementById(`${inputElement.id}-error`);
 
-    if (value.length === 0) {
-      checkIcon.classList.add('hidden');
-      crossIcon.classList.add('hidden');
+    if (inputElement.value.length === 0) {
+      checkIcon?.classList.add('hidden');
+      crossIcon?.classList.add('hidden');
       if (errorEl) {
         errorEl.classList.add('hidden');
         errorEl.textContent = '';
@@ -198,15 +194,15 @@ import PageLayout from '../layout/PageLayout.astro';
     }
 
     if (success) {
-      checkIcon.classList.remove('hidden');
-      crossIcon.classList.add('hidden');
+      checkIcon?.classList.remove('hidden');
+      crossIcon?.classList.add('hidden');
       if (errorEl) {
         errorEl.classList.add('hidden');
         errorEl.textContent = '';
       }
     } else {
-      checkIcon.classList.add('hidden');
-      crossIcon.classList.remove('hidden');
+      checkIcon?.classList.add('hidden');
+      crossIcon?.classList.remove('hidden');
       if (errorEl && errorMessage) {
         errorEl.textContent = errorMessage;
         errorEl.classList.remove('hidden');
@@ -214,81 +210,69 @@ import PageLayout from '../layout/PageLayout.astro';
     }
   }
 
+  // Event Listeners reactivos en tiempo real
   nombreInput.addEventListener('input', () => {
-    nombreInput.value = nombreInput.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, ''); // Filtrar caracteres no permitidos en tiempo real
+    nombreInput.value = nombreInput.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '');
     const result = formUserSchema.pick({ nombre: true }).safeParse({ nombre: nombreInput.value });
-    const errMsg = result.success ? '' : result.error.errors[0]?.message;
-    validateField(nombreInput, result.success, errMsg);
+    validateField(nombreInput, result.success, result.success ? '' : result.error.errors[0]?.message);
   });
 
   emailInput.addEventListener('input', () => {
     const result = formUserSchema.pick({ email: true }).safeParse({ email: emailInput.value });
-    const errMsg = result.success ? '' : result.error.errors[0]?.message;
-    validateField(emailInput, result.success, errMsg);
+    validateField(emailInput, result.success, result.success ? '' : result.error.errors[0]?.message);
   });
 
   passwordInput.addEventListener('input', () => {
     const result = formUserSchema.pick({ password: true }).safeParse({ password: passwordInput.value });
-    const errMsg = result.success ? '' : result.error.errors[0]?.message;
-    validateField(passwordInput, result.success, errMsg);
+    validateField(passwordInput, result.success, result.success ? '' : result.error.errors[0]?.message);
   });
 
   razonSocialInput.addEventListener('input', () => {
+    // Sanitización en caliente: bloquea caracteres que no coincidan con la Regex comercial
+    razonSocialInput.value = razonSocialInput.value.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\s.,-]/g, '');
     const result = formUserSchema.pick({ razon_social: true }).safeParse({ razon_social: razonSocialInput.value });
-    const errMsg = result.success ? '' : result.error.errors[0]?.message;
-    validateField(razonSocialInput, result.success, errMsg);
+    validateField(razonSocialInput, result.success, result.success ? '' : result.error.errors[0]?.message);
   });
 
   rifInput.addEventListener('input', () => {
-    rifInput.value = rifInput.value.replace(/\D/g, ''); // Filtrar para admitir solo números en tiempo real
+    rifInput.value = rifInput.value.replace(/\D/g, '');
     const result = formUserSchema.pick({ rif: true }).safeParse({ rif: rifInput.value });
-    const errMsg = result.success ? '' : result.error.errors[0]?.message;
-    validateField(rifInput, result.success, errMsg);
+    validateField(rifInput, result.success, result.success ? '' : result.error.errors[0]?.message);
   });
 
-  // Submit
+  // Submit Handler
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // Check if fields are valid before proceeding
-    const { success, error } = formUserSchema.safeParse({
+    const formData = {
       nombre: nombreInput.value,
       email: emailInput.value,
       password: passwordInput.value,
       razon_social: razonSocialInput.value,
       rif: rifInput.value,
-    });
+    };
+
+    const { success, error } = formUserSchema.safeParse(formData);
     const fieldErrors = error?.flatten().fieldErrors;
 
     if (success) {
-      console.log('Form is valid! Ready to submit.');
-      const payload = {
-        nombre: nombreInput.value,
-        email: emailInput.value,
-        password: passwordInput.value,
-        razon_social: razonSocialInput.value,
-        rif: rifInput.value,
-      };
       try {
         spinner?.classList.remove('hidden');
-        const response = await ky.post('/api/user', { json: payload }).json();
+        const response = await ky.post('/api/user', { json: formData }).json();
         showToast({
           type: 'success',
           text: `Usuario creado con éxito! Se ha enviado un correo de verificación a ${response.email}`,
         });
+        form.reset();
+        // Limpiamos iconos después del reset exitoso
+        document.querySelectorAll('ion-icon').forEach(icon => icon.classList.add('hidden'));
       } catch (error) {
         if (error instanceof HTTPError) {
           const errorData = await error.response.json().catch(() => ({}));
-          const errorText = error.data?.error || errorData.error || 'Error al registrar usuario';
-          showToast({
-            type: 'error',
-            text: errorText,
-          });
+          const errorText = errorData.error || 'Error al registrar usuario';
+          showToast({ type: 'error', text: errorText });
         } else {
-          showToast({
-            type: 'error',
-            text: 'Error de red al intentar registrarse',
-          });
+          showToast({ type: 'error', text: 'Error de red al intentar registrarse' });
         }
       } finally {
         spinner?.classList.add('hidden');

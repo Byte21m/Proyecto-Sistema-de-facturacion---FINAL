@@ -53,7 +53,7 @@ import AppLayout from '../layout/AppLayout.astro';
               <!-- Products rendered dynamically -->
             </div>
 
-            <div id="products-empty" class="flex-1 flex flex-col items-center justify-center p-12 text-center hidden">
+            <div id="products-empty" class="flex-1 flex-col items-center justify-center p-12 text-center hidden">
               <div class="text-5xl mb-3">📦</div>
               <p class="text-sm font-bold text-gray-900 dark:text-white">Sin productos</p>
               <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Agrega productos desde el módulo de Inventario.</p>
@@ -154,7 +154,7 @@ import AppLayout from '../layout/AppLayout.astro';
               </div>
               <div class="text-left">
                 <span class="block text-sm font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Datos del Cliente</span>
-                <span class="block text-xs text-gray-500 dark:text-gray-400">Agregar información (Opcional)</span>
+                <span id="client-subtitle" class="block text-xs text-gray-500 dark:text-gray-400">Agregar información (Opcional)</span>
               </div>
             </div>
             <div class="w-8 h-8 rounded-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-gray-400 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-500/20 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-all">
@@ -171,6 +171,22 @@ import AppLayout from '../layout/AppLayout.astro';
             <div>
               <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Cédula / RIF</label>
               <input type="text" id="client-id" placeholder="Ej. V-12345678 o J-12345678-9" class="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl py-3 px-4 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none text-gray-900 dark:text-white shadow-sm" />
+            </div>
+            <div class="flex justify-center gap-3 pt-2">
+              <button
+                type="button"
+                id="btn-clear-client"
+                class="p-2.5 w-36 rounded-xl bg-slate-600 hover:bg-slate-700 text-white font-bold text-sm transition-all shadow-md shadow-slate-500/20 flex items-center justify-center gap-2"
+              >
+                🧹 Limpiar Datos
+              </button>
+              <button
+                type="button"
+                id="btn-save-client"
+                class="p-2.5 w-36 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition-all shadow-md shadow-indigo-500/10 flex items-center justify-center gap-2"
+              >
+                ✅ Aceptar
+              </button>
             </div>
           </div>
         </div>
@@ -290,6 +306,8 @@ import AppLayout from '../layout/AppLayout.astro';
   // ===== State =====
   let cart = []; // { id, nombre, precio_dolar, cantidad, stockMax, exento_iva }
   const IVA_RATE = 0.16;
+  let savedClientName = '';
+  let savedClientId = '';
 
   // ===== DOM =====
   const searchInput = document.getElementById('product-search');
@@ -332,10 +350,16 @@ import AppLayout from '../layout/AppLayout.astro';
     productCount.textContent = filtered.length;
 
     if (filtered.length === 0) {
-      productsEmpty?.classList.remove('hidden');
+      if (productsEmpty) {
+        productsEmpty.classList.remove('hidden');
+        productsEmpty.classList.add('flex');
+      }
       productsGrid?.classList.add('hidden');
     } else {
-      productsEmpty?.classList.add('hidden');
+      if (productsEmpty) {
+        productsEmpty.classList.add('hidden');
+        productsEmpty.classList.remove('flex');
+      }
       productsGrid?.classList.remove('hidden');
 
       filtered.forEach(product => {
@@ -426,9 +450,11 @@ import AppLayout from '../layout/AppLayout.astro';
 
     if (cart.length === 0) {
       cartEmpty?.classList.remove('hidden');
+      cartItems?.classList.add('hidden');
       cartTotals?.classList.add('hidden');
     } else {
       cartEmpty?.classList.add('hidden');
+      cartItems?.classList.remove('hidden');
       cartTotals?.classList.remove('hidden');
 
       cart.forEach(item => {
@@ -517,11 +543,12 @@ import AppLayout from '../layout/AppLayout.astro';
       iva_porcentaje: 16,
       iva_monto_bs: ivaBs,
       total_bs: grandTotalBs,
-      nombre_cliente: clientName?.value?.trim() || undefined,
-      cedula_cliente: clientId?.value?.trim() || undefined,
+      nombre_cliente: savedClientName.trim() || undefined,
+      cedula_cliente: savedClientId.trim() || undefined,
       tasa_dia: tasa,
       items: cart.map(item => ({
         id_producto: item.id,
+        nombre: item.nombre,
         cantidad: item.cantidad,
         precio_momento: item.precio_dolar,
         tasa_dia: tasa,
@@ -556,8 +583,12 @@ import AppLayout from '../layout/AppLayout.astro';
       });
 
       cart = [];
+      savedClientName = '';
+      savedClientId = '';
       if (clientName) clientName.value = '';
       if (clientId) clientId.value = '';
+      const clientSubtitle = document.getElementById('client-subtitle');
+      if (clientSubtitle) clientSubtitle.textContent = 'Agregar información (Opcional)';
       renderCart();
       await inventoryService.loadInventoryFromServer();
       renderProducts(searchInput?.value || '');
@@ -681,9 +712,49 @@ import AppLayout from '../layout/AppLayout.astro';
     btnOpenClientModal.addEventListener('click', (e) => {
       e.preventDefault(); 
       e.stopPropagation();
+      // Populate inputs with saved client data before opening
+      if (clientName) clientName.value = savedClientName;
+      if (clientId) clientId.value = savedClientId;
       openModal('client-section', '📋 <span class="text-indigo-600 dark:text-indigo-400">Datos del Cliente</span>');
     });
   }
+
+  // Client modal action buttons
+  const btnSaveClient = document.getElementById('btn-save-client');
+  const btnClearClient = document.getElementById('btn-clear-client');
+  const clientSubtitle = document.getElementById('client-subtitle');
+
+  btnSaveClient?.addEventListener('click', () => {
+    savedClientName = clientName?.value?.trim() || '';
+    savedClientId = clientId?.value?.trim() || '';
+    
+    if (clientSubtitle) {
+      if (savedClientName) {
+        clientSubtitle.textContent = `Cliente: ${savedClientName}`;
+      } else if (savedClientId) {
+        clientSubtitle.textContent = `C.I./RIF: ${savedClientId}`;
+      } else {
+        clientSubtitle.textContent = 'Agregar información (Opcional)';
+      }
+    }
+    
+    showToast({ type: 'success', text: 'Datos de cliente guardados' });
+    closeModal();
+  });
+
+  btnClearClient?.addEventListener('click', () => {
+    savedClientName = '';
+    savedClientId = '';
+    if (clientName) clientName.value = '';
+    if (clientId) clientId.value = '';
+    
+    if (clientSubtitle) {
+      clientSubtitle.textContent = 'Agregar información (Opcional)';
+    }
+    
+    showToast({ type: 'success', text: 'Datos de cliente restablecidos' });
+    closeModal();
+  });
 
   quickAddForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -723,7 +794,9 @@ import AppLayout from '../layout/AppLayout.astro';
           if (errData && errData.error) {
             errorMsg = errData.error;
           }
-        } catch (_) {}
+        } catch (e) {
+          console.warn('Could not parse error response json', e);
+        }
       }
       showToast({ type: 'error', text: errorMsg });
     }

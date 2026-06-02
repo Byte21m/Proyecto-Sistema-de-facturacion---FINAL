@@ -155,7 +155,7 @@ import AppLayout from '../layout/AppLayout.astro';
             <tbody id="low-stock-body" class="divide-y divide-gray-100 dark:divide-gray-800">
             </tbody>
           </table>
-          <div id="low-stock-empty" class="flex-1 flex flex-col items-center justify-center p-10 text-center hidden">
+          <div id="low-stock-empty" class="flex-1 flex-col items-center justify-center p-10 text-center hidden">
             <div class="text-4xl mb-2">✅</div>
             <p class="text-sm font-bold text-gray-900 dark:text-white">¡Todo en orden!</p>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">No hay productos con stock bajo (≤ 5 uds).</p>
@@ -223,9 +223,15 @@ import AppLayout from '../layout/AppLayout.astro';
     tbody.innerHTML = '';
 
     if (lowStockProducts.length === 0) {
-      emptyState?.classList.remove('hidden');
+      if (emptyState) {
+        emptyState.classList.remove('hidden');
+        emptyState.classList.add('flex');
+      }
     } else {
-      emptyState?.classList.add('hidden');
+      if (emptyState) {
+        emptyState.classList.add('hidden');
+        emptyState.classList.remove('flex');
+      }
       lowStockProducts.forEach(product => {
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-gray-50/80 dark:hover:bg-gray-800/40 transition-colors';

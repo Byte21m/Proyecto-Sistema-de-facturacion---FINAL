@@ -68,7 +68,7 @@ export function generateInvoiceHtml(saleData, businessProfile) {
     /* ── Header ── */
     .invoice-header {
       background: linear-gradient(135deg, #312e81 0%, #4f46e5 40%, #7c3aed 100%);
-      color: #fff; padding: 36px 40px; display: flex; justify-content: space-between; align-items: flex-start;
+      color: #fff; padding: 36px 40px;
       position: relative; overflow: hidden;
     }
     .invoice-header::before {
@@ -98,9 +98,9 @@ export function generateInvoiceHtml(saleData, businessProfile) {
 
     /* ── Info Section ── */
     .info-section {
-      display: flex; justify-content: space-between; padding: 28px 40px;
+      padding: 28px 40px;
       background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
-      border-bottom: 1px solid #e2e8f0; gap: 32px;
+      border-bottom: 1px solid #e2e8f0;
     }
     .info-block { flex: 1; }
     .info-block h3 {
@@ -169,44 +169,48 @@ export function generateInvoiceHtml(saleData, businessProfile) {
 <body>
   <div class="invoice-container">
     <!-- Header -->
-    <div class="invoice-header">
-      <div>
-        <h1>${emisorNombre}</h1>
-        <div class="factura-badge">📄 ${numero_factura || 'SIN NÚMERO'}</div>
-      </div>
-      <div class="right">
-        ${emisorRif ? `<p><span class="rif-badge">RIF: ${emisorRif}</span></p>` : ''}
-        ${emisorDireccion ? `<p style="margin-top:6px;">${emisorDireccion}</p>` : ''}
-        ${emisorTelefono ? `<p>📞 ${emisorTelefono}</p>` : ''}
-      </div>
-    </div>
+    <table class="invoice-header" cellpadding="0" cellspacing="0" border="0" width="100%" style="background: linear-gradient(135deg, #312e81 0%, #4f46e5 40%, #7c3aed 100%); color: #fff; border-radius: 16px 16px 0 0; border-collapse: collapse; width: 100%;">
+      <tr>
+        <td valign="top" align="left" style="padding: 36px 20px 36px 40px;">
+          <h1 style="font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin: 0; color: #ffffff;">${emisorNombre}</h1>
+          <div style="display: inline-block; background: rgba(255,255,255,0.18); padding: 5px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; margin-top: 8px; letter-spacing: 0.5px; border: 1px solid rgba(255,255,255,0.15); color: #ffffff;">📄 ${numero_factura || 'SIN NÚMERO'}</div>
+        </td>
+        <td valign="top" align="right" style="padding: 42px 40px 36px 20px; text-align: right;">
+          ${emisorRif ? `<p style="margin: 0 0 6px 0;"><span style="display: inline-block; background: rgba(255,255,255,0.15); padding: 3px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; border: 1px solid rgba(255,255,255,0.12); color: #ffffff;">RIF: ${emisorRif}</span></p>` : ''}
+          ${emisorDireccion ? `<p style="margin: 6px 0 0 0; font-size: 13px; opacity: 0.85; color: #ffffff; line-height: 1.4;">${emisorDireccion}</p>` : ''}
+          ${emisorTelefono ? `<p style="margin: 4px 0 0 0; font-size: 13px; opacity: 0.85; color: #ffffff; line-height: 1.4;">📞 ${emisorTelefono}</p>` : ''}
+        </td>
+      </tr>
+    </table>
 
     <!-- Info Section -->
-    <div class="info-section">
-      <div class="info-block">
-        <h3>Datos de la Factura</h3>
-        <p><strong>N° Factura:</strong> ${numero_factura || '—'}</p>
-        <p><strong>Fecha:</strong> ${fechaStr}</p>
-        <p><strong>Hora:</strong> ${horaStr}</p>
-        <p><strong>Tasa BCV:</strong> Bs ${tasaDia.toFixed(2)} / $1</p>
-      </div>
-      <div class="info-block">
-        <h3>Datos del Cliente</h3>
-        ${nombre_cliente ? `<p><strong>Nombre:</strong> ${nombre_cliente}</p>` : '<p style="color:#94a3b8;font-style:italic;">Cliente de paso</p>'}
-        ${cedula_cliente ? `<p><strong>C.I. / RIF:</strong> ${cedula_cliente}</p>` : ''}
-      </div>
-    </div>
+    <table class="info-section" cellpadding="0" cellspacing="0" border="0" width="100%" style="background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%); border-bottom: 1px solid #e2e8f0; border-collapse: collapse; width: 100%;">
+      <tr>
+        <td valign="top" width="50%" style="padding: 28px 40px; border-right: 1px solid #e2e8f0;">
+          <h3 style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #4f46e5; margin: 0 0 12px 0; border-left: 3px solid #4f46e5; padding-left: 6px; display: block; line-height: 1.4;">Datos de la Factura</h3>
+          <p style="font-size: 13px; color: #475569; line-height: 1.8; margin: 0 0 4px 0;"><strong style="color: #1e293b; font-weight: 600;">N° Factura:</strong> ${numero_factura || '—'}</p>
+          <p style="font-size: 13px; color: #475569; line-height: 1.8; margin: 0 0 4px 0;"><strong style="color: #1e293b; font-weight: 600;">Fecha:</strong> ${fechaStr}</p>
+          <p style="font-size: 13px; color: #475569; line-height: 1.8; margin: 0 0 4px 0;"><strong style="color: #1e293b; font-weight: 600;">Hora:</strong> ${horaStr}</p>
+          <p style="font-size: 13px; color: #475569; line-height: 1.8; margin: 0;"><strong style="color: #1e293b; font-weight: 600;">Tasa BCV:</strong> Bs ${tasaDia.toFixed(2)} / $1</p>
+        </td>
+        <td valign="top" width="50%" style="padding: 28px 40px;">
+          <h3 style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #4f46e5; margin: 0 0 12px 0; border-left: 3px solid #4f46e5; padding-left: 6px; display: block; line-height: 1.4;">Datos del Cliente</h3>
+          ${nombre_cliente ? `<p style="font-size: 13px; color: #475569; line-height: 1.8; margin: 0 0 4px 0;"><strong style="color: #1e293b; font-weight: 600;">Nombre:</strong> ${nombre_cliente}</p>` : '<p style="color:#94a3b8;font-style:italic;margin:0;font-size: 13px;">Cliente de paso</p>'}
+          ${cedula_cliente ? `<p style="font-size: 13px; color: #475569; line-height: 1.8; margin: 0;"><strong style="color: #1e293b; font-weight: 600;">C.I. / RIF:</strong> ${cedula_cliente}</p>` : ''}
+        </td>
+      </tr>
+    </table>
 
     <!-- Products Table -->
-    <div class="table-section">
-      <table>
+    <div class="table-section" style="padding: 8px 40px 28px;">
+      <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse: collapse; margin-top: 8px; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; width: 100%;">
         <thead>
           <tr>
-            <th>Descripción</th>
-            <th style="text-align:center;">Cant.</th>
-            <th style="text-align:right;">P. Unit. ($)</th>
-            <th style="text-align:right;">P. Unit. (Bs)</th>
-            <th style="text-align:right;">Subtotal (Bs)</th>
+            <th style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #fff; padding: 14px 16px; text-align: left; background: #4f46e5;">Descripción</th>
+            <th style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #fff; padding: 14px 16px; text-align: center; background: #4f46e5; width: 70px;">Cant.</th>
+            <th style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #fff; padding: 14px 16px; text-align: right; background: #4f46e5; width: 100px;">P. Unit. ($)</th>
+            <th style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #fff; padding: 14px 16px; text-align: right; background: #4f46e5; width: 110px;">P. Unit. (Bs)</th>
+            <th style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #fff; padding: 14px 16px; text-align: right; background: #4f46e5; width: 130px;">Subtotal (Bs)</th>
           </tr>
         </thead>
         <tbody>
@@ -216,30 +220,36 @@ export function generateInvoiceHtml(saleData, businessProfile) {
     </div>
 
     <!-- Totals -->
-    <div class="totals-section">
-      <div class="totals-box">
-        <div class="totals-row">
-          <span class="label">Base Imponible (gravado)</span>
-          <span class="value">$${subtotal_usd.toFixed(2)} — Bs ${baseImponibleBs.toFixed(2)}</span>
-        </div>
+    <div class="totals-section" style="padding: 0 40px 36px;">
+      <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 1px solid #e2e8f0; border-left: 4px solid #4f46e5; border-radius: 14px; padding: 24px 28px; border-collapse: collapse; width: 100%;">
+        <tr>
+          <td align="left" style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 500;">Base Imponible (gravado)</td>
+          <td align="right" style="padding: 6px 0; font-size: 13px; font-weight: 600; color: #1e293b;">$${subtotal_usd.toFixed(2)} — Bs ${baseImponibleBs.toFixed(2)}</td>
+        </tr>
         ${monto_exento_bs > 0 ? `
-        <div class="totals-row">
-          <span class="label">Monto Exento</span>
-          <span class="value">$${exentoUsd.toFixed(2)} — Bs ${monto_exento_bs.toFixed(2)}</span>
-        </div>
+        <tr>
+          <td align="left" style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 500;">Monto Exento</td>
+          <td align="right" style="padding: 6px 0; font-size: 13px; font-weight: 600; color: #1e293b;">$${exentoUsd.toFixed(2)} — Bs ${monto_exento_bs.toFixed(2)}</td>
+        </tr>
         ` : ''}
-        <div class="totals-row">
-          <span class="label">IVA (${iva_porcentaje}%)</span>
-          <span class="value">$${ivaUsd.toFixed(2)} — Bs ${iva_monto_bs.toFixed(2)}</span>
-        </div>
-        <div class="totals-row grand">
-          <span class="label">TOTAL A PAGAR</span>
-          <span class="value" style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
-            <span style="font-size:18px;">$${totalUsd.toFixed(2)}</span>
-            <span style="font-size:20px;color:#059669;">Bs ${total_bs.toFixed(2)}</span>
-          </span>
-        </div>
-      </div>
+        <tr>
+          <td align="left" style="padding: 6px 0; font-size: 13px; color: #64748b; font-weight: 500;">IVA (${iva_porcentaje}%)</td>
+          <td align="right" style="padding: 6px 0; font-size: 13px; font-weight: 600; color: #1e293b;">$${ivaUsd.toFixed(2)} — Bs ${iva_monto_bs.toFixed(2)}</td>
+        </tr>
+        <tr>
+          <td colspan="2" style="padding: 12px 0 6px 0; border-top: 2px dashed #cbd5e1;">
+            <table cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100%;">
+              <tr>
+                <td align="left" valign="middle" style="font-size: 16px; font-weight: 800; color: #1e293b; padding: 0;">TOTAL A PAGAR</td>
+                <td align="right" valign="middle" style="text-align: right; padding: 0;">
+                  <div style="font-size: 16px; font-weight: 700; color: #312e81; margin: 0 0 2px 0; line-height: 1.2;">$${totalUsd.toFixed(2)}</div>
+                  <div style="font-size: 20px; font-weight: 900; color: #059669; margin: 0; line-height: 1.2;">Bs ${total_bs.toFixed(2)}</div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
     </div>
 
     <!-- Footer -->

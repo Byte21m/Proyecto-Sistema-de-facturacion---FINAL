@@ -41,8 +41,8 @@ const createSale = (params) => {
   `);
 
   const insertDetail = db.prepare(`
-    INSERT INTO sale_details (id_venta, id_producto, tasa_dia, cantidad, precio_momento, exento_iva)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO sale_details (id_venta, id_producto, producto_nombre, tasa_dia, cantidad, precio_momento, exento_iva)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `);
 
   const updateStock = db.prepare(`
@@ -74,6 +74,7 @@ const createSale = (params) => {
       insertDetail.run(
         sale.id,
         item.id_producto,
+        item.nombre, // Requires item to pass nombre
         item.tasa_dia,
         item.cantidad,
         item.precio_momento,
@@ -82,6 +83,7 @@ const createSale = (params) => {
 
       details.push({
         id_producto: item.id_producto,
+        producto_nombre: item.nombre,
         cantidad: item.cantidad,
         precio_momento: item.precio_momento,
         tasa_dia: item.tasa_dia,
@@ -100,11 +102,12 @@ const createSale = (params) => {
  */
 const findSales = (id_usuario) => {
   const statement = db.prepare(`
-    SELECT s.*, u.email as usuario_email
+    SELECT s.*, u.email as usuario_email, bp.razon_social
     FROM sales s
     LEFT JOIN users u ON s.id_usuario = u.id
+    LEFT JOIN business_profile bp ON s.id_usuario = bp.user_id
     WHERE s.id_usuario = ?
-    ORDER BY s.fecha DESC
+    ORDER BY s.id DESC
   `);
   return statement.all(id_usuario);
 };
@@ -114,12 +117,13 @@ const findSales = (id_usuario) => {
  */
 const findTodaySales = (id_usuario) => {
   const statement = db.prepare(`
-    SELECT s.*, u.email as usuario_email,
+    SELECT s.*, u.email as usuario_email, bp.razon_social,
            (SELECT COALESCE(SUM(sd.precio_momento * sd.cantidad), 0) FROM sale_details sd WHERE sd.id_venta = s.id) as total_usd
     FROM sales s
     LEFT JOIN users u ON s.id_usuario = u.id
+    LEFT JOIN business_profile bp ON s.id_usuario = bp.user_id
     WHERE date(s.fecha) = date('now', 'localtime') AND s.id_usuario = ?
-    ORDER BY s.fecha DESC
+    ORDER BY s.id DESC
   `);
   return statement.all(id_usuario);
 };
@@ -137,9 +141,8 @@ const findSaleById = (id, id_usuario) => {
   if (!sale) return null;
 
   const details = db.prepare(`
-    SELECT sd.*, p.nombre as producto_nombre
+    SELECT sd.*
     FROM sale_details sd
-    LEFT JOIN products p ON sd.id_producto = p.id
     WHERE sd.id_venta = ?
   `).all(id);
 
@@ -155,12 +158,11 @@ const findSaleById = (id, id_usuario) => {
  */
 const findSalesHistory = (id_usuario) => {
   const statement = db.prepare(`
-    SELECT sd.id, s.id as id_factura, s.numero_factura, p.nombre as producto_nombre, sd.cantidad, sd.precio_momento, sd.tasa_dia, sd.exento_iva, s.fecha
+    SELECT sd.id, s.id as id_factura, s.numero_factura, sd.producto_nombre, sd.cantidad, sd.precio_momento, sd.tasa_dia, sd.exento_iva, s.fecha
     FROM sale_details sd
     JOIN sales s ON sd.id_venta = s.id
-    JOIN products p ON sd.id_producto = p.id
     WHERE s.id_usuario = ?
-    ORDER BY s.fecha DESC
+    ORDER BY s.id DESC
   `);
   return statement.all(id_usuario);
 };
@@ -196,8 +198,73 @@ const findMonthlyReport = (id_usuario, year, month) => {
     WHERE id_usuario = ?
       AND strftime('%Y', fecha) = ?
       AND strftime('%m', fecha) = ?
-    ORDER BY fecha ASC
+    ORDER BY numero_factura DESC
   `).all(id_usuario, String(year), monthStr);
+
+  return { summary, facturas };
+};
+
+/**
+ * Obtiene un reporte unificado por día, semana o mes
+ * @param {number} id_usuario
+ * @param {string} type - 'day' | 'week' | 'month'
+ * @param {string} dateStr - Fecha de referencia (YYYY-MM-DD)
+ */
+const findReport = (id_usuario, type, dateStr) => {
+  let dateQueryCondition = '';
+  const params = [id_usuario];
+
+  if (type === 'day') {
+    dateQueryCondition = `date(fecha) = ?`;
+    params.push(dateStr);
+  } else if (type === 'week') {
+    const [yr, mo, dy] = dateStr.split('-').map(Number);
+    const chosen = new Date(yr, mo - 1, dy);
+    const day = chosen.getDay(); // 0 is Sunday, 1 is Monday...
+    const diffToMonday = chosen.getDate() - day + (day === 0 ? -6 : 1);
+    const monday = new Date(chosen.setDate(diffToMonday));
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+
+    const formatDateString = (d) => {
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    };
+
+    const mondayStr = formatDateString(monday);
+    const sundayStr = formatDateString(sunday);
+
+    dateQueryCondition = `date(fecha) >= ? AND date(fecha) <= ?`;
+    params.push(mondayStr, sundayStr);
+  } else {
+    // Default to month (dateStr is either YYYY-MM-DD or YYYY-MM)
+    const [year, month] = dateStr.split('-');
+    const monthStr = String(month).padStart(2, '0');
+
+    dateQueryCondition = `strftime('%Y', fecha) = ? AND strftime('%m', fecha) = ?`;
+    params.push(String(year), monthStr);
+  }
+
+  // Resumen general
+  const summary = db.prepare(`
+    SELECT 
+      COUNT(*) as total_facturas,
+      COALESCE(SUM(subtotal_usd), 0) as base_imponible_usd,
+      COALESCE(SUM(monto_exento_bs), 0) as total_exento_bs,
+      COALESCE(SUM(iva_monto_bs), 0) as total_iva_bs,
+      COALESCE(SUM(total_bs), 0) as total_facturado_bs
+    FROM sales
+    WHERE id_usuario = ?
+      AND ${dateQueryCondition}
+  `).get(...params);
+
+  // Lista de facturas
+  const facturas = db.prepare(`
+    SELECT id, numero_factura, fecha, subtotal_usd, monto_exento_bs, iva_porcentaje, iva_monto_bs, total_bs, nombre_cliente, cedula_cliente
+    FROM sales
+    WHERE id_usuario = ?
+      AND ${dateQueryCondition}
+    ORDER BY numero_factura DESC
+  `).all(...params);
 
   return { summary, facturas };
 };
@@ -209,6 +276,7 @@ const saleRepository = {
   findSaleById,
   findSalesHistory,
   findMonthlyReport,
+  findReport,
 };
 
 export default saleRepository;

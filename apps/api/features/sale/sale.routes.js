@@ -61,6 +61,18 @@ saleRouter.get('/history/items', async (req, res, next) => {
   }
 });
 
+// Reporte dinámico (día, semana, mes)
+saleRouter.get('/report', async (req, res, next) => {
+  try {
+    const type = req.query.type || 'month';
+    const date = req.query.date || new Date().toISOString().split('T')[0];
+    const report = saleRepository.findReport(req.user.id, type, date);
+    res.json(report);
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Reporte mensual de IVA
 saleRouter.get('/report/monthly', async (req, res, next) => {
   try {

@@ -25,7 +25,7 @@ import AppLayout from '../layout/AppLayout.astro';
     <!-- Contenedor de Facturas (Invoices) -->
     <div id="view-invoices" class="glass-card rounded-3xl overflow-hidden animate-fade-in">
       <div class="flex flex-col h-[460px] md:h-[500px]">
-        <div class="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-white/50 dark:bg-gray-900/50 flex-shrink-0">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-white/50 dark:bg-gray-900/50 shrink-0">
           <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <span class="text-indigo-500">🧾</span> Registro de Facturas
           </h2>
@@ -61,7 +61,7 @@ import AppLayout from '../layout/AppLayout.astro';
     <!-- Contenedor de Detalles de Venta (Items) -->
     <div id="view-items" class="glass-card rounded-3xl overflow-hidden animate-fade-in hidden">
       <div class="flex flex-col h-[460px] md:h-[500px]">
-        <div class="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-white/50 dark:bg-gray-900/50 flex-shrink-0">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-white/50 dark:bg-gray-900/50 shrink-0">
           <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <span class="text-emerald-500">🛍️</span> Productos Vendidos
           </h2>
@@ -263,7 +263,7 @@ import AppLayout from '../layout/AppLayout.astro';
     // Reset UI
     drawerLoading?.classList.remove('hidden');
     drawerContent?.classList.add('hidden');
-    drawerTitle.textContent = `Factura #${String(invoiceId).padStart(5, '0')}`;
+    drawerTitle.textContent = `Cargando factura...`;
     drawerSubtitle.textContent = 'Cargando detalles...';
 
     // Fetch Details
@@ -275,7 +275,8 @@ import AppLayout from '../layout/AppLayout.astro';
 
       const { date, time } = formatDate(sale.fecha);
       drawerSubtitle.textContent = `Emitida el ${date} a las ${time}`;
-      drawerSeller.textContent = sale.usuario_email || 'Cajero del Sistema';
+      drawerSeller.textContent = sale.businessProfile?.razon_social || sale.usuario_email || 'Cajero del Sistema';
+      drawerTitle.textContent = `Factura ${sale.numero_factura}`;
       
       let usdTotal = 0;
       let firstTasa = 0;
@@ -361,7 +362,7 @@ import AppLayout from '../layout/AppLayout.astro';
         row.innerHTML = `
           <td class="px-6 py-4 whitespace-nowrap text-sm font-extrabold text-indigo-600 dark:text-indigo-400">
             <button class="invoice-trigger flex items-center gap-1.5 hover:underline focus:outline-none focus:ring-2 focus:ring-indigo-500/30 rounded-md px-1 -ml-1 transition-all" data-id="${sale.id}">
-              #${String(sale.id).padStart(5, '0')}
+              ${sale.numero_factura || ('#' + String(sale.id).padStart(5, '0'))}
               <svg class="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -372,7 +373,7 @@ import AppLayout from '../layout/AppLayout.astro';
             <span class="font-medium text-gray-900 dark:text-white">${date}</span> <span class="text-xs text-gray-400 ml-1">${time}</span>
           </td>
           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-            ${sale.usuario_email || 'Desconocido'}
+            ${sale.razon_social || sale.usuario_email || 'Desconocido'}
           </td>
           <td class="px-6 py-4 whitespace-nowrap text-right">
             <div class="flex flex-col items-end">
@@ -406,7 +407,7 @@ import AppLayout from '../layout/AppLayout.astro';
           </td>
           <td class="px-6 py-4 whitespace-nowrap text-xs font-bold text-indigo-500">
             <button class="invoice-trigger flex items-center gap-1.5 hover:underline focus:outline-none focus:ring-2 focus:ring-indigo-500/30 rounded-md px-1 -ml-1 transition-all" data-id="${item.id_factura}">
-              #${String(item.id_factura).padStart(5, '0')}
+              ${item.numero_factura || ('#' + String(item.id_factura).padStart(5, '0'))}
               <svg class="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />

@@ -13,6 +13,7 @@ export const createSaleRouteSchema = {
     items: z.array(
       z.object({
         id_producto: z.number().int().positive(),
+        nombre: z.string().optional(),
         cantidad: z.number().int().positive('La cantidad debe ser mayor a 0'),
         precio_momento: z.number().positive(),
         tasa_dia: z.number().positive(),
