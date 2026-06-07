@@ -9,6 +9,7 @@ import userRouter from './features/user/user.routes.js';
 import productRouter from './features/product/product.routes.js';
 import saleRouter from './features/sale/sale.routes.js';
 import businessRouter from './features/user/business.routes.js';
+import dashboardRouter from './features/dashboard/dashboard.routes.js';
 
 const app = express();
 const port = 3000;
@@ -27,6 +28,7 @@ app.use('/api/user/business', businessRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/product', productRouter);
 app.use('/api/sale', saleRouter);
+app.use('/api/dashboard', dashboardRouter);
 
 app.use((err, req, res, _next) => {
   let errorString = 'Desconocido';

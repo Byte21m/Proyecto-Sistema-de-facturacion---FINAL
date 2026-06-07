@@ -180,6 +180,20 @@ const getReport = async (type, date) => {
   }
 };
 
+/**
+ * Obtiene las estadísticas unificadas del dashboard desde el servidor
+ */
+const getDashboardStats = async () => {
+  try {
+    const privateKy = getPrivateKy();
+    const data = await privateKy.get('/api/dashboard/stats').json();
+    return data;
+  } catch (err) {
+    console.error('Error cargando estadísticas del dashboard:', err);
+    return null;
+  }
+};
+
 const inventoryService = {
   addProduct,
   getInventory,
@@ -194,6 +208,7 @@ const inventoryService = {
   sendInvoiceEmail,
   getMonthlyReport,
   getReport,
+  getDashboardStats,
 };
 
 export default inventoryService;
