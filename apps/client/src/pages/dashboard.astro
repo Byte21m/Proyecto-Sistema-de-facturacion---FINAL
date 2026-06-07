@@ -224,41 +224,41 @@ import AppLayout from '../layout/AppLayout.astro';
         </div>
 
         <!-- Row 2: Top Products (Col-span-2) -->
-        <div class="lg:col-span-2 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/60 dark:border-gray-800/60 shadow-sm p-4 lg:p-5 flex flex-col justify-between min-h-0">
+        <div class="lg:col-span-2 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/60 dark:border-gray-800/60 shadow-sm p-4 flex flex-col justify-between min-h-0">
           <div>
-            <h3 class="text-base font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
+            <h3 class="text-base font-bold text-gray-900 dark:text-white mb-0.5 flex items-center gap-2">
               <span class="text-emerald-500">🛍️</span> Productos Estrella (Últimos 30 Días)
             </h3>
-            <p class="text-xs text-gray-400 dark:text-gray-500 font-medium mb-2 lg:mb-4">Top 5 de artículos con mayor volumen de unidades vendidas</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500 font-medium mb-1.5 lg:mb-2">Top 5 de artículos con mayor volumen de unidades vendidas</p>
           </div>
-          <div class="flex-1 flex flex-col justify-center space-y-2 lg:space-y-3 pr-2 min-h-0 overflow-y-auto" id="top-products-container">
+          <div class="flex-1 flex flex-col justify-center space-y-1.5 lg:space-y-2 pr-2 min-h-0 overflow-y-auto" id="top-products-container">
             <!-- Loading indicator -->
             <div class="text-center py-6 text-gray-400">Cargando productos estrella...</div>
           </div>
         </div>
 
         <!-- Row 2: Performance Summary -->
-        <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/60 dark:border-gray-800/60 shadow-sm p-4 lg:p-5 flex flex-col justify-between min-h-0">
+        <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/60 dark:border-gray-800/60 shadow-sm p-4 flex flex-col justify-between min-h-0">
           <div>
-            <h3 class="text-base font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
+            <h3 class="text-base font-bold text-gray-900 dark:text-white mb-0.5 flex items-center gap-2">
               <span class="text-amber-500">📊</span> Desempeño Mensual
             </h3>
-            <p class="text-xs text-gray-400 dark:text-gray-500 font-medium mb-2 lg:mb-4">Indicadores analíticos clave del periodo en curso</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500 font-medium mb-1.5 lg:mb-2">Indicadores analíticos clave del periodo en curso</p>
           </div>
-          <div class="flex-1 flex flex-col justify-center space-y-2 lg:space-y-2.5">
-            <div class="flex justify-between items-center p-2.5 lg:p-3 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800/50">
+          <div class="flex-1 flex flex-col justify-center space-y-1.5 lg:space-y-2">
+            <div class="flex justify-between items-center p-2 lg:p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800/50">
               <span class="text-xs font-bold text-gray-500 dark:text-gray-400">Facturas Emitidas</span>
               <span id="metric-total-facturas" class="text-sm font-black text-gray-900 dark:text-white">—</span>
             </div>
-            <div class="flex justify-between items-center p-2.5 lg:p-3 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800/50">
+            <div class="flex justify-between items-center p-2 lg:p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800/50">
               <span class="text-xs font-bold text-gray-500 dark:text-gray-400">Total Facturado (Bs)</span>
               <span id="metric-ventas-totales" class="text-sm font-black text-gray-900 dark:text-white">—</span>
             </div>
-            <div class="flex justify-between items-center p-2.5 lg:p-3 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800/50">
+            <div class="flex justify-between items-center p-2 lg:p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800/50">
               <span class="text-xs font-bold text-gray-500 dark:text-gray-400">Venta Promedio (Bs)</span>
               <span id="metric-ticket-promedio" class="text-sm font-black text-indigo-600 dark:text-indigo-400">—</span>
             </div>
-            <div class="flex justify-between items-center p-2.5 lg:p-3 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800/50">
+            <div class="flex justify-between items-center p-2 lg:p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800/50">
               <span class="text-xs font-bold text-gray-500 dark:text-gray-400">Producto Estrella</span>
               <span id="metric-producto-estrella" class="text-sm font-black text-emerald-600 dark:text-emerald-400 truncate max-w-[140px] text-right" title="Cargando...">—</span>
             </div>
@@ -588,7 +588,7 @@ import AppLayout from '../layout/AppLayout.astro';
     topProducts.forEach((product, index) => {
       const percentage = (product.total_vendido / maxQty) * 100;
       const itemDiv = document.createElement('div');
-      itemDiv.className = 'space-y-1.5';
+      itemDiv.className = 'space-y-1';
       itemDiv.innerHTML = `
         <div class="flex justify-between items-center text-xs md:text-sm font-semibold">
           <div class="flex items-center gap-2 truncate">
@@ -602,7 +602,7 @@ import AppLayout from '../layout/AppLayout.astro';
             <span class="text-gray-950 dark:text-white font-extrabold text-xs">Bs ${parseFloat(product.total_bs).toFixed(2)}</span>
           </div>
         </div>
-        <div class="w-full h-2.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+        <div class="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
           <div class="h-full bg-linear-to-r from-indigo-500 to-indigo-600 rounded-full transition-all duration-1000" style="width: 0%"></div>
         </div>
       `;
