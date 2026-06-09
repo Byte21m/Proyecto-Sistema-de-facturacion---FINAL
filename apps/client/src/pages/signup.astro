@@ -2,6 +2,7 @@
 import Button from '../components/Button.astro';
 import Spinner from '../components/Spinner.astro';
 import PageLayout from '../layout/PageLayout.astro';
+import Logotipo from '../components/Logotipo.astro';
 ---
 
 <PageLayout title="Registro - SIGO">
@@ -16,11 +17,7 @@ import PageLayout from '../layout/PageLayout.astro';
       class="relative z-10 w-full max-w-3xl pt-6 pb-8 px-6 md:pt-8 md:pb-10 md:px-8 rounded-xl glass-card flex flex-col gap-5 md:gap-6 my-auto animate-fade-in"
     >
       <div class="text-center space-y-1">
-        <div class="mx-auto w-12 h-12 bg-indigo-600 dark:bg-indigo-500 rounded-xl flex items-center justify-center mb-3 shadow-lg shadow-indigo-500/20">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-          </svg>
-        </div>
+        <Logotipo size="lg" class="justify-center mb-3" />
         <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 tracking-tight">Registro</h2>
         <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Únete a la nueva era de facturación digital</p>
       </div>

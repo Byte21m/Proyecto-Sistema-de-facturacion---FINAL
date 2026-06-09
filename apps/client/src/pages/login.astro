@@ -1,5 +1,6 @@
 ---
 import PageLayout from '../layout/PageLayout.astro';
+import Logotipo from '../components/Logotipo.astro';
 ---
 
 <PageLayout title="Iniciar Sesión - SIGO">
@@ -15,11 +16,7 @@ import PageLayout from '../layout/PageLayout.astro';
       class="relative z-10 w-full max-w-md p-8 md:p-10 rounded-3xl glass-card flex flex-col gap-6 md:gap-8 animate-fade-in"
     >
       <div class="text-center space-y-2">
-        <div class="mx-auto w-12 h-12 bg-indigo-600 dark:bg-indigo-500 rounded-xl flex items-center justify-center mb-3 shadow-lg shadow-indigo-500/20">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
-        </div>
+        <Logotipo size="lg" class="justify-center mb-3" />
         <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-200 tracking-tight">Bienvenido de nuevo</h2>
         <p class="text-gray-500 dark:text-gray-400 font-medium">Accede a tu panel de control premium</p>
       </div>
