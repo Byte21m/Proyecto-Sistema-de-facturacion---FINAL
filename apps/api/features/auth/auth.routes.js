@@ -186,7 +186,7 @@ authRouter.post('/forgot-password', async (req, res, next) => {
 
     await nodemailerService.sendMail({
       to: user.email,
-      subject: '🔐 Recuperación de Contraseña - FacturaApp',
+      subject: '🔐 Recuperación de Contraseña - SIGO',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <h2 style="color: #4f46e5;">Recuperación de Contraseña</h2>

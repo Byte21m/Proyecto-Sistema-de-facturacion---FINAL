@@ -114,7 +114,7 @@ saleRouter.post('/:id/invoice/email', async (req, res, next) => {
     }
 
     const html = generateInvoiceHtml(sale, sale.businessProfile);
-    const emisorNombre = sale.businessProfile?.razon_social || 'FacturaApp';
+    const emisorNombre = sale.businessProfile?.razon_social || 'SIGO';
 
     await nodemailerService.sendMail({
       from: `"${emisorNombre}" <${process.env.EMAIL_USER}>`,

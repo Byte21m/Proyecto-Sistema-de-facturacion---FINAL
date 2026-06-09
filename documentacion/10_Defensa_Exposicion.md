@@ -18,7 +18,7 @@ Este documento proporciona los guiones estructurados, puntos clave y consejos es
 ### 🎤 Guión Paso a Paso:
 
 #### 1. Introducción y Problema (0:00 - 1:00)
-> *"Buenos días. Hoy les presento **FacturaApp**, un sistema de facturación y punto de venta diseñado para resolver la compleja realidad comercial bimonetaria de hoy en día. En muchos comercios pequeños y medianos, la gestión del inventario y las ventas se hace difícil por la fluctuación del Bolívar respecto al Dólar, la falta de control del IVA y la dificultad para facturar rápido. FacturaApp resuelve esto ofreciendo una plataforma rápida, segura y adaptada a la tasa oficial del Banco Central de Venezuela."*
+> *"Buenos días. Hoy les presento **SIGO**, cuyas siglas significan **Seguimiento, Inventario y Gestión Operativa**. Es un sistema de facturación y punto de venta diseñado para resolver la compleja realidad comercial bimonetaria de hoy en día. En muchos comercios pequeños y medianos, la gestión del inventario y las ventas se hace difícil por la fluctuación del Bolívar respecto al Dólar, la falta de control del IVA y la dificultad para facturar rápido. SIGO resuelve esto ofreciendo una plataforma rápida, segura y adaptada a la tasa oficial del Banco Central de Venezuela."*
 
 #### 2. Arquitectura y Seguridad (1:00 - 2:30)
 > *"Tecnológicamente, el sistema utiliza una arquitectura Monorepo moderna: un backend REST en **Express.js** y un frontend de alto rendimiento en **Astro 6** con **Tailwind CSS v4**.*
@@ -34,7 +34,7 @@ Este documento proporciona los guiones estructurados, puntos clave y consejos es
 > *A nivel de base de datos, el registro de la venta es atómico (ACID): se ejecuta en una sola transacción SQL. Si agregamos una venta, se crea la factura, se descuenta el inventario y se inserta el detalle del precio. Si el stock no es suficiente, la base de datos hace un rollback (marcha atrás) completo para evitar datos corruptos."*
 
 #### 4. Conclusión (4:00 - 5:00)
-> *"En resumen, FacturaApp no es solo un sistema contable, es una solución eficaz y real para las empresas: porque otorga un mayor beneficio automatizado en las conversiones bimonetarias y el inventario, reduciendo el margen de error y disminuyendo drásticamente el trabajo manual del día a día. Muchas gracias. Quedo abierto a sus preguntas."*
+> *"En resumen, SIGO no es solo un sistema contable, es una solución eficaz y real para las empresas: porque otorga un mayor beneficio automatizado en las conversiones bimonetarias y el inventario, reduciendo el margen de error y disminuyendo drásticamente el trabajo manual del día a día. Muchas gracias. Quedo abierto a sus preguntas."*
 
 ---
 
@@ -53,9 +53,9 @@ Este documento proporciona los guiones estructurados, puntos clave y consejos es
 ### 🎤 Guión Paso a Paso:
 
 #### 1. Introducción y Stack Tecnológico (0:00 - 2:00)
-> *"Buenos días a todos. Hoy les presento la defensa de nuestro **Sistema de Facturación y POS Bimonetario**. Este proyecto nace de una necesidad real del mercado venezolano: la urgencia de contar con un software que facilite las ventas bimonetarias (USD/Bs) de manera rápida, segura y bajo las normativas fiscales básicas.*
+> *"Buenos días a todos. Hoy les presento la defensa de **SIGO**, cuyas siglas significan **Seguimiento, Inventario y Gestión Operativa**. Este proyecto es un Sistema de Facturación y POS Bimonetario que nace de una necesidad real del mercado venezolano: la urgencia de contar con un software que facilite las ventas bimonetarias (USD/Bs) de manera rápida, segura y bajo las normativas fiscales básicas.*
 >
-> *Para lograr esto, diseñamos una arquitectura fullstack desacoplada:*
+> *Para lograr esto, diseñamos una arquitectura de ingeniería fullstack desacoplada:*
 > - *En el **Backend**, implementamos una API REST robusta en **Node.js** con **Express.js**, utilizando **better-sqlite3** como motor relacional optimizado.*
 > - *En el **Frontend**, elegimos **Astro 6** por su arquitectura de islas de alto rendimiento, reduciendo a casi cero el JavaScript innecesario en el navegador, y estilizamos con la última versión de **Tailwind CSS v4** para una interfaz moderna, limpia y adaptada a modo oscuro y claro."*
 
@@ -88,7 +88,7 @@ Este documento proporciona los guiones estructurados, puntos clave y consejos es
 #### 5. Conclusión (8:30 - 10:00)
 > *"En conclusión, este proyecto demuestra cómo se puede construir una aplicación comercial de nivel profesional que es segura contra ataques web, rápida en transacciones y que resuelve un problema real.*
 > 
-> *Y es por eso que FacturaApp funciona como una solución eficaz para las empresas: porque otorga un mayor beneficio automatizado en la facturación y el inventario, reduciendo a cero los errores y liberando al comerciante del trabajo manual y repetitivo. Muchas gracias por su tiempo. Quedo a su disposición para cualquier duda o comentario técnico."*
+> *Y es por eso que SIGO funciona como una solución eficaz para las empresas: porque otorga un mayor beneficio automatizado en la facturación y el inventario, reduciendo a cero los errores y liberando al comerciante del trabajo manual y repetitivo. Muchas gracias por su tiempo. Quedo a su disposición para cualquier duda o comentario técnico."*
 
 ---
 

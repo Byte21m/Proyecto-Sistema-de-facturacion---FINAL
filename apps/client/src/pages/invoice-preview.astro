@@ -8,7 +8,7 @@ import '../styles/global.css';
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-    <title>Factura - FacturaApp</title>
+    <title>Factura - SIGO</title>
     <style>
       .action-bar { position: sticky; top: 0; z-index: 10; }
       @media print { .action-bar { display: none !important; } body { background: #fff !important; } }
@@ -74,7 +74,7 @@ import '../styles/global.css';
         const privateKy = getPrivateKy();
         const html = await privateKy.get(`/api/sale/${saleId}/invoice`).text();
         container.innerHTML = html;
-        document.title = `Factura - FacturaApp`;
+        document.title = `Factura - SIGO`;
       } catch {
         container.innerHTML = '<p class="text-center text-red-500 py-20 font-bold">Error al cargar la factura.</p>';
       }

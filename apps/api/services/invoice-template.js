@@ -255,7 +255,7 @@ export function generateInvoiceHtml(saleData, businessProfile) {
     <!-- Footer -->
     <div class="footer">
       <p>Factura comercial generada el ${fechaStr} — Tasa BCV: Bs ${tasaDia.toFixed(2)}/$</p>
-      <div class="brand-line">⚡ FacturaApp</div>
+      <div class="brand-line">⚡ SIGO</div>
       <p style="margin-top:6px;">Gracias por su preferencia 🙌</p>
     </div>
   </div>
