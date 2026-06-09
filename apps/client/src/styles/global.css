@@ -94,22 +94,26 @@ input:-webkit-autofill:active {
 }
 
 /* ========== High Contrast Accessibility Overrides ========== */
-/* Hacer los bordes de las cajas y tarjetas más visibles pero ligeros y neutros (sin tonos azules) */
+/* Aplicar el color gris claro neutro a los bordes sin alterar su grosor */
 .border-gray-200\/60,
 .border-gray-200\/70,
 .border-gray-200 {
   border-color: rgba(229, 231, 235, 1) !important; /* Gris claro neutro */
-  border-width: 2px !important; /* Bordes de 2px para una definición de formas excelente */
 }
 
 .dark .border-gray-800\/60,
 .dark .border-gray-800\/70,
 .dark .border-gray-800 {
   border-color: rgba(55, 65, 81, 0.8) !important;
+}
+
+/* Solo las cajas completas con borde (4 lados) y la clase glass-card tendrán un grosor de 2px */
+.border,
+.glass-card {
   border-width: 2px !important;
 }
 
-/* Bordes más definidos para inputs pero ligeros */
+/* Bordes más definidos para inputs */
 input, select, textarea {
   border-width: 2px !important;
   border-color: rgba(209, 213, 219, 0.8) !important;
@@ -121,7 +125,6 @@ input, select, textarea {
 
 /* Definir la clase glass-card con sombras y bordes mejorados pero ligeros */
 .glass-card {
-  border-width: 2px !important;
   border-color: rgba(229, 231, 235, 1) !important;
   box-shadow: var(--shadow-md) !important;
 }
