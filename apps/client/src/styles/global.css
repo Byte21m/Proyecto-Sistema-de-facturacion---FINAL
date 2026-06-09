@@ -5,11 +5,11 @@
 @theme {
   --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   
-  /* Make shadows darker and more defined for better readability and contrast */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.16);
-  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.14), 0 2px 6px rgba(0, 0, 0, 0.18);
-  --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.18), 0 4px 12px rgba(0, 0, 0, 0.22);
-  --shadow-xl: 0 22px 40px rgba(0, 0, 0, 0.25), 0 8px 18px rgba(0, 0, 0, 0.28);
+  /* Make shadows standard, neutral, and lighter */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.08), 0 3px 6px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 20px 30px rgba(0, 0, 0, 0.1), 0 6px 12px rgba(0, 0, 0, 0.05);
 }
 
 @layer base {
@@ -94,33 +94,61 @@ input:-webkit-autofill:active {
 }
 
 /* ========== High Contrast Accessibility Overrides ========== */
-/* Hacer los bordes de las cajas y tarjetas más visibles y definidos */
+/* Hacer los bordes de las cajas y tarjetas más visibles pero ligeros y neutros (sin tonos azules) */
 .border-gray-200\/60,
 .border-gray-200\/70,
 .border-gray-200 {
-  border-color: rgba(186, 200, 218, 0.9) !important;
-  border-width: 1.5px !important; /* Bordes ligeramente más gruesos para mejor contraste */
+  border-color: rgba(229, 231, 235, 1) !important; /* Gris claro neutro */
+  border-width: 1.2px !important; /* Bordes ligeramente más definidos, pero ligeros */
 }
 
 .dark .border-gray-800\/60,
 .dark .border-gray-800\/70,
 .dark .border-gray-800 {
-  border-color: rgba(75, 85, 99, 0.8) !important;
-  border-width: 1.5px !important;
+  border-color: rgba(55, 65, 81, 0.8) !important;
+  border-width: 1.2px !important;
 }
 
-/* Bordes más definidos para inputs */
+/* Bordes más definidos para inputs pero ligeros */
 input, select, textarea {
-  border-width: 1.5px !important;
+  border-width: 1.2px !important;
+  border-color: rgba(209, 213, 219, 0.8) !important;
 }
 
-/* Definir la clase glass-card con sombras y bordes mejorados */
+.dark input, .dark select, .dark textarea {
+  border-color: rgba(75, 85, 99, 0.8) !important;
+}
+
+/* Definir la clase glass-card con sombras y bordes mejorados pero ligeros */
 .glass-card {
-  border-width: 1.5px !important;
-  border-color: rgba(186, 200, 218, 0.9) !important;
-  box-shadow: var(--shadow-lg) !important;
+  border-width: 1.2px !important;
+  border-color: rgba(229, 231, 235, 1) !important;
+  box-shadow: var(--shadow-md) !important;
 }
 
 .dark .glass-card {
-  border-color: rgba(75, 85, 99, 0.8) !important;
+  border-color: rgba(55, 65, 81, 0.8) !important;
+}
+
+/* Forzar a que todas las sombras de color (como shadow-indigo-500/30) sean normales (negras/grises) y ligeras */
+[class*="shadow-indigo-"],
+[class*="shadow-emerald-"],
+[class*="shadow-slate-"],
+[class*="shadow-purple-"],
+[class*="shadow-pink-"],
+[class*="shadow-blue-"],
+[class*="shadow-"] {
+  --tw-shadow-color: rgba(0, 0, 0, 0.05) !important;
+  --shadow-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* En hover también para los estados dinámicos */
+[class*="hover:shadow-indigo-"]:hover,
+[class*="hover:shadow-emerald-"]:hover,
+[class*="hover:shadow-slate-"]:hover,
+[class*="hover:shadow-purple-"]:hover,
+[class*="hover:shadow-pink-"]:hover,
+[class*="hover:shadow-blue-"]:hover {
+  --tw-shadow-color: rgba(0, 0, 0, 0.08) !important;
+  --shadow-color: rgba(0, 0, 0, 0.08) !important;
 }
