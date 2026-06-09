@@ -104,16 +104,16 @@ input:-webkit-autofill:active {
 .dark .border-gray-800\/60,
 .dark .border-gray-800\/70,
 .dark .border-gray-800 {
-  border-color: rgba(75, 85, 99, 0.8) !important;
+  border-color: rgba(31, 41, 55, 0.6) !important; /* Gris oscuro muy suave en modo oscuro, evita verse blanco */
 }
 
-/* Mantener las cajas y tarjetas con bordes delgados (1px) y estéticos */
+/* Mantener las cajas y tarjetas con bordes delgados y estéticos */
 .border,
 .glass-card {
-  border-width: 1px !important; /* Bordes delgados y premium */
+  border-width: 1px !important; /* Bordes delgados y premium en modo claro */
 }
 
-/* Aplicar grosor delgado de 1px a los divisores estructurales (menú lateral, cabeceras) */
+/* Aplicar grosor de 1px a los divisores estructurales (menú lateral, cabeceras) */
 aside,
 header,
 nav {
@@ -124,7 +124,16 @@ nav {
 .dark aside,
 .dark header,
 .dark nav {
-  border-color: rgba(75, 85, 99, 0.8) !important;
+  border-color: rgba(31, 41, 55, 0.6) !important;
+}
+
+/* Reducir el grosor de los bordes aún más en modo oscuro para que se vean ultra-delgados y finos */
+.dark .border,
+.dark .glass-card,
+.dark aside,
+.dark header,
+.dark nav {
+  border-width: 0.8px !important;
 }
 
 /* Bordes para inputs, delgados y limpios */
@@ -134,7 +143,8 @@ input, select, textarea {
 }
 
 .dark input, .dark select, .dark textarea {
-  border-color: rgba(75, 85, 99, 0.8) !important;
+  border-width: 1px !important;
+  border-color: rgba(55, 65, 81, 0.5) !important;
 }
 
 /* Definir la clase glass-card con sombras y bordes delgados estéticos */
@@ -144,7 +154,7 @@ input, select, textarea {
 }
 
 .dark .glass-card {
-  border-color: rgba(75, 85, 99, 0.8) !important;
+  border-color: rgba(31, 41, 55, 0.6) !important;
 }
 
 /* Forzar a que todas las sombras de color (como shadow-indigo-500/30) sean normales (negras/grises) y ligeras */
