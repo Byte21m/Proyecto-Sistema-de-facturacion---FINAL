@@ -34,7 +34,7 @@ Este documento proporciona los guiones estructurados, puntos clave y consejos es
 > *A nivel de base de datos, el registro de la venta es atómico (ACID): se ejecuta en una sola transacción SQL. Si agregamos una venta, se crea la factura, se descuenta el inventario y se inserta el detalle del precio. Si el stock no es suficiente, la base de datos hace un rollback (marcha atrás) completo para evitar datos corruptos."*
 
 #### 4. Conclusión (4:00 - 5:00)
-> *"En resumen, FacturaApp no es solo un sistema contable, es una herramienta lista para la nube que ayuda a los comerciantes a proteger su inventario, automatizar sus cálculos contables de IVA y agilizar las ventas del día a día. Muchas gracias. Quedo abierto a sus preguntas."*
+> *"En resumen, FacturaApp no es solo un sistema contable, es una solución eficaz y real para las empresas: porque otorga un mayor beneficio automatizado en las conversiones bimonetarias y el inventario, reduciendo el margen de error y disminuyendo drásticamente el trabajo manual del día a día. Muchas gracias. Quedo abierto a sus preguntas."*
 
 ---
 
@@ -86,9 +86,9 @@ Este documento proporciona los guiones estructurados, puntos clave y consejos es
 > *Asimismo, el sistema cuenta con integración no bloqueante con **DolarAPI**. Al cargar la interfaz, consulta silenciosamente en segundo plano la cotización oficial del BCV. El usuario ve reflejados los precios en dólares y bolívares en paralelo, y el carrito realiza las conversiones automáticamente al vuelo. También cuenta con un módulo de **Reportes** completo que desglosa el IVA cobrado, las exenciones y la base imponible por día, semana y mes, listo para imprimir."*
 
 #### 5. Conclusión (8:30 - 10:00)
-> *"En conclusión, este proyecto demuestra cómo se puede construir una aplicación comercial robusta y de nivel profesional con tecnologías modernas de código abierto. Es segura contra ataques web comunes, es rápida en transacciones financieras gracias al modo WAL y transacciones ACID, y resuelve un problema real para los comerciantes locales.*
+> *"En conclusión, este proyecto demuestra cómo se puede construir una aplicación comercial de nivel profesional que es segura contra ataques web, rápida en transacciones y que resuelve un problema real.*
 > 
-> *A partir de aquí, el sistema está listo para dar el salto a producción en entornos cloud usando bases de datos Postgres en Supabase y servicios de hosting como Render. Muchas gracias por su tiempo. Quedo a su disposición para cualquier duda o comentario técnico."*
+> *Y es por eso que FacturaApp funciona como una solución eficaz para las empresas: porque otorga un mayor beneficio automatizado en la facturación y el inventario, reduciendo a cero los errores y liberando al comerciante del trabajo manual y repetitivo. Muchas gracias por su tiempo. Quedo a su disposición para cualquier duda o comentario técnico."*
 
 ---
 
