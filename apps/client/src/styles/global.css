@@ -98,39 +98,39 @@ input:-webkit-autofill:active {
 .border-gray-200\/60,
 .border-gray-200\/70,
 .border-gray-200 {
-  border-color: rgba(229, 231, 235, 1) !important; /* Gris claro neutro */
+  border-color: rgba(209, 213, 219, 1) !important; /* Gris medio neutro (gray-300) para mayor visibilidad */
 }
 
 .dark .border-gray-800\/60,
 .dark .border-gray-800\/70,
 .dark .border-gray-800 {
-  border-color: rgba(55, 65, 81, 0.8) !important;
+  border-color: rgba(75, 85, 99, 0.9) !important;
 }
 
-/* Solo las cajas completas con borde (4 lados) y la clase glass-card tendrán un grosor de 2px */
+/* Solo las cajas completas con borde (4 lados) y la clase glass-card tendrán un grosor de 3px */
 .border,
 .glass-card {
-  border-width: 2px !important;
+  border-width: 3px !important; /* Grosor de 3px para resaltar las cajas */
 }
 
 /* Bordes más definidos para inputs */
 input, select, textarea {
-  border-width: 2px !important;
-  border-color: rgba(209, 213, 219, 0.8) !important;
+  border-width: 3px !important;
+  border-color: rgba(186, 194, 204, 1) !important;
 }
 
 .dark input, .dark select, .dark textarea {
-  border-color: rgba(75, 85, 99, 0.8) !important;
+  border-color: rgba(75, 85, 99, 0.9) !important;
 }
 
 /* Definir la clase glass-card con sombras y bordes mejorados pero ligeros */
 .glass-card {
-  border-color: rgba(229, 231, 235, 1) !important;
+  border-color: rgba(209, 213, 219, 1) !important;
   box-shadow: var(--shadow-md) !important;
 }
 
 .dark .glass-card {
-  border-color: rgba(55, 65, 81, 0.8) !important;
+  border-color: rgba(75, 85, 99, 0.9) !important;
 }
 
 /* Forzar a que todas las sombras de color (como shadow-indigo-500/30) sean normales (negras/grises) y ligeras */
