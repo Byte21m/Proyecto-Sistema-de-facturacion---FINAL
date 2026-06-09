@@ -115,15 +115,13 @@ input:-webkit-autofill:active {
 
 /* Aplicar grosor de 1px a los divisores estructurales (menú lateral, cabeceras) */
 aside,
-header,
-nav {
+header {
   border-width: 1px !important;
   border-color: rgba(209, 213, 219, 1) !important;
 }
 
 .dark aside,
-.dark header,
-.dark nav {
+.dark header {
   border-color: rgba(31, 41, 55, 0.6) !important;
 }
 
@@ -131,8 +129,7 @@ nav {
 .dark .border,
 .dark .glass-card,
 .dark aside,
-.dark header,
-.dark nav {
+.dark header {
   border-width: 0.8px !important;
 }
 
