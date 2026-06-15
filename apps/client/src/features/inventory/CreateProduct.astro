@@ -1,3 +1,7 @@
+---
+import Spinner from '../../components/Spinner.astro';
+---
+
 <div class="glass-card p-8 rounded-3xl animate-fade-in">
   <div class="flex items-center gap-3 mb-6">
     <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white text-xl">
@@ -47,7 +51,10 @@
       id="main-form-btn"
       class="mt-2 group relative w-full bg-indigo-600 py-3.5 rounded-2xl text-white font-bold shadow-xl shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-1 active:scale-95 transition-all duration-300 overflow-hidden disabled:opacity-50 disabled:translate-y-0"
     >
-      <span class="relative z-10">Añadir al Inventario</span>
+      <span class="relative z-10 flex items-center justify-center gap-2">
+        Añadir al Inventario
+        <Spinner color="fill-white" />
+      </span>
       <div class="absolute inset-0 bg-linear-to-r from-indigo-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
     </button>
   </form>
@@ -64,6 +71,7 @@
   const inputPrecio = document.querySelector('#precio-input');
   const inputStock = document.querySelector('#stock-input');
   const formButton = document.querySelector('#main-form-btn');
+  const spinner = formButton?.querySelector('#spinner');
 
   const getPayload = () => ({
     nombre: inputNombre.value,
@@ -91,6 +99,8 @@
     if (!result.success) return;
 
     try {
+      if (formButton) formButton.disabled = true;
+      spinner?.classList.remove('hidden');
       await inventoryService.addProduct(result.data);
       showToast({ text: `Producto "${result.data.nombre}" añadido`, type: 'success' });
       form.reset();
@@ -103,9 +113,14 @@
           if (errData && errData.error) {
             errorMsg = errData.error;
           }
-        } catch (_) {}
+        } catch (e) {
+          console.warn('Could not parse error response json', e);
+        }
       }
       showToast({ text: errorMsg, type: 'error' });
+    } finally {
+      spinner?.classList.add('hidden');
+      if (formButton) formButton.disabled = false;
     }
   });
 </script>

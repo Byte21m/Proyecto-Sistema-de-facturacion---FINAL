@@ -1,5 +1,6 @@
 ---
 import AppLayout from '../layout/AppLayout.astro';
+import Spinner from '../components/Spinner.astro';
 ---
 
 <AppLayout title="Configuración | SIGO" activePage="settings">
@@ -41,8 +42,11 @@ import AppLayout from '../layout/AppLayout.astro';
         <div id="form-message" class="hidden text-sm font-bold p-3 rounded-xl"></div>
 
         <button type="submit" id="save-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-indigo-500/20 flex justify-center items-center gap-2">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-          Guardar Configuración
+          <span class="relative z-10 flex items-center justify-center gap-2">
+            <svg id="save-btn-icon" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+            Guardar Configuración
+            <Spinner color="fill-white" />
+          </span>
         </button>
       </form>
     </div>
@@ -59,6 +63,9 @@ import AppLayout from '../layout/AppLayout.astro';
   const telefonoInput = document.getElementById('input-telefono');
   const saveBtn = document.getElementById('save-btn');
   const formMessage = document.getElementById('form-message');
+
+  const spinner = saveBtn?.querySelector('#spinner');
+  const saveIcon = document.getElementById('save-btn-icon');
 
   const showMessage = (text, type) => {
     formMessage.textContent = text;
@@ -81,7 +88,8 @@ import AppLayout from '../layout/AppLayout.astro';
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     saveBtn.disabled = true;
-    saveBtn.textContent = 'Guardando...';
+    saveIcon?.classList.add('hidden');
+    spinner?.classList.remove('hidden');
 
     const result = await inventoryService.updateBusinessProfile({
       razon_social: razonInput.value.trim(),
@@ -96,6 +104,7 @@ import AppLayout from '../layout/AppLayout.astro';
       showMessage('❌ Error al guardar el perfil', 'error');
     }
     saveBtn.disabled = false;
-    saveBtn.innerHTML = '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg> Guardar Configuración';
+    saveIcon?.classList.remove('hidden');
+    spinner?.classList.add('hidden');
   });
 </script>

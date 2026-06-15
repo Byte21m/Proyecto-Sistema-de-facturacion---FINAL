@@ -2,7 +2,6 @@
 import Button from '../components/Button.astro';
 import Spinner from '../components/Spinner.astro';
 import PageLayout from '../layout/PageLayout.astro';
-import Logotipo from '../components/Logotipo.astro';
 ---
 
 <PageLayout title="Registro - SIGO">
@@ -17,7 +16,11 @@ import Logotipo from '../components/Logotipo.astro';
       class="relative z-10 w-full max-w-3xl pt-6 pb-8 px-6 md:pt-8 md:pb-10 md:px-8 rounded-xl glass-card flex flex-col gap-5 md:gap-6 my-auto animate-fade-in"
     >
       <div class="text-center space-y-1">
-        <Logotipo size="lg" class="justify-center mb-3" />
+        <div class="mx-auto w-12 h-12 bg-indigo-600 dark:bg-indigo-500 rounded-xl flex items-center justify-center mb-3 shadow-lg shadow-indigo-500/20">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+          </svg>
+        </div>
         <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 tracking-tight">Registro</h2>
         <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Únete a la nueva era de facturación digital</p>
       </div>
@@ -120,10 +123,13 @@ import Logotipo from '../components/Logotipo.astro';
           <div class="space-y-3 pt-2">
             <button
               type="submit"
+              id="submit-btn"
               class="group relative w-full bg-indigo-600 py-3.5 rounded-lg text-white font-bold text-sm shadow-xl shadow-indigo-500/20 hover:shadow-indigo-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-300 overflow-hidden flex items-center justify-center gap-3"
             >
-              <span class="relative z-10">Crear cuenta gratis</span>
-              <Spinner id="spinner" color="fill-white" class="hidden" />
+              <span class="relative z-10 flex items-center gap-2">
+                Crear cuenta gratis
+                <Spinner color="fill-white" />
+              </span>
               <div class="absolute inset-0 bg-linear-to-r from-indigo-500 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
             </button>
 
@@ -166,7 +172,8 @@ import Logotipo from '../components/Logotipo.astro';
   const passwordInput = document.querySelector('#password');
   const razonSocialInput = document.querySelector('#razon_social');
   const rifInput = document.querySelector('#rif');
-  const spinner = document.querySelector('#spinner');
+  const submitBtn = document.querySelector('#submit-btn');
+  const spinner = submitBtn?.querySelector('#spinner');
 
   // Función de validación visual robusta y desacoplada
   function validateField(inputElement, success, errorMessage = '') {
@@ -254,6 +261,7 @@ import Logotipo from '../components/Logotipo.astro';
 
     if (success) {
       try {
+        if (submitBtn) submitBtn.disabled = true;
         spinner?.classList.remove('hidden');
         const response = await ky.post('/api/user', { json: formData }).json();
         showToast({
@@ -273,6 +281,7 @@ import Logotipo from '../components/Logotipo.astro';
         }
       } finally {
         spinner?.classList.add('hidden');
+        if (submitBtn) submitBtn.disabled = false;
       }
     } else {
       validateField(nombreInput, !fieldErrors?.nombre, fieldErrors?.nombre?.[0]);

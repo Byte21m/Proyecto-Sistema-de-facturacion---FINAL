@@ -1,5 +1,6 @@
 ---
 import AppLayout from '../layout/AppLayout.astro';
+import Spinner from '../components/Spinner.astro';
 ---
 
 <AppLayout title="Punto de Venta - SIGO" activePage="sales">
@@ -198,10 +199,11 @@ import AppLayout from '../layout/AppLayout.astro';
           class="group relative w-full bg-emerald-600 py-3 rounded-2xl text-white font-bold text-lg shadow-xl shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:-translate-y-1 active:scale-95 transition-all duration-300 overflow-hidden disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-emerald-500/30 disabled:cursor-not-allowed"
         >
           <span class="relative z-10 flex items-center justify-center gap-2">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <svg id="submit-sale-icon" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             Registrar Venta
+            <Spinner color="fill-white" />
           </span>
           <div class="absolute inset-0 bg-linear-to-r from-emerald-500 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
         </button>
@@ -279,7 +281,10 @@ import AppLayout from '../layout/AppLayout.astro';
         
         <div class="pt-2">
           <button type="submit" id="quick-submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-indigo-500/30 flex justify-center items-center gap-2">
-            Guardar y Añadir
+            <span class="relative z-10 flex items-center justify-center gap-2">
+              Guardar y Añadir
+              <Spinner color="fill-white" />
+            </span>
           </button>
         </div>
       </form>
@@ -331,6 +336,8 @@ import AppLayout from '../layout/AppLayout.astro';
   const submitBtn = document.getElementById('submit-sale');
   const clientName = document.getElementById('client-name');
   const clientId = document.getElementById('client-id');
+  const submitSpinner = submitBtn?.querySelector('#spinner');
+  const submitIcon = document.getElementById('submit-sale-icon');
 
 
   // Quick Add Modal Elements
@@ -558,6 +565,8 @@ import AppLayout from '../layout/AppLayout.astro';
 
     try {
       submitBtn.disabled = true;
+      submitIcon?.classList.add('hidden');
+      submitSpinner?.classList.remove('hidden');
       const privateKy = getPrivateKy();
       const result = await privateKy.post('/api/sale', { json: salePayload }).json();
 
@@ -595,6 +604,8 @@ import AppLayout from '../layout/AppLayout.astro';
     } catch {
       showToast({ type: 'error', text: 'Error al registrar la venta.' });
     } finally {
+      submitSpinner?.classList.add('hidden');
+      submitIcon?.classList.remove('hidden');
       submitBtn.disabled = false;
       updateTotals();
     }
@@ -759,9 +770,10 @@ import AppLayout from '../layout/AppLayout.astro';
   quickAddForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('quick-submit-btn');
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '<div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>';
-    btn.disabled = true;
+    const quickSpinner = btn?.querySelector('#spinner');
+    
+    if (btn) btn.disabled = true;
+    quickSpinner?.classList.remove('hidden');
 
     const nombre = document.getElementById('quick-nombre').value;
     const precio = document.getElementById('quick-precio').value;
@@ -799,10 +811,10 @@ import AppLayout from '../layout/AppLayout.astro';
         }
       }
       showToast({ type: 'error', text: errorMsg });
+    } finally {
+      quickSpinner?.classList.add('hidden');
+      if (btn) btn.disabled = false;
     }
-
-    btn.innerHTML = originalText;
-    btn.disabled = false;
   });
 
   const btnFetchBcv = document.getElementById('btn-fetch-bcv');
