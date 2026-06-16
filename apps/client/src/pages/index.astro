@@ -3,8 +3,8 @@ import PageLayout from '../layout/PageLayout.astro';
 ---
 
 <PageLayout title="Inicio - Sistema de Facturación PRO">
-  <main class="relative h-full w-full overflow-hidden bg-mesh">
-    <div class="h-full w-full flex flex-col items-center justify-center py-6 md:py-10">
+  <main class="relative h-full w-full overflow-y-auto bg-mesh">
+    <div class="min-h-full w-full flex flex-col items-center justify-start pt-8 pb-8 md:pt-16 md:pb-12">
       
       <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-20 dark:opacity-30">
         <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-blue-500 rounded-full blur-[120px]"></div>
@@ -14,7 +14,7 @@ import PageLayout from '../layout/PageLayout.astro';
 
       <div class="relative z-10 max-w-6xl mx-auto px-6 flex flex-col items-center text-center gap-4 md:gap-6">
 
-        <h1 class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.9] md:leading-[0.85] text-gray-900 dark:text-white animate-fade-in mt-6 md:mt-12" style="animation-delay: 0.1s">
+        <h1 class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.9] md:leading-[0.85] text-gray-900 dark:text-white animate-fade-in mt-4 md:mt-8" style="animation-delay: 0.1s">
           Facturación <br />
           <span class="text-gradient animate-gradient">Inteligente.</span>
         </h1>
