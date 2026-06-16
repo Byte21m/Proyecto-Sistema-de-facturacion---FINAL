@@ -12,15 +12,15 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.8",
-    "@astrojs/node": "^10.0.2",
-    "@tailwindcss/vite": "^4.2.1",
-    "astro": "^6.0.5",
-    "ky": "^2.0.0",
-    "nanostores": "^1.2.0",
-    "tailwindcss": "^4.2.1",
-    "typescript": "^5.9.3",
-    "zod": "^4.3.6"
+    "@astrojs/check": "0.9.8",
+    "@astrojs/node": "10.0.2",
+    "@tailwindcss/vite": "4.2.2",
+    "astro": "6.1.6",
+    "ky": "2.0.0",
+    "nanostores": "1.2.0",
+    "tailwindcss": "4.2.2",
+    "typescript": "5.9.3",
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
