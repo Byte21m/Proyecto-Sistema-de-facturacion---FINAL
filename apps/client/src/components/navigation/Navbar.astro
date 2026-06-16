@@ -16,14 +16,14 @@ const links = getLinks(currentPath);
     </div>
 
     <div class="flex gap-8">
-      <nav id="action-container" class="hidden md:flex items-center gap-5">
+      <nav id="action-container" class="hidden md:flex items-center gap-6">
         {
           links.map((link) => {
             if (link.isButton) {
               return (
                 <a
                   href={link.to}
-                  class="inline-flex items-center justify-center px-4 py-1.5 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white bg-white/40 dark:bg-white/5 hover:bg-white/60 dark:hover:bg-indigo-600/20 border border-gray-200/50 dark:border-white/10 hover:border-indigo-500/30 dark:hover:border-indigo-500/30 rounded-lg backdrop-blur-md shadow-xs hover:shadow-sm transition-all duration-300 hover:-translate-y-0.5 active:scale-95"
+                  class="inline-flex items-center justify-center px-5 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white bg-white/40 dark:bg-white/5 hover:bg-white/60 dark:hover:bg-indigo-600/20 border border-gray-200/50 dark:border-white/10 hover:border-indigo-500/30 dark:hover:border-indigo-500/30 rounded-lg backdrop-blur-md shadow-xs hover:shadow-sm transition-all duration-300 hover:-translate-y-0.5 active:scale-95"
                 >
                   {link.name}
                 </a>
@@ -32,7 +32,7 @@ const links = getLinks(currentPath);
             return (
               <a
                 href={link.to}
-                class="text-xs font-semibold text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                class="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
               >
                 {link.name}
               </a>
@@ -48,24 +48,22 @@ const links = getLinks(currentPath);
         >
           <svg
             id="theme-toggle-light-icon"
-            class="hidden h-5 w-5"
+            class="hidden h-6 w-6"
             fill="currentColor"
             viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg"
-            ><path
-              d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4.22 3.22a1 1 0 011.415 0l.708.708a1 1 0 01-1.414 1.414l-.708-.708a1 1 0 010-1.414zM16 10a1 1 0 011 1h1a1 1 0 110-2h-1a1 1 0 01-1 1zm-3.22 4.22a1 1 0 010 1.415l-.708.708a1 1 0 01-1.414-1.414l.708-.708a1 1 0 011.415 0zM10 16a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm-4.22-3.22a1 1 0 01-1.415 0l-.708-.708a1 1 0 011.414-1.414l.708.708a1 1 0 010 1.414zM4 10a1 1 0 01-1-1H2a1 1 0 110 2h1a1 1 0 011-1zm3.22-4.22a1 1 0 010-1.415l.708-.708a1 1 0 011.414 1.414l-.708.708a1 1 0 01-1.415 0z"
-            ></path><path d="M10 6a4 4 0 100 8 4 4 0 000-8z" fill-rule="evenodd" clip-rule="evenodd"
-            ></path></svg
           >
+            <path d="M10 2a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5A.75.75 0 0 1 10 2Zm0 13a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5A.75.75 0 0 1 10 15Zm6.364-11.364a.75.75 0 0 1 0 1.06l-1.06 1.06a.75.75 0 1 1-1.06-1.06l1.06-1.06a.75.75 0 0 1 1.06 0Zm-9.192 9.192a.75.75 0 0 1 0 1.06l-1.06 1.06a.75.75 0 1 1-1.06-1.06l1.06-1.06a.75.75 0 0 1 1.06 0ZM18 10a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1 0-1.5h1.5A.75.75 0 0 1 18 10ZM4 10a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1 0-1.5h1.5A.75.75 0 0 1 4 10Zm10.95 4.95a.75.75 0 0 1 0 1.06l-1.06 1.06a.75.75 0 1 1-1.06-1.06l1.06-1.06a.75.75 0 0 1 1.06 0Zm-9.192-9.192a.75.75 0 0 1 0 1.06l-1.06 1.06a.75.75 0 1 1-1.06-1.06l1.06-1.06a.75.75 0 0 1 1.06 0ZM10 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z" />
+          </svg>
           <svg
             id="theme-toggle-dark-icon"
-            class="hidden h-5 w-5"
+            class="hidden h-6 w-6"
             fill="currentColor"
             viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg"
-            ><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
-            ></path></svg
           >
+            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+          </svg>
         </button>
         <button
           id="mobile-menu-open"
@@ -77,12 +75,14 @@ const links = getLinks(currentPath);
             stroke="currentColor"
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
-            ><path
+          >
+            <path
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16"></path></svg
-          >
+              d="M4 6h16M4 12h16M4 18h16"
+            ></path>
+          </svg>
         </button>
       </div>
     </div>
@@ -111,12 +111,14 @@ const links = getLinks(currentPath);
           stroke="currentColor"
           viewBox="0 0 24 24"
           xmlns="http://www.w3.org/2000/svg"
-          ><path
+        >
+          <path
             stroke-linecap="round"
             stroke-linejoin="round"
             stroke-width="2"
-            d="M6 18L18 6M6 6l12 12"></path></svg
-        >
+            d="M6 18L18 6M6 6l12 12"
+          ></path>
+        </svg>
       </button>
     </div>
     <nav class="flex flex-col gap-4">
@@ -158,18 +160,15 @@ const links = getLinks(currentPath);
   const buttons = getButtons(location.pathname);
 
   buttons.forEach((button) => {
-    const className =
-      'w-full text-left px-4 py-2 text-base font-medium text-gray-900 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer transition-colors';
-
     const desktopBtn = document.createElement('button');
     desktopBtn.textContent = button.name;
-    desktopBtn.className = className;
+    desktopBtn.className = 'inline-flex items-center justify-center px-5 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white bg-white/40 dark:bg-white/5 hover:bg-white/60 dark:hover:bg-indigo-600/20 border border-gray-200/50 dark:border-white/10 hover:border-indigo-500/30 dark:hover:border-indigo-500/30 rounded-lg backdrop-blur-md shadow-xs hover:shadow-sm transition-all duration-300 hover:-translate-y-0.5 active:scale-95 cursor-pointer';
     desktopBtn.addEventListener('click', button.handler);
     document.querySelector('#action-container').appendChild(desktopBtn);
 
     const mobileBtn = document.createElement('button');
     mobileBtn.textContent = button.name;
-    mobileBtn.className = className;
+    mobileBtn.className = 'w-full text-left px-4 py-2.5 text-base font-semibold text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white bg-white/40 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 rounded-lg transition-all active:scale-95 cursor-pointer';
     mobileBtn.addEventListener('click', button.handler);
     sidebar.querySelector('nav').appendChild(mobileBtn);
   });

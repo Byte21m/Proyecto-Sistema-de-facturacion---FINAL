@@ -278,6 +278,17 @@ import Spinner from '../components/Spinner.astro';
             <input type="number" id="quick-stock" min="1" value="1" required class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none text-gray-900 dark:text-white" />
           </div>
         </div>
+
+        <div class="flex items-center gap-3 ml-1 py-1">
+          <input
+            type="checkbox"
+            id="quick-exento"
+            class="w-5 h-5 rounded-lg border-gray-200 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500/50 cursor-pointer bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm"
+          />
+          <label for="quick-exento" class="text-sm font-bold text-gray-700 dark:text-gray-300 cursor-pointer select-none">
+            Exento de IVA
+          </label>
+        </div>
         
         <div class="pt-2">
           <button type="submit" id="quick-submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-indigo-500/30 flex justify-center items-center gap-2">
@@ -778,12 +789,14 @@ import Spinner from '../components/Spinner.astro';
     const nombre = document.getElementById('quick-nombre').value;
     const precio = document.getElementById('quick-precio').value;
     const stock = document.getElementById('quick-stock').value;
+    const exento_iva = document.getElementById('quick-exento').checked;
 
     try {
       await inventoryService.addProduct({
         nombre,
         precio_dolar: parseFloat(precio),
-        stock: parseInt(stock, 10)
+        stock: parseInt(stock, 10),
+        exento_iva
       });
       
       showToast({ type: 'success', text: 'Producto creado y disponible' });

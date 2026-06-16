@@ -3,8 +3,8 @@ import PageLayout from '../layout/PageLayout.astro';
 ---
 
 <PageLayout title="Inicio - Sistema de Facturación PRO">
-  <main class="relative h-full w-full overflow-y-auto bg-mesh">
-    <div class="min-h-full w-full flex flex-col items-center justify-start pt-8 pb-8 md:pt-16 md:pb-12">
+  <main class="relative h-full w-full overflow-hidden bg-mesh">
+    <div class="h-full w-full flex flex-col items-center justify-center py-4 md:py-6">
       
       <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-20 dark:opacity-30">
         <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-blue-500 rounded-full blur-[120px]"></div>
@@ -12,9 +12,9 @@ import PageLayout from '../layout/PageLayout.astro';
         <div class="absolute top-[30%] left-[50%] w-[30%] h-[30%] bg-sky-300 rounded-full blur-[100px]"></div>
       </div>
 
-      <div class="relative z-10 max-w-6xl mx-auto px-6 flex flex-col items-center text-center gap-4 md:gap-6">
+      <div class="relative z-10 max-w-6xl mx-auto px-6 flex flex-col items-center text-center gap-3 md:gap-4">
 
-        <h1 class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.9] md:leading-[0.85] text-gray-900 dark:text-white animate-fade-in mt-4 md:mt-8" style="animation-delay: 0.1s">
+        <h1 class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.9] md:leading-[0.85] text-gray-900 dark:text-white animate-fade-in mt-0" style="animation-delay: 0.1s">
           Facturación <br />
           <span class="text-gradient animate-gradient">Inteligente.</span>
         </h1>
@@ -23,7 +23,7 @@ import PageLayout from '../layout/PageLayout.astro';
           La solución definitiva para gestionar el crecimiento de tu PyME. Emite facturas en segundos con un sistema seguro, rápido y estéticamente superior.
         </p>
 
-        <div class="flex flex-wrap justify-center gap-4 mt-2 animate-fade-in" style="animation-delay: 0.3s">
+        <div class="flex flex-wrap justify-center gap-4 mt-1 animate-fade-in" style="animation-delay: 0.3s">
           <a href="/login" class="group relative px-8 py-3.5 rounded-2xl bg-indigo-600 text-white font-bold text-lg shadow-2xl shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:-translate-y-1 transition-all duration-300 overflow-hidden">
             <span class="relative z-10">Iniciar Sesión</span>
             <div class="absolute inset-0 bg-linear-to-r from-indigo-400 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -33,7 +33,7 @@ import PageLayout from '../layout/PageLayout.astro';
           </a>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mt-4 md:mt-6 w-full animate-fade-in" style="animation-delay: 0.4s">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mt-2 md:mt-3 w-full animate-fade-in" style="animation-delay: 0.4s">
           <div class="group p-6 md:p-8 rounded-3xl bg-white/80 dark:bg-gray-800/60 backdrop-blur-xl border border-gray-200 dark:border-white/10 shadow-lg hover:shadow-xl text-left hover:border-indigo-400 dark:hover:border-indigo-500/50 transition-all duration-500 hover:scale-[1.02]">
             <div class="w-10 h-10 flex items-center justify-center rounded-2xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 text-xl mb-4 group-hover:rotate-12 transition-transform">
               🛡️

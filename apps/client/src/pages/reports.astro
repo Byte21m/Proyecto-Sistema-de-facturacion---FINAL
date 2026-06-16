@@ -104,6 +104,7 @@ import AppLayout from '../layout/AppLayout.astro';
                 <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Fecha / Hora</th>
                 <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Cliente</th>
                 <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase text-right">Base Imp.</th>
+                <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase text-right">Exento</th>
                 <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase text-right">IVA</th>
                 <th class="px-5 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase text-right">Total Bs</th>
               </tr>
@@ -122,6 +123,92 @@ import AppLayout from '../layout/AppLayout.astro';
     <!-- Loading -->
     <div id="loading" class="justify-center py-12" style="display:none;">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
+    </div>
+  </div>
+
+  <!-- Invoice Details Drawer (Slide-over) -->
+  <div id="invoice-drawer-overlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden transition-opacity duration-300 opacity-0"></div>
+  <div id="invoice-drawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-white dark:bg-gray-900 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
+    <!-- Header -->
+    <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-800/50">
+      <div>
+        <h3 id="drawer-title" class="text-xl font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
+          Factura Detalle
+        </h3>
+        <p id="drawer-subtitle" class="text-xs text-gray-500 dark:text-gray-400 mt-1">Cargando...</p>
+      </div>
+      <button id="close-drawer-btn" class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="flex-1 overflow-y-auto p-6">
+      <div id="drawer-loading" class="flex justify-center items-center h-32">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
+      </div>
+      
+      <div id="drawer-content" class="hidden space-y-6">
+        <!-- Vendedor Info -->
+        <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl">
+          <p class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Vendedor</p>
+          <p id="drawer-seller" class="text-sm font-medium text-gray-900 dark:text-white">---</p>
+        </div>
+
+        <!-- Items Table -->
+        <div>
+          <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-3">Productos Adquiridos</h4>
+          <div class="border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-gray-50 dark:bg-gray-800/50 text-xs text-gray-500 dark:text-gray-400">
+                <tr>
+                  <th class="px-4 py-2 font-bold">Item</th>
+                  <th class="px-4 py-2 font-bold text-center">Cant.</th>
+                  <th class="px-4 py-2 font-bold text-right">Precio</th>
+                  <th class="px-4 py-2 font-bold text-right">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody id="drawer-items-body" class="divide-y divide-gray-100 dark:divide-gray-800">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Totals -->
+        <div class="border-t border-gray-100 dark:border-gray-800 pt-4 space-y-2">
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500 dark:text-gray-400 font-medium">Tasa aplicada</span>
+            <span id="drawer-tasa" class="font-bold text-gray-900 dark:text-white">---</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500 dark:text-gray-400 font-medium">Total USD</span>
+            <span id="drawer-total-usd" class="font-bold text-gray-900 dark:text-white">---</span>
+          </div>
+          <div class="flex justify-between items-center mt-2 pt-2 border-t border-dashed border-gray-200 dark:border-gray-700">
+            <span class="text-base font-bold text-gray-900 dark:text-white">TOTAL Bs.</span>
+            <span id="drawer-total-bs" class="text-lg font-black text-emerald-600 dark:text-emerald-400">---</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Footer actions -->
+    <div class="p-6 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50 space-y-2">
+      <a id="drawer-print-btn" href="#" target="_blank" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all text-sm">
+        🖨️ Ver e Imprimir Factura
+      </a>
+      <div id="drawer-email-section">
+        <button id="drawer-email-toggle" class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all text-sm">
+          📧 Enviar por Correo
+        </button>
+        <form id="drawer-email-form" class="mt-2 hidden gap-2" style="display:none;">
+          <input type="email" id="drawer-email-input" required placeholder="correo@ejemplo.com" class="flex-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl py-2.5 px-4 text-sm focus:ring-2 focus:ring-indigo-500/50 outline-none text-gray-900 dark:text-white" />
+          <button type="submit" id="drawer-email-send" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition-all whitespace-nowrap">Enviar</button>
+        </form>
+      </div>
     </div>
   </div>
 </AppLayout>
@@ -149,6 +236,21 @@ import AppLayout from '../layout/AppLayout.astro';
   const loading = document.getElementById('loading');
   const reportDescription = document.getElementById('report-description');
   const tableTitle = document.getElementById('report-table-title');
+
+  // Drawer elements
+  const drawerOverlay = document.getElementById('invoice-drawer-overlay');
+  const drawer = document.getElementById('invoice-drawer');
+  const drawerCloseBtn = document.getElementById('close-drawer-btn');
+  
+  const drawerLoading = document.getElementById('drawer-loading');
+  const drawerContent = document.getElementById('drawer-content');
+  const drawerTitle = document.getElementById('drawer-title');
+  const drawerSubtitle = document.getElementById('drawer-subtitle');
+  const drawerSeller = document.getElementById('drawer-seller');
+  const drawerItemsBody = document.getElementById('drawer-items-body');
+  const drawerTasa = document.getElementById('drawer-tasa');
+  const drawerTotalUsd = document.getElementById('drawer-total-usd');
+  const drawerTotalBs = document.getElementById('drawer-total-bs');
 
   // Set current month/year and default date
   const now = new Date();
@@ -221,6 +323,132 @@ import AppLayout from '../layout/AppLayout.astro';
       }
     });
   }
+
+  const formatDate = (dateString) => {
+    const dateObj = new Date(dateString);
+    return {
+      date: dateObj.toLocaleDateString(),
+      time: dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+  };
+
+  const openDrawer = async (invoiceId) => {
+    drawerOverlay?.classList.remove('hidden');
+    drawerOverlay?.classList.add('block');
+    setTimeout(() => {
+      drawerOverlay?.classList.remove('opacity-0');
+      drawer?.classList.remove('translate-x-full');
+    }, 10);
+
+    drawerLoading?.classList.remove('hidden');
+    drawerContent?.classList.add('hidden');
+    drawerTitle.textContent = `Cargando factura...`;
+    drawerSubtitle.textContent = 'Cargando detalles...';
+
+    const sale = await inventoryService.getSaleById(invoiceId);
+    
+    if (sale) {
+      drawerLoading?.classList.add('hidden');
+      drawerContent?.classList.remove('hidden');
+
+      const { date, time } = formatDate(sale.fecha);
+      drawerSubtitle.textContent = `Emitida el ${date} a las ${time}`;
+      drawerSeller.textContent = sale.businessProfile?.razon_social || sale.usuario_email || 'Cajero del Sistema';
+      drawerTitle.textContent = `Factura ${sale.numero_factura}`;
+      
+      let usdTotal = 0;
+      let firstTasa = 0;
+
+      drawerItemsBody.innerHTML = '';
+      if (sale.details && sale.details.length > 0) {
+        firstTasa = sale.details[0].tasa_dia || 1;
+        sale.details.forEach(item => {
+          const qty = item.cantidad;
+          const price = parseFloat(item.precio_momento);
+          const subtotal = qty * price;
+          usdTotal += subtotal;
+
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-gray-50/50 dark:hover:bg-gray-800/30';
+          tr.innerHTML = `
+            <td class="px-4 py-2 text-gray-900 dark:text-white font-medium truncate max-w-[150px]">${item.producto_nombre || 'Producto'}</td>
+            <td class="px-4 py-2 text-gray-500 dark:text-gray-400 text-center">${qty}</td>
+            <td class="px-4 py-2 text-gray-500 dark:text-gray-400 text-right">$${price.toFixed(2)}</td>
+            <td class="px-4 py-2 text-gray-900 dark:text-white font-bold text-right">$${subtotal.toFixed(2)}</td>
+          `;
+          drawerItemsBody.appendChild(tr);
+        });
+      }
+
+      drawerTasa.textContent = `Bs. ${firstTasa.toFixed(2)}`;
+      drawerTotalUsd.textContent = `$${usdTotal.toFixed(2)}`;
+      drawerTotalBs.textContent = `Bs. ${parseFloat(sale.total_bs).toFixed(2)}`;
+    } else {
+      drawerSubtitle.textContent = 'Error al cargar la factura.';
+      drawerLoading?.classList.add('hidden');
+    }
+  };
+
+  const closeDrawer = () => {
+    drawerOverlay?.classList.add('opacity-0');
+    drawer?.classList.add('translate-x-full');
+    setTimeout(() => {
+      drawerOverlay?.classList.add('hidden');
+      drawerOverlay?.classList.remove('block');
+    }, 300);
+  };
+
+  drawerCloseBtn?.addEventListener('click', closeDrawer);
+  drawerOverlay?.addEventListener('click', closeDrawer);
+
+  let currentDrawerInvoiceId = null;
+
+  const openDrawerWithActions = async (invoiceId) => {
+    currentDrawerInvoiceId = invoiceId;
+    const printBtn = document.getElementById('drawer-print-btn');
+    if (printBtn) printBtn.href = `/invoice-preview?id=${invoiceId}`;
+    const emailForm = document.getElementById('drawer-email-form');
+    if (emailForm) emailForm.style.display = 'none';
+    await openDrawer(invoiceId);
+  };
+
+  document.getElementById('drawer-email-toggle')?.addEventListener('click', () => {
+    const form = document.getElementById('drawer-email-form');
+    if (form) {
+      const isHidden = form.style.display === 'none' || form.style.display === '';
+      form.style.display = isHidden ? 'flex' : 'none';
+    }
+    document.getElementById('drawer-email-input')?.focus();
+  });
+
+  document.getElementById('drawer-email-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('drawer-email-input')?.value;
+    const btn = document.getElementById('drawer-email-send');
+    if (!email || !currentDrawerInvoiceId) return;
+    btn.textContent = 'Enviando...';
+    btn.disabled = true;
+    const result = await inventoryService.sendInvoiceEmail(currentDrawerInvoiceId, email);
+    if (result) {
+      const emailFormEl = document.getElementById('drawer-email-form');
+      if (emailFormEl) emailFormEl.style.display = 'none';
+      document.getElementById('drawer-email-input').value = '';
+      alert('✅ Factura enviada exitosamente');
+    } else {
+      alert('❌ Error al enviar la factura');
+    }
+    btn.textContent = 'Enviar';
+    btn.disabled = false;
+  });
+
+  const bindInvoiceTriggers = () => {
+    document.querySelectorAll('.invoice-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const invoiceId = e.currentTarget.getAttribute('data-id');
+        if (invoiceId) openDrawerWithActions(invoiceId);
+      });
+    });
+  };
 
   selectMonth.value = String(now.getMonth() + 1);
   
@@ -351,17 +579,27 @@ import AppLayout from '../layout/AppLayout.astro';
         const horaStr = fechaObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const fBaseBs = parseFloat(f.total_bs) - parseFloat(f.iva_monto_bs) - parseFloat(f.monto_exento_bs);
         const tr = document.createElement('tr');
-        tr.className = 'hover:bg-gray-50/80 dark:hover:bg-gray-800/40 transition-colors';
+        tr.className = 'group hover:bg-gray-50/80 dark:hover:bg-gray-800/40 transition-colors';
         tr.innerHTML = `
-          <td class="px-5 py-3 text-sm font-bold text-indigo-600 dark:text-indigo-400">${f.numero_factura || '—'}</td>
+          <td class="px-5 py-3 text-sm font-extrabold text-indigo-600 dark:text-indigo-400">
+            <button class="invoice-trigger flex items-center gap-1.5 hover:underline focus:outline-none focus:ring-2 focus:ring-indigo-500/30 rounded-md px-1 -ml-1 transition-all cursor-pointer" data-id="${f.id}">
+              ${f.numero_factura || ('#' + String(f.id).padStart(5, '0'))}
+              <svg class="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </button>
+          </td>
           <td class="px-5 py-3 text-sm text-gray-600 dark:text-gray-400"><span class="font-medium text-gray-900 dark:text-white">${fechaStr}</span> <span class="text-xs text-gray-400">${horaStr}</span></td>
           <td class="px-5 py-3 text-sm text-gray-600 dark:text-gray-400">${f.nombre_cliente || 'Cliente de paso'}</td>
           <td class="px-5 py-3 text-sm text-right text-gray-700 dark:text-gray-300 font-medium">Bs ${fBaseBs.toFixed(2)}</td>
+          <td class="px-5 py-3 text-sm text-right text-emerald-600 dark:text-emerald-400 font-bold">Bs ${parseFloat(f.monto_exento_bs).toFixed(2)}</td>
           <td class="px-5 py-3 text-sm text-right text-indigo-600 dark:text-indigo-400 font-bold">Bs ${parseFloat(f.iva_monto_bs).toFixed(2)}</td>
           <td class="px-5 py-3 text-sm text-right font-bold text-gray-900 dark:text-white">Bs ${parseFloat(f.total_bs).toFixed(2)}</td>
         `;
         tableBody.appendChild(tr);
       });
+      bindInvoiceTriggers();
     }
   };
 

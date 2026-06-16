@@ -25,7 +25,13 @@
 
     <!-- Vista edición (oculta por defecto) -->
     <td class="px-6 py-4 whitespace-nowrap edit-mode hidden" colspan="1">
-      <input type="text" class="edit-nombre w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl py-2 px-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all" />
+      <div class="flex flex-col gap-2">
+        <input type="text" class="edit-nombre w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl py-2 px-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all" />
+        <label class="flex items-center gap-2 text-xs font-bold text-gray-600 dark:text-gray-400 cursor-pointer select-none ml-1">
+          <input type="checkbox" class="edit-exento w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500/50 cursor-pointer" />
+          Exento de IVA
+        </label>
+      </div>
     </td>
     <td class="px-6 py-4 whitespace-nowrap edit-mode hidden" colspan="1">
       <input type="number" step="0.01" class="edit-precio w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl py-2 px-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all" />
