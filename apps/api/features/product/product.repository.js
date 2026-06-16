@@ -1,68 +1,114 @@
-import db from '../../db/index.js';
+import supabase from '../../db/index.js';
 
 /**
- * Crea un producto en la base de datos
+ * Crea un producto en Supabase
  * @param {Object} payload
  * @param {string} payload.nombre
  * @param {number} payload.precio_dolar
  * @param {number} payload.stock
  * @param {boolean} payload.exento_iva
  * @param {number} payload.user_id
- * @returns {Object} El producto creado
+ * @returns {Promise<Object>} El producto creado
  */
 const createProduct = async ({ nombre, precio_dolar, stock, exento_iva = false, user_id }) => {
-  const statement = db.prepare(`
-    INSERT INTO products (nombre, precio_dolar, stock, exento_iva, user_id)
-    VALUES (?, ?, ?, ?, ?) RETURNING *
-  `);
-  return statement.get(nombre, precio_dolar, stock, exento_iva ? 1 : 0, user_id);
+  const { data, error } = await supabase
+    .from('products')
+    .insert({ nombre, precio_dolar, stock, exento_iva, user_id })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
 };
 
 /**
  * Obtiene todos los productos de un usuario
- * @returns {Array} Listado de productos
+ * @param {number} user_id
+ * @returns {Promise<Array>} Listado de productos
  */
-const findProducts = (user_id) => {
-  const statement = db.prepare(`
-    SELECT p.*, 
-           EXISTS(SELECT 1 FROM sale_details sd WHERE sd.id_producto = p.id) as tiene_ventas
-    FROM products p 
-    WHERE p.user_id = ? AND p.is_deleted = 0
-  `);
-  return statement.all(user_id);
+const findProducts = async (user_id) => {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*, sale_details(id_producto)')
+    .eq('user_id', user_id)
+    .eq('is_deleted', false);
+
+  if (error) throw error;
+
+  return (data || []).map(p => {
+    const { sale_details, ...rest } = p;
+    return {
+      ...rest,
+      tiene_ventas: sale_details && sale_details.length > 0,
+    };
+  });
 };
 
 /**
  * Encuentra un producto por ID y Usuario
+ * @param {number} id
+ * @param {number} user_id
+ * @returns {Promise<Object|null>}
  */
-const findProductById = (id, user_id) => {
-  const statement = db.prepare('SELECT * FROM products WHERE id = ? AND user_id = ? AND is_deleted = 0');
-  return statement.get(id, user_id);
+const findProductById = async (id, user_id) => {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('id', id)
+    .eq('user_id', user_id)
+    .eq('is_deleted', false)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
 };
 
 /**
  * Actualiza un producto de un usuario
+ * @param {number} id
+ * @param {number} user_id
+ * @param {Object} data
+ * @param {string} data.nombre
+ * @param {number} data.precio_dolar
+ * @param {number} data.stock
+ * @param {boolean} data.exento_iva
+ * @returns {Promise<Object>}
  */
-const updateProduct = (id, user_id, { nombre, precio_dolar, stock, exento_iva }) => {
-  const statement = db.prepare(`
-    UPDATE products 
-    SET nombre = ?, precio_dolar = ?, stock = ?, exento_iva = ?
-    WHERE id = ? AND user_id = ? AND is_deleted = 0 RETURNING *
-  `);
-  return statement.get(nombre, precio_dolar, stock, exento_iva ? 1 : 0, id, user_id);
+const updateProduct = async (id, user_id, { nombre, precio_dolar, stock, exento_iva }) => {
+  const { data, error } = await supabase
+    .from('products')
+    .update({ nombre, precio_dolar, stock, exento_iva })
+    .eq('id', id)
+    .eq('user_id', user_id)
+    .eq('is_deleted', false)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
 };
 
 /**
  * Elimina (soft delete) un producto de un usuario
+ * @param {number} id
+ * @param {number} user_id
+ * @returns {Promise<void>}
  */
-const deleteProduct = (id, user_id) => {
+const deleteProduct = async (id, user_id) => {
   const timestamp = Date.now();
-  const statement = db.prepare(`
-    UPDATE products 
-    SET is_deleted = 1, nombre = nombre || ' (eliminado ' || ? || ')' 
-    WHERE id = ? AND user_id = ?
-  `);
-  return statement.run(timestamp, id, user_id);
+  const product = await findProductById(id, user_id);
+  if (!product) throw new Error('Producto no encontrado');
+
+  const { error } = await supabase
+    .from('products')
+    .update({
+      is_deleted: true,
+      nombre: `${product.nombre} (eliminado ${timestamp})`,
+    })
+    .eq('id', id)
+    .eq('user_id', user_id);
+
+  if (error) throw error;
 };
 
 const productRepository = {

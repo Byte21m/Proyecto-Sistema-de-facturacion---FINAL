@@ -1,6 +1,12 @@
-import Database from 'better-sqlite3';
+import { createClient } from '@supabase/supabase-js';
 
-const db = new Database('database.db', { verbose: console.log });
-db.pragma('journal_mode = WAL');
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
-export default db;
+if (!supabaseUrl || !supabaseKey) {
+  console.error('❌ Faltan las variables de entorno SUPABASE_URL o SUPABASE_ANON_KEY');
+}
+
+const supabase = createClient(supabaseUrl || '', supabaseKey || '');
+
+export default supabase;

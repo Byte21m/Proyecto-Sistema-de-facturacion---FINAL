@@ -1,205 +1,304 @@
-import db from '../../db/index.js';
+import supabase from '../../db/index.js';
 
 /**
- * Genera el siguiente número de factura para un usuario
+ * Genera el siguiente número de factura para un usuario en Supabase
  * @param {number} userId
- * @returns {string} Número de factura formateado (FAC-00001)
+ * @returns {Promise<string>} Número de factura formateado (FAC-00001)
  */
-const getNextInvoiceNumber = (userId) => {
-  const result = db.prepare(`
-    SELECT numero_factura FROM sales 
-    WHERE id_usuario = ? AND numero_factura IS NOT NULL
-    ORDER BY id DESC LIMIT 1
-  `).get(userId);
+const getNextInvoiceNumber = async (userId) => {
+  const { data, error } = await supabase
+    .from('sales')
+    .select('numero_factura')
+    .eq('id_usuario', userId)
+    .not('numero_factura', 'is', null)
+    .order('id', { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
-  if (!result || !result.numero_factura) return 'FAC-00001';
+  if (error) throw error;
+  if (!data || !data.numero_factura) return 'FAC-00001';
 
-  const currentNum = parseInt(result.numero_factura.replace('FAC-', ''), 10);
+  const currentNum = parseInt(data.numero_factura.replace('FAC-', ''), 10);
   return `FAC-${String(currentNum + 1).padStart(5, '0')}`;
 };
 
 /**
- * Crea una venta con sus detalles en una transacción
+ * Crea una venta con sus detalles en Supabase
  * @param {Object} params
- * @param {number} params.subtotal_usd - Subtotal en dólares (base imponible)
- * @param {number} params.monto_exento_bs - Monto exento en bolívares
- * @param {number} params.iva_porcentaje - Alícuota del IVA (16)
- * @param {number} params.iva_monto_bs - Monto del IVA en bolívares
- * @param {number} params.total_bs - Total en bolívares (incluye IVA)
- * @param {string} [params.nombre_cliente] - Nombre del cliente (opcional)
- * @param {string} [params.cedula_cliente] - Cédula/RIF del cliente (opcional)
- * @param {number} params.id_usuario - ID del usuario que realiza la venta
- * @param {Array} params.items - Detalles de la venta
- * @returns {Object} La venta creada con sus detalles
+ * @returns {Promise<Object>} La venta creada con sus detalles
  */
-const createSale = (params) => {
+const createSale = async (params) => {
   const { subtotal_usd, monto_exento_bs, iva_porcentaje, iva_monto_bs, total_bs, nombre_cliente, cedula_cliente, id_usuario, items } = params;
 
-  const insertSale = db.prepare(`
-    INSERT INTO sales (numero_factura, fecha, subtotal_usd, monto_exento_bs, iva_porcentaje, iva_monto_bs, total_bs, nombre_cliente, cedula_cliente, id_usuario)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *
-  `);
+  const numeroFactura = await getNextInvoiceNumber(id_usuario);
+  const now = new Date();
+  const localISO = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString();
 
-  const insertDetail = db.prepare(`
-    INSERT INTO sale_details (id_venta, id_producto, producto_nombre, tasa_dia, cantidad, precio_momento, exento_iva)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-  `);
+  // 1. Crear la venta
+  const { data: sale, error: saleError } = await supabase
+    .from('sales')
+    .insert({
+      numero_factura: numeroFactura,
+      fecha: localISO,
+      subtotal_usd,
+      monto_exento_bs,
+      iva_porcentaje,
+      iva_monto_bs,
+      total_bs,
+      nombre_cliente: nombre_cliente || null,
+      cedula_cliente: cedula_cliente || null,
+      id_usuario
+    })
+    .select()
+    .single();
 
-  const updateStock = db.prepare(`
-    UPDATE products SET stock = stock - ? WHERE id = ? AND stock >= ?
-  `);
+  if (saleError) throw saleError;
 
-  const transaction = db.transaction(() => {
-    const numeroFactura = getNextInvoiceNumber(id_usuario);
+  const details = [];
+  // 2. Insertar cada detalle y actualizar stock
+  for (const item of items) {
+    // A. Obtener stock actual
+    const { data: product, error: prodErr } = await supabase
+      .from('products')
+      .select('stock, nombre')
+      .eq('id', item.id_producto)
+      .single();
 
-    // Generar fecha/hora local (evita UTC de CURRENT_TIMESTAMP)
-    const now = new Date();
-    const localISO = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 19).replace('T', ' ');
-
-    // 1. Crear la venta con campos fiscales
-    const sale = insertSale.get(
-      numeroFactura, localISO, subtotal_usd, monto_exento_bs, iva_porcentaje, iva_monto_bs, total_bs,
-      nombre_cliente || null, cedula_cliente || null, id_usuario
-    );
-
-    // 2. Insertar cada detalle y actualizar stock
-    const details = [];
-    for (const item of items) {
-      // Verificar y actualizar stock
-      const result = updateStock.run(item.cantidad, item.id_producto, item.cantidad);
-      if (result.changes === 0) {
-        throw new Error(`Stock insuficiente para el producto con ID ${item.id_producto}`);
-      }
-
-      insertDetail.run(
-        sale.id,
-        item.id_producto,
-        item.nombre, // Requires item to pass nombre
-        item.tasa_dia,
-        item.cantidad,
-        item.precio_momento,
-        item.exento_iva ? 1 : 0
-      );
-
-      details.push({
-        id_producto: item.id_producto,
-        producto_nombre: item.nombre,
-        cantidad: item.cantidad,
-        precio_momento: item.precio_momento,
-        tasa_dia: item.tasa_dia,
-        exento_iva: item.exento_iva,
-      });
+    if (prodErr || !product) {
+      throw new Error(`Producto no encontrado con ID ${item.id_producto}`);
     }
 
-    return { ...sale, details };
-  });
+    if (product.stock < item.cantidad) {
+      throw new Error(`Stock insuficiente para el producto "${product.nombre}"`);
+    }
 
-  return transaction();
+    // B. Decrementar stock
+    const { error: stockErr } = await supabase
+      .from('products')
+      .update({ stock: product.stock - item.cantidad })
+      .eq('id', item.id_producto);
+
+    if (stockErr) throw stockErr;
+
+    // C. Insertar detalle
+    const { error: detailErr } = await supabase
+      .from('sale_details')
+      .insert({
+        id_venta: sale.id,
+        id_producto: item.id_producto,
+        producto_nombre: item.nombre,
+        tasa_dia: item.tasa_dia,
+        cantidad: item.cantidad,
+        precio_momento: item.precio_momento,
+        exento_iva: !!item.exento_iva
+      });
+
+    if (detailErr) throw detailErr;
+
+    details.push({
+      id_producto: item.id_producto,
+      producto_nombre: item.nombre,
+      cantidad: item.cantidad,
+      precio_momento: item.precio_momento,
+      tasa_dia: item.tasa_dia,
+      exento_iva: item.exento_iva,
+    });
+  }
+
+  return { ...sale, details };
 };
 
 /**
  * Obtiene todas las ventas de un usuario
+ * @param {number} id_usuario
+ * @returns {Promise<Array>}
  */
-const findSales = (id_usuario) => {
-  const statement = db.prepare(`
-    SELECT s.*, u.email as usuario_email, bp.razon_social
-    FROM sales s
-    LEFT JOIN users u ON s.id_usuario = u.id
-    LEFT JOIN business_profile bp ON s.id_usuario = bp.user_id
-    WHERE s.id_usuario = ?
-    ORDER BY s.id DESC
-  `);
-  return statement.all(id_usuario);
+const findSales = async (id_usuario) => {
+  const { data, error } = await supabase
+    .from('sales')
+    .select(`
+      *,
+      users:id_usuario (
+        email,
+        business_profile (
+          razon_social
+        )
+      )
+    `)
+    .eq('id_usuario', id_usuario)
+    .order('id', { ascending: false });
+
+  if (error) throw error;
+
+  return (data || []).map(s => ({
+    ...s,
+    usuario_email: s.users?.email || null,
+    razon_social: s.users?.business_profile?.razon_social || null,
+  }));
 };
 
 /**
  * Obtiene las ventas de hoy
+ * @param {number} id_usuario
+ * @returns {Promise<Array>}
  */
-const findTodaySales = (id_usuario) => {
-  const statement = db.prepare(`
-    SELECT s.*, u.email as usuario_email, bp.razon_social,
-           (SELECT COALESCE(SUM(sd.precio_momento * sd.cantidad), 0) FROM sale_details sd WHERE sd.id_venta = s.id) as total_usd
-    FROM sales s
-    LEFT JOIN users u ON s.id_usuario = u.id
-    LEFT JOIN business_profile bp ON s.id_usuario = bp.user_id
-    WHERE date(s.fecha) = date('now', 'localtime') AND s.id_usuario = ?
-    ORDER BY s.id DESC
-  `);
-  return statement.all(id_usuario);
+const findTodaySales = async (id_usuario) => {
+  const todayStr = new Date().toISOString().split('T')[0];
+  const { data, error } = await supabase
+    .from('sales')
+    .select(`
+      *,
+      users:id_usuario (
+        email,
+        business_profile (
+          razon_social
+        )
+      ),
+      sale_details (
+        precio_momento,
+        cantidad
+      )
+    `)
+    .eq('id_usuario', id_usuario)
+    .gte('fecha', `${todayStr}T00:00:00`)
+    .lte('fecha', `${todayStr}T23:59:59`)
+    .order('id', { ascending: false });
+
+  if (error) throw error;
+
+  return (data || []).map(s => {
+    const total_usd = (s.sale_details || []).reduce((acc, curr) => acc + (curr.precio_momento * curr.cantidad), 0);
+    return {
+      ...s,
+      usuario_email: s.users?.email || null,
+      razon_social: s.users?.business_profile?.razon_social || null,
+      total_usd,
+    };
+  });
 };
 
 /**
  * Obtiene una venta por ID con sus detalles y datos del perfil comercial
+ * @param {number} id
+ * @param {number} id_usuario
+ * @returns {Promise<Object|null>}
  */
-const findSaleById = (id, id_usuario) => {
-  const sale = db.prepare(`
-    SELECT s.*, u.email as usuario_email
-    FROM sales s
-    LEFT JOIN users u ON s.id_usuario = u.id
-    WHERE s.id = ? AND s.id_usuario = ?
-  `).get(id, id_usuario);
-  if (!sale) return null;
+const findSaleById = async (id, id_usuario) => {
+  const { data: sale, error: saleErr } = await supabase
+    .from('sales')
+    .select(`
+      *,
+      users:id_usuario (
+        email
+      )
+    `)
+    .eq('id', id)
+    .eq('id_usuario', id_usuario)
+    .maybeSingle();
 
-  const details = db.prepare(`
-    SELECT sd.*
-    FROM sale_details sd
-    WHERE sd.id_venta = ?
-  `).all(id);
+  if (saleErr || !sale) return null;
 
-  const businessProfile = db.prepare(`
-    SELECT * FROM business_profile WHERE user_id = ?
-  `).get(id_usuario);
+  const { data: details, error: detailsErr } = await supabase
+    .from('sale_details')
+    .select('*')
+    .eq('id_venta', id);
 
-  return { ...sale, details, businessProfile: businessProfile || null };
+  if (detailsErr) throw detailsErr;
+
+  const { data: businessProfile, error: bpErr } = await supabase
+    .from('business_profile')
+    .select('*')
+    .eq('user_id', id_usuario)
+    .maybeSingle();
+
+  if (bpErr) throw bpErr;
+
+  return {
+    ...sale,
+    usuario_email: sale.users?.email || null,
+    details: details || [],
+    businessProfile: businessProfile || null,
+  };
 };
 
 /**
  * Obtiene el historial de productos vendidos
+ * @param {number} id_usuario
+ * @returns {Promise<Array>}
  */
-const findSalesHistory = (id_usuario) => {
-  const statement = db.prepare(`
-    SELECT sd.id, s.id as id_factura, s.numero_factura, sd.producto_nombre, sd.cantidad, sd.precio_momento, sd.tasa_dia, sd.exento_iva, s.fecha
-    FROM sale_details sd
-    JOIN sales s ON sd.id_venta = s.id
-    WHERE s.id_usuario = ?
-    ORDER BY s.id DESC
-  `);
-  return statement.all(id_usuario);
+const findSalesHistory = async (id_usuario) => {
+  const { data, error } = await supabase
+    .from('sale_details')
+    .select(`
+      id,
+      producto_nombre,
+      cantidad,
+      precio_momento,
+      tasa_dia,
+      exento_iva,
+      sales!inner (
+        id,
+        numero_factura,
+        fecha,
+        id_usuario
+      )
+    `)
+    .eq('sales.id_usuario', id_usuario)
+    .order('id', { ascending: false });
+
+  if (error) throw error;
+
+  return (data || []).map(sd => ({
+    id: sd.id,
+    id_factura: sd.sales?.id,
+    numero_factura: sd.sales?.numero_factura,
+    producto_nombre: sd.producto_nombre,
+    cantidad: sd.cantidad,
+    precio_momento: sd.precio_momento,
+    tasa_dia: sd.tasa_dia,
+    exento_iva: sd.exento_iva,
+    fecha: sd.sales?.fecha,
+  }));
 };
 
 /**
  * Obtiene el reporte mensual de IVA
  * @param {number} id_usuario
- * @param {number} year - Año (ej: 2026)
- * @param {number} month - Mes (1-12)
- * @returns {Object} Resumen mensual de IVA
+ * @param {number} year
+ * @param {number} month
+ * @returns {Promise<Object>}
  */
-const findMonthlyReport = (id_usuario, year, month) => {
+const findMonthlyReport = async (id_usuario, year, month) => {
   const monthStr = String(month).padStart(2, '0');
+  const startOfMonth = `${year}-${monthStr}-01T00:00:00`;
+  
+  const nextMonth = month === 12 ? 1 : month + 1;
+  const nextMonthYear = month === 12 ? year + 1 : year;
+  const endOfMonth = `${nextMonthYear}-${String(nextMonth).padStart(2, '0')}-01T00:00:00`;
 
-  // Resumen general del mes
-  const summary = db.prepare(`
-    SELECT 
-      COUNT(*) as total_facturas,
-      COALESCE(SUM(subtotal_usd), 0) as base_imponible_usd,
-      COALESCE(SUM(monto_exento_bs), 0) as total_exento_bs,
-      COALESCE(SUM(iva_monto_bs), 0) as total_iva_bs,
-      COALESCE(SUM(total_bs), 0) as total_facturado_bs
-    FROM sales
-    WHERE id_usuario = ?
-      AND strftime('%Y', fecha) = ?
-      AND strftime('%m', fecha) = ?
-  `).get(id_usuario, String(year), monthStr);
+  const { data: facturas, error } = await supabase
+    .from('sales')
+    .select('*')
+    .eq('id_usuario', id_usuario)
+    .gte('fecha', startOfMonth)
+    .lt('fecha', endOfMonth)
+    .order('numero_factura', { ascending: false });
 
-  // Lista de facturas del mes
-  const facturas = db.prepare(`
-    SELECT id, numero_factura, fecha, subtotal_usd, monto_exento_bs, iva_porcentaje, iva_monto_bs, total_bs, nombre_cliente, cedula_cliente
-    FROM sales
-    WHERE id_usuario = ?
-      AND strftime('%Y', fecha) = ?
-      AND strftime('%m', fecha) = ?
-    ORDER BY numero_factura DESC
-  `).all(id_usuario, String(year), monthStr);
+  if (error) throw error;
+
+  const total_facturas = facturas.length;
+  const base_imponible_usd = facturas.reduce((acc, f) => acc + (f.subtotal_usd || 0), 0);
+  const total_exento_bs = facturas.reduce((acc, f) => acc + (f.monto_exento_bs || 0), 0);
+  const total_iva_bs = facturas.reduce((acc, f) => acc + (f.iva_monto_bs || 0), 0);
+  const total_facturado_bs = facturas.reduce((acc, f) => acc + (f.total_bs || 0), 0);
+
+  const summary = {
+    total_facturas,
+    base_imponible_usd,
+    total_exento_bs,
+    total_iva_bs,
+    total_facturado_bs,
+  };
 
   return { summary, facturas };
 };
@@ -208,19 +307,20 @@ const findMonthlyReport = (id_usuario, year, month) => {
  * Obtiene un reporte unificado por día, semana o mes
  * @param {number} id_usuario
  * @param {string} type - 'day' | 'week' | 'month'
- * @param {string} dateStr - Fecha de referencia (YYYY-MM-DD)
+ * @param {string} dateStr
+ * @returns {Promise<Object>}
  */
-const findReport = (id_usuario, type, dateStr) => {
-  let dateQueryCondition = '';
-  const params = [id_usuario];
+const findReport = async (id_usuario, type, dateStr) => {
+  let start = '';
+  let end = '';
 
   if (type === 'day') {
-    dateQueryCondition = `date(fecha) = ?`;
-    params.push(dateStr);
+    start = `${dateStr}T00:00:00`;
+    end = `${dateStr}T23:59:59`;
   } else if (type === 'week') {
     const [yr, mo, dy] = dateStr.split('-').map(Number);
     const chosen = new Date(yr, mo - 1, dy);
-    const day = chosen.getDay(); // 0 is Sunday, 1 is Monday...
+    const day = chosen.getDay();
     const diffToMonday = chosen.getDate() - day + (day === 0 ? -6 : 1);
     const monday = new Date(chosen.setDate(diffToMonday));
     const sunday = new Date(monday);
@@ -230,41 +330,43 @@ const findReport = (id_usuario, type, dateStr) => {
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     };
 
-    const mondayStr = formatDateString(monday);
-    const sundayStr = formatDateString(sunday);
-
-    dateQueryCondition = `date(fecha) >= ? AND date(fecha) <= ?`;
-    params.push(mondayStr, sundayStr);
+    start = `${formatDateString(monday)}T00:00:00`;
+    end = `${formatDateString(sunday)}T23:59:59`;
   } else {
-    // Default to month (dateStr is either YYYY-MM-DD or YYYY-MM)
     const [year, month] = dateStr.split('-');
-    const monthStr = String(month).padStart(2, '0');
+    const monthVal = Number(month);
+    const yearVal = Number(year);
+    const monthStr = String(monthVal).padStart(2, '0');
+    start = `${yearVal}-${monthStr}-01T00:00:00`;
 
-    dateQueryCondition = `strftime('%Y', fecha) = ? AND strftime('%m', fecha) = ?`;
-    params.push(String(year), monthStr);
+    const nextMonth = monthVal === 12 ? 1 : monthVal + 1;
+    const nextMonthYear = monthVal === 12 ? yearVal + 1 : yearVal;
+    end = `${nextMonthYear}-${String(nextMonth).padStart(2, '0')}-01T00:00:00`;
   }
 
-  // Resumen general
-  const summary = db.prepare(`
-    SELECT 
-      COUNT(*) as total_facturas,
-      COALESCE(SUM(subtotal_usd), 0) as base_imponible_usd,
-      COALESCE(SUM(monto_exento_bs), 0) as total_exento_bs,
-      COALESCE(SUM(iva_monto_bs), 0) as total_iva_bs,
-      COALESCE(SUM(total_bs), 0) as total_facturado_bs
-    FROM sales
-    WHERE id_usuario = ?
-      AND ${dateQueryCondition}
-  `).get(...params);
+  const { data: facturas, error } = await supabase
+    .from('sales')
+    .select('*')
+    .eq('id_usuario', id_usuario)
+    .gte('fecha', start)
+    .lte('fecha', end)
+    .order('numero_factura', { ascending: false });
 
-  // Lista de facturas
-  const facturas = db.prepare(`
-    SELECT id, numero_factura, fecha, subtotal_usd, monto_exento_bs, iva_porcentaje, iva_monto_bs, total_bs, nombre_cliente, cedula_cliente
-    FROM sales
-    WHERE id_usuario = ?
-      AND ${dateQueryCondition}
-    ORDER BY numero_factura DESC
-  `).all(...params);
+  if (error) throw error;
+
+  const total_facturas = facturas.length;
+  const base_imponible_usd = facturas.reduce((acc, f) => acc + (f.subtotal_usd || 0), 0);
+  const total_exento_bs = facturas.reduce((acc, f) => acc + (f.monto_exento_bs || 0), 0);
+  const total_iva_bs = facturas.reduce((acc, f) => acc + (f.iva_monto_bs || 0), 0);
+  const total_facturado_bs = facturas.reduce((acc, f) => acc + (f.total_bs || 0), 0);
+
+  const summary = {
+    total_facturas,
+    base_imponible_usd,
+    total_exento_bs,
+    total_iva_bs,
+    total_facturado_bs,
+  };
 
   return { summary, facturas };
 };

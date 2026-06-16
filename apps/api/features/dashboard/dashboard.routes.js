@@ -15,9 +15,11 @@ dashboardRouter.get('/stats', async (req, res, next) => {
   try {
     const userId = req.user.id;
     
-    const trend = dashboardRepository.getSalesTrend(userId);
-    const topProducts = dashboardRepository.getTopProducts(userId);
-    const fiscal = dashboardRepository.getFiscalDistribution(userId);
+    const [trend, topProducts, fiscal] = await Promise.all([
+      dashboardRepository.getSalesTrend(userId),
+      dashboardRepository.getTopProducts(userId),
+      dashboardRepository.getFiscalDistribution(userId)
+    ]);
 
     res.json({
       trend,

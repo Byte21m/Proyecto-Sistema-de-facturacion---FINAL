@@ -14,7 +14,7 @@ saleRouter.use(authenticate);
 saleRouter.post('/', async (req, res, next) => {
   try {
     const body = createSaleRouteSchema.body.parse(req.body);
-    const sale = saleRepository.createSale({
+    const sale = await saleRepository.createSale({
       subtotal_usd: body.subtotal_usd,
       monto_exento_bs: body.monto_exento_bs,
       iva_porcentaje: body.iva_porcentaje,
@@ -34,7 +34,7 @@ saleRouter.post('/', async (req, res, next) => {
 // Obtener todas las ventas
 saleRouter.get('/', async (req, res, next) => {
   try {
-    const sales = saleRepository.findSales(req.user.id);
+    const sales = await saleRepository.findSales(req.user.id);
     res.json(sales);
   } catch (error) {
     next(error);
@@ -44,7 +44,7 @@ saleRouter.get('/', async (req, res, next) => {
 // Obtener ventas de hoy (para el dashboard)
 saleRouter.get('/today', async (req, res, next) => {
   try {
-    const sales = saleRepository.findTodaySales(req.user.id);
+    const sales = await saleRepository.findTodaySales(req.user.id);
     res.json(sales);
   } catch (error) {
     next(error);
@@ -54,7 +54,7 @@ saleRouter.get('/today', async (req, res, next) => {
 // Obtener historial detallado de items vendidos
 saleRouter.get('/history/items', async (req, res, next) => {
   try {
-    const history = saleRepository.findSalesHistory(req.user.id);
+    const history = await saleRepository.findSalesHistory(req.user.id);
     res.json(history);
   } catch (error) {
     next(error);
@@ -66,7 +66,7 @@ saleRouter.get('/report', async (req, res, next) => {
   try {
     const type = req.query.type || 'month';
     const date = req.query.date || new Date().toISOString().split('T')[0];
-    const report = saleRepository.findReport(req.user.id, type, date);
+    const report = await saleRepository.findReport(req.user.id, type, date);
     res.json(report);
   } catch (error) {
     next(error);
@@ -78,7 +78,7 @@ saleRouter.get('/report/monthly', async (req, res, next) => {
   try {
     const year = parseInt(req.query.year) || new Date().getFullYear();
     const month = parseInt(req.query.month) || (new Date().getMonth() + 1);
-    const report = saleRepository.findMonthlyReport(req.user.id, year, month);
+    const report = await saleRepository.findMonthlyReport(req.user.id, year, month);
     res.json(report);
   } catch (error) {
     next(error);
@@ -89,7 +89,7 @@ saleRouter.get('/report/monthly', async (req, res, next) => {
 saleRouter.get('/:id/invoice', async (req, res, next) => {
   try {
     const id = parseInt(req.params.id);
-    const sale = saleRepository.findSaleById(id, req.user.id);
+    const sale = await saleRepository.findSaleById(id, req.user.id);
     if (!sale) {
       return res.status(404).json({ error: 'Venta no encontrada' });
     }
@@ -108,7 +108,7 @@ saleRouter.post('/:id/invoice/email', async (req, res, next) => {
     const { email } = req.body;
     if (!email) return res.status(400).json({ error: 'Correo del destinatario requerido' });
 
-    const sale = saleRepository.findSaleById(id, req.user.id);
+    const sale = await saleRepository.findSaleById(id, req.user.id);
     if (!sale) {
       return res.status(404).json({ error: 'Venta no encontrada' });
     }
@@ -133,7 +133,7 @@ saleRouter.post('/:id/invoice/email', async (req, res, next) => {
 saleRouter.get('/:id', async (req, res, next) => {
   try {
     const id = parseInt(req.params.id);
-    const sale = saleRepository.findSaleById(id, req.user.id);
+    const sale = await saleRepository.findSaleById(id, req.user.id);
     if (!sale) {
       return res.status(404).json({ error: 'Venta no encontrada' });
     }

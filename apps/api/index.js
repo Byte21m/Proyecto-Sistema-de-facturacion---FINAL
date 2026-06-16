@@ -30,6 +30,17 @@ app.use('/api/product', productRouter);
 app.use('/api/sale', saleRouter);
 app.use('/api/dashboard', dashboardRouter);
 
+// Servir frontend compilado en producción (Astro SSR)
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('dist/client'));
+  try {
+    const { handler: ssrHandler } = await import('./dist/server/entry.mjs');
+    app.use(ssrHandler);
+  } catch (err) {
+    console.error('Error al cargar el middleware de Astro:', err);
+  }
+}
+
 app.use((err, req, res, _next) => {
   let errorString = 'Desconocido';
   let errorCode = 500;
@@ -42,15 +53,23 @@ app.use((err, req, res, _next) => {
     errorCode = 400;
   }
 
-  if (err instanceof SqliteError) {
-    if (err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
-      const property = err.message.split('.')[1];
+  if (err && err.code) {
+    if (err.code === '23505' || err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+      let property = 'el registro';
+      if (err.message && err.message.includes('key')) {
+        const match = err.message.match(/key "([^"]+)"/);
+        if (match && match[1]) {
+          property = match[1].split('_')[1] || match[1];
+        }
+      } else if (err.message && err.message.includes('.')) {
+        property = err.message.split('.')[1];
+      }
 
       errorCode = 400;
       errorString = `${property?.toUpperCase() || ''} ya se encuentra en uso.`;
     }
 
-    if (err.code === 'SQLITE_CONSTRAINT_FOREIGNKEY') {
+    if (err.code === '23503' || err.code === 'SQLITE_CONSTRAINT_FOREIGNKEY') {
       errorCode = 409;
       errorString = 'No se puede eliminar porque tiene registros asociados (ventas, etc).';
     }

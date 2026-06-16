@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "node --watch --env-file=.env index.js",
+    "dev": "node --watch-path=features --watch-path=db --watch-path=services --watch-path=index.js --env-file=.env index.js",
     "tables:create": "node db/tables.js",
     "test": "node --test"
   },
@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@supabase/supabase-js": "^2.108.2",
     "bcrypt": "^5.1.1",
     "better-sqlite3": "^12.9.0",
     "cookie-parser": "^1.4.7",

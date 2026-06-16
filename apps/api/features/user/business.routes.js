@@ -19,7 +19,7 @@ const businessProfileSchema = z.object({
 // Obtener perfil comercial
 businessRouter.get('/', async (req, res, next) => {
   try {
-    const profile = businessRepository.findProfileByUserId(req.user.id);
+    const profile = await businessRepository.findProfileByUserId(req.user.id);
     res.json(profile || null);
   } catch (error) {
     next(error);
@@ -30,7 +30,7 @@ businessRouter.get('/', async (req, res, next) => {
 businessRouter.put('/', async (req, res, next) => {
   try {
     const body = businessProfileSchema.parse(req.body);
-    const profile = businessRepository.createOrUpdateProfile(req.user.id, body);
+    const profile = await businessRepository.createOrUpdateProfile(req.user.id, body);
     res.json(profile);
   } catch (error) {
     next(error);

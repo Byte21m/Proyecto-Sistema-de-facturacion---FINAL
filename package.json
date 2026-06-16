@@ -5,7 +5,9 @@
   "scripts": {
     "client:dev": "npm run dev -w client",
     "api:dev": "npm run dev -w api",
-    "dev": "npm run client:dev & npm run api:dev"
+    "dev": "npm run client:dev & npm run api:dev",
+    "build": "npm run build -w client && node -e \"const fs=require('fs'); fs.rmSync('apps/api/dist', { recursive: true, force: true }); fs.cpSync('apps/client/dist', 'apps/api/dist', { recursive: true });\"",
+    "start": "node apps/api/index.js"
   },
   "keywords": [],
   "author": "",

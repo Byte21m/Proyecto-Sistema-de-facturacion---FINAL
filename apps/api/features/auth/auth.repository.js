@@ -1,70 +1,92 @@
-import db from '../../db/index.js';
+import supabase from '../../db/index.js';
 
-/** @typedef {import('./auth.schemas.js').Session} Session */
-
-/**
- * Crea una session en la base de datos
- * @param {Object} payload - El payload para crear la session
- * @param {Session['jwtid']} payload.jwtid - El id del token
- * @param {Session['user_id']} payload.userId - El id del usuario
- * @returns {Session} La session creada
- */
-const createSession = ({ jwtid, userId }) => {
-  const insertTokenQuery = db.prepare(
-    'INSERT INTO sessions (jwtid, user_id) VALUES (?,?) RETURNING *',
-  );
-  const createdSession = insertTokenQuery.get(jwtid, userId);
-  return createdSession;
-};
+/** @typedef {Object} Session */
 
 /**
- * Busca una session por el id del refresh token
- * @param {Object} payload - El payload para buscar la session
- * @param {Session['jwtid']} payload.jwtid - El id del token
- * @returns {Session} La session encontrada
- */
-const findSessionByJwtId = ({ jwtid }) => {
-  const findSessionQuery = db.prepare('SELECT * FROM sessions WHERE jwtid = ?');
-  const session = findSessionQuery.get(jwtid);
-  return session;
-};
-
-/**
- * Actualiza el id del token de la session
+ * Crea una sesión en Supabase
  * @param {Object} payload
- * @param {Session['jwtid']} payload.jwtid - El id del token
- * @param {Session['id']} payload.id - El id de la session a actualizar
- * @returns {void}
+ * @param {string} payload.jwtid
+ * @param {number} payload.userId
+ * @returns {Promise<Session>} La sesión creada
  */
-const updateSessionJwtId = ({ jwtid, id }) => {
-  const updateSessionQuery = db.prepare(`
-    UPDATE sessions
-    SET jwtid = ?
-    WHERE id = ?
-  `);
+const createSession = async ({ jwtid, userId }) => {
+  const { data, error } = await supabase
+    .from('sessions')
+    .insert({ jwtid, user_id: userId })
+    .select()
+    .single();
 
-  updateSessionQuery.run(jwtid, id);
+  if (error) throw error;
+  return data;
 };
 
 /**
- * Elimina una session por el id
- * @param {string} id - El id de la session a eliminar
- * @returns {void}
+ * Busca una sesión por jwtid
+ * @param {Object} payload
+ * @param {string} payload.jwtid
+ * @returns {Promise<Session|null>}
  */
-const deleteSession = (id) => {
-  const deleteSessionQuery = db.prepare('DELETE FROM sessions WHERE id = ?');
-  deleteSessionQuery.run(id);
+const findSessionByJwtId = async ({ jwtid }) => {
+  const { data, error } = await supabase
+    .from('sessions')
+    .select('*')
+    .eq('jwtid', jwtid)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
+};
+
+/**
+ * Actualiza el jwtid de una sesión
+ * @param {Object} payload
+ * @param {string} payload.jwtid
+ * @param {number} payload.id
+ * @returns {Promise<void>}
+ */
+const updateSessionJwtId = async ({ jwtid, id }) => {
+  const { error } = await supabase
+    .from('sessions')
+    .update({ jwtid })
+    .eq('id', id);
+
+  if (error) throw error;
+};
+
+/**
+ * Elimina una sesión por su id
+ * @param {number} id
+ * @returns {Promise<void>}
+ */
+const deleteSession = async (id) => {
+  const { error } = await supabase
+    .from('sessions')
+    .delete()
+    .eq('id', id);
+
+  if (error) throw error;
 };
 
 /**
  * Elimina todas las sesiones de un usuario
- * @param {string} userId - El id del usuario
- * @returns {void}
+ * @param {number} userId
+ * @returns {Promise<void>}
  */
-const deleteAllSessionsByUserId = (userId) => {
-  const deleteSessionsQuery = db.prepare('DELETE FROM sessions WHERE user_id = ?');
-  deleteSessionsQuery.run(userId);
+const deleteAllSessionsByUserId = async (userId) => {
+  const { error } = await supabase
+    .from('sessions')
+    .delete()
+    .eq('user_id', userId);
+
+  if (error) throw error;
 };
 
-const authRepository = { createSession, findSessionByJwtId, updateSessionJwtId, deleteSession, deleteAllSessionsByUserId };
+const authRepository = {
+  createSession,
+  findSessionByJwtId,
+  updateSessionJwtId,
+  deleteSession,
+  deleteAllSessionsByUserId,
+};
+
 export default authRepository;

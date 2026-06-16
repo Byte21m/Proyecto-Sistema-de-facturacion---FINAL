@@ -1,0 +1,34 @@
+services:
+  # 1. Unified Fullstack Web Service (Express API + Astro Frontend)
+  - type: web
+    name: sigo-facturacion-fullstack
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: SUPABASE_URL
+        sync: false
+        placeholder: "Ingresa tu Supabase URL"
+      - key: SUPABASE_ANON_KEY
+        sync: false
+        placeholder: "Ingresa tu Supabase Anon/Public Key"
+      - key: ACCESS_TOKEN_SECRET
+        generateValue: true
+      - key: REFRESH_TOKEN_SECRET
+        generateValue: true
+      - key: EMAIL_TOKEN_SECRET
+        generateValue: true
+      - key: CLIENT_ENDPOINT
+        sync: false
+        placeholder: "URL de este servicio en Render (ej: https://sigo-facturacion.onrender.com)"
+      - key: EMAIL_USER
+        sync: false
+        placeholder: "Correo emisor de facturas/verificación (ej: jcmon21@gmail.com)"
+      - key: EMAIL_PASS
+        sync: false
+        placeholder: "Contraseña de aplicación de Gmail (16 caracteres sin espacios)"
