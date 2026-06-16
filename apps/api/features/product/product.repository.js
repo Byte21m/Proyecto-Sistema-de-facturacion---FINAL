@@ -27,21 +27,33 @@ const createProduct = async ({ nombre, precio_dolar, stock, exento_iva = false, 
  * @returns {Promise<Array>} Listado de productos
  */
 const findProducts = async (user_id) => {
-  const { data, error } = await supabase
+  const { data: products, error: productsError } = await supabase
     .from('products')
-    .select('*, sale_details(id_producto)')
+    .select('*')
     .eq('user_id', user_id)
     .eq('is_deleted', false);
 
-  if (error) throw error;
+  if (productsError) throw productsError;
 
-  return (data || []).map(p => {
-    const { sale_details, ...rest } = p;
-    return {
-      ...rest,
-      tiene_ventas: sale_details && sale_details.length > 0,
-    };
-  });
+  if (!products || products.length === 0) return [];
+
+  // Obtener la lista de IDs de productos
+  const productIds = products.map(p => p.id);
+
+  // Consultar cuáles de estos productos tienen detalles de venta registrados
+  const { data: soldDetails, error: detailsError } = await supabase
+    .from('sale_details')
+    .select('id_producto')
+    .in('id_producto', productIds);
+
+  if (detailsError) throw detailsError;
+
+  const soldSet = new Set((soldDetails || []).map(d => d.id_producto));
+
+  return products.map(p => ({
+    ...p,
+    tiene_ventas: soldSet.has(p.id),
+  }));
 };
 
 /**

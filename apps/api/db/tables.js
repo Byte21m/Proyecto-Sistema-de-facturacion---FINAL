@@ -86,6 +86,7 @@
  * -- A. Tendencia de ventas
  * CREATE OR REPLACE FUNCTION get_sales_trend(p_user_id INT, p_start_date DATE)
  * RETURNS TABLE(dia DATE, total_bs NUMERIC, cantidad BIGINT) AS $$
+ * #variable_conflict use_column
  * BEGIN
  *   RETURN QUERY
  *   SELECT DATE(fecha) as dia, COALESCE(SUM(total_bs), 0) as total_bs, COUNT(*) as cantidad
@@ -98,6 +99,7 @@
  * -- B. Productos más vendidos
  * CREATE OR REPLACE FUNCTION get_top_products(p_user_id INT, p_start_date DATE)
  * RETURNS TABLE(nombre TEXT, total_vendido NUMERIC, total_usd NUMERIC, total_bs NUMERIC) AS $$
+ * #variable_conflict use_column
  * BEGIN
  *   RETURN QUERY
  *   SELECT 
@@ -117,6 +119,7 @@
  * -- C. Distribución fiscal del mes
  * CREATE OR REPLACE FUNCTION get_fiscal_distribution(p_user_id INT, p_year TEXT, p_month TEXT)
  * RETURNS TABLE(total_exento_bs NUMERIC, total_iva_bs NUMERIC, total_facturado_bs NUMERIC, total_facturas BIGINT) AS $$
+ * #variable_conflict use_column
  * BEGIN
  *   RETURN QUERY
  *   SELECT 
