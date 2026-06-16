@@ -15,7 +15,7 @@ import supabase from '../../db/index.js';
 const createUser = async ({ nombre, email, passwordHash, razon_social, rif }) => {
   const { data: user, error: userError } = await supabase
     .from('users')
-    .insert({ nombre, email, password_hash: passwordHash })
+    .insert({ nombre, email, password_hash: passwordHash, email_verified: true })
     .select()
     .single();
 
