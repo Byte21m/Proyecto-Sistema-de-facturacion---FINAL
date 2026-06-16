@@ -27,8 +27,7 @@ userRouter.post('/', async (req, res, next) => {
       rif: body.rif || '',
     });
 
-    // 4. Enviar el correo de validación (COMENTADO POR BLOQUEO DE PUERTOS EN RENDER)
-    /*
+    // 4. Enviar el correo de validación
     const emailToken = jwt.sign(
       { id: createdUser.id, email: createdUser.email },
       process.env.EMAIL_TOKEN_SECRET,
@@ -93,7 +92,6 @@ userRouter.post('/', async (req, res, next) => {
         </html>
       `,
     });
-    */
 
     // 5. Responder con el usuario creado
     res.status(201).json(createdUser);
