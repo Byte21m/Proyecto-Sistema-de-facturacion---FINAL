@@ -1,19 +1,25 @@
 import authService from '../../features/auth/auth.service';
 
+const cleanPath = (path) => {
+  if (!path) return '';
+  return path.endsWith('/') && path.length > 1 ? path.slice(0, -1) : path;
+};
+
 export const getLinks = (pathname) => {
   let links = [];
+  const path = cleanPath(pathname);
 
-  if (pathname === '/login') {
+  if (path === '/login') {
     links = links.concat({ name: 'Inicio', to: '/' });
     links = links.concat({ name: 'Registro', to: '/signup', isButton: true, isPrimary: true });
   }
 
-  if (pathname === '/signup') {
+  if (path === '/signup') {
     links = links.concat({ name: 'Inicio', to: '/' });
     links = links.concat({ name: 'Iniciar sesión', to: '/login', isButton: true });
   }
 
-  if (pathname === '/') {
+  if (path === '/') {
     links = links.concat({ name: 'Iniciar sesión', to: '/login', isButton: true });
     links = links.concat({ name: 'Registro', to: '/signup', isButton: true, isPrimary: true });
   }
@@ -23,9 +29,10 @@ export const getLinks = (pathname) => {
 
 export const getButtons = (pathname) => {
   let buttons = [];
+  const path = cleanPath(pathname);
 
   const privatePages = ['/inventory', '/dashboard', '/sales', '/history', '/settings', '/reports', '/invoice-preview'];
-  if (privatePages.includes(pathname)) {
+  if (privatePages.includes(path)) {
     buttons = buttons.concat({
       name: 'Cerrar sesión',
       handler: () => {
