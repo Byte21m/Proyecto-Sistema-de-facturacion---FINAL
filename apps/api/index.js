@@ -2,8 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { ZodError } from 'zod';
-import { SqliteError } from 'better-sqlite3';
 import jwt from 'jsonwebtoken';
+import { fileURLToPath } from 'url';
+import path from 'path';
 import authRouter from './features/auth/auth.routes.js';
 import userRouter from './features/user/user.routes.js';
 import productRouter from './features/product/product.routes.js';
@@ -11,8 +12,11 @@ import saleRouter from './features/sale/sale.routes.js';
 import businessRouter from './features/user/business.routes.js';
 import dashboardRouter from './features/dashboard/dashboard.routes.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -32,12 +36,20 @@ app.use('/api/dashboard', dashboardRouter);
 
 // Servir frontend compilado en producción (Astro SSR)
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('dist/client'));
+  const clientDist = path.join(__dirname, 'dist', 'client');
+  app.use(express.static(clientDist));
   try {
-    const { handler: ssrHandler } = await import('./dist/server/entry.mjs');
+    const entryPath = path.join(__dirname, 'dist', 'server', 'entry.mjs');
+    const { handler: ssrHandler } = await import('file://' + entryPath.replace(/\\/g, '/'));
     app.use(ssrHandler);
   } catch (err) {
     console.error('Error al cargar el middleware de Astro:', err);
+    // Fallback: servir index.html para cualquier ruta no-API
+    app.get('*', (req, res) => {
+      if (!req.path.startsWith('/api')) {
+        res.sendFile(path.join(clientDist, 'index.html'));
+      }
+    });
   }
 }
 
