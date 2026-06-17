@@ -32,3 +32,5 @@ services:
       - key: EMAIL_PASS
         sync: false
         placeholder: "Contraseña de aplicación de Gmail (16 caracteres sin espacios)"
+      - key: DISABLE_EMAIL
+        value: "true"

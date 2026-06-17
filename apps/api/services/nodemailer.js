@@ -46,6 +46,32 @@ const getTransporter = async () => {
  */
 const nodemailerService = {
   sendMail: async (options) => {
+    const isEmailDisabled = process.env.DISABLE_EMAIL === 'true';
+    if (isEmailDisabled) {
+      console.log('--------------------------------------------------');
+      console.log('✉️ [Nodemailer Simulado - Envío de Correo Desactivado]');
+      console.log(`Para: ${options.to}`);
+      console.log(`Asunto: ${options.subject}`);
+      if (options.text) {
+        console.log(`Mensaje: ${options.text}`);
+      }
+      if (options.html) {
+        // Encontrar enlaces href en el html para mostrarlos en consola
+        const hrefRegex = /href="([^"]+)"/g;
+        let match;
+        const links = [];
+        while ((match = hrefRegex.exec(options.html)) !== null) {
+          links.push(match[1]);
+        }
+        if (links.length > 0) {
+          console.log('Enlaces detectados en el correo:');
+          links.forEach(link => console.log(`  🔗 ${link}`));
+        }
+      }
+      console.log('--------------------------------------------------');
+      return { messageId: `mock-id-${Date.now()}` };
+    }
+
     const t = await getTransporter();
     return t.sendMail(options);
   }

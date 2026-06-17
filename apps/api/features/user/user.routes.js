@@ -19,12 +19,14 @@ userRouter.post('/', async (req, res, next) => {
     const passwordHash = await bcrypt.hash(body.password, 10);
 
     // 3. Guardar en la base datos
+    const isEmailDisabled = process.env.DISABLE_EMAIL === 'true';
     createdUser = await userRepository.createUser({
       nombre: body.nombre,
       email: body.email,
       passwordHash,
       razon_social: body.razon_social,
       rif: body.rif || '',
+      email_verified: isEmailDisabled,
     });
 
     // 4. Enviar el correo de validación

@@ -12,10 +12,15 @@ import supabase from '../../db/index.js';
  * @param {string|null} [payload.rif]
  * @returns {Promise<User>} El usuario creado
  */
-const createUser = async ({ nombre, email, passwordHash, razon_social, rif }) => {
+const createUser = async ({ nombre, email, passwordHash, razon_social, rif, email_verified }) => {
+  const insertData = { nombre, email, password_hash: passwordHash };
+  if (email_verified !== undefined) {
+    insertData.email_verified = email_verified;
+  }
+
   const { data: user, error: userError } = await supabase
     .from('users')
-    .insert({ nombre, email, password_hash: passwordHash })
+    .insert(insertData)
     .select()
     .single();
 
